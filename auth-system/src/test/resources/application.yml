@@ -1,0 +1,30 @@
+logging:
+  level:
+    root: INFO
+    com.okapi: DEBUG
+    org.springframework.security: DEBUG
+    org.springframework.web: DEBUG
+
+spring:
+  application:
+    name: okapi-auth-system-test
+  security:
+    oauth2:
+      client:
+        registration:
+          okta:
+            client-id: test-client-id
+            client-secret: test-client-secret
+            scope: openid,profile,email,groups
+            authorization-grant-type: authorization_code
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+        provider:
+          okta:
+            # Pointing to a non-existent or ignored URL to bypass discovery if possible,
+            # OR explicitly defining endpoints to avoid discovery.
+            authorization-uri: http://localhost:8080/test/authorize
+            token-uri: http://localhost:8080/test/token
+            user-info-uri: http://localhost:8080/test/userinfo
+            jwk-set-uri: http://localhost:8080/test/jwks
+            # issuer-uri must be omitted or commented out to prevent discovery call
+            # issuer-uri: http://localhost:8080/test

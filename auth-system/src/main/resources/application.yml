@@ -1,0 +1,23 @@
+spring:
+  application:
+    name: okapi-auth-system
+  security:
+    oauth2:
+      client:
+        registration:
+          okta:
+            client-id: ${OIDC_CLIENT_ID}
+            client-secret: ${OIDC_CLIENT_SECRET}
+            scope: openid,profile,email
+        provider:
+          okta:
+            issuer-uri: ${OIDC_ISSUER_URI}
+#      saml2:
+#        relying-party:
+#          registration:
+#            okapi-saml:
+#              asserting-party:
+#                metadata-uri: ${SAML_IDP_METADATA_URL}
+
+server:
+  port: ${SERVER_PORT:8080}

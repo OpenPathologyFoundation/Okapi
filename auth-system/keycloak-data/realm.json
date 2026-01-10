@@ -1,0 +1,53 @@
+{
+  "realm": "okapi",
+  "enabled": true,
+  "users": [
+    {
+      "username": "testuser",
+      "enabled": true,
+      "email": "testuser@okapi.com",
+      "firstName": "Test",
+      "lastName": "User",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "password",
+          "temporary": false
+        }
+      ],
+      "groups": [
+        "Okapi_Pathologists"
+      ]
+    }
+  ],
+  "clients": [
+    {
+      "clientId": "okapi-client",
+      "enabled": true,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "okapi-secret",
+      "redirectUris": [
+        "http://localhost:8080/login/oauth2/code/okta"
+      ],
+      "defaultClientScopes": [
+        "web-origins",
+        "acr",
+        "roles",
+        "profile",
+        "email"
+      ],
+      "optionalClientScopes": [
+        "address",
+        "phone",
+        "offline_access",
+        "microprofile-jwt"
+      ]
+    }
+  ],
+  "groups": [
+    {
+      "name": "Okapi_Pathologists",
+      "path": "/Okapi_Pathologists"
+    }
+  ]
+}

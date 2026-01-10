@@ -77,7 +77,9 @@ The following artifacts constitute the DHF for this system.
 | ID | Artifact | Purpose | Path | Status |
 |---|---|---|---|---|
 | 03 | Cybersecurity | Threat Model & Security Controls | qms/dhf/03-Cybersecurity.md | Draft/Active |
-| 04 | SDS | Software Design Spec (Context, API, Data Flow, SOUP) | qms/dhf/04-SDS.md | Draft/Active |
+| 04 | SDS | Software Design Spec (folder) | qms/dhf/04-SDS/ | Draft/Active |
+| 04-00 | SDS Overview | High-level architecture, component boundaries | qms/dhf/04-SDS/00-SDS-Overview.md | Draft/Active |
+| 04-01 | Auth Architecture | Detailed AuthN/AuthZ design, data model | qms/dhf/04-SDS/01-Auth-Architecture.md | Draft/Active |
 
 ### 5.4 RISK & QUALITY (The "Safety")
 | ID | Artifact | Purpose | Path | Status |

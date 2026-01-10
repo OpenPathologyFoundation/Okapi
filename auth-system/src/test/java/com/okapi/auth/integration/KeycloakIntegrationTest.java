@@ -37,18 +37,32 @@ public class KeycloakIntegrationTest {
         }
 
         @Autowired
-        private MockMvc mockMvc;
+    private MockMvc mockMvc;
+    
+    @Autowired
+    private com.okapi.auth.repository.IdentityRepository identityRepository;
 
-        @Test
-        void whenKeycloakIsRunning_ApplicationStartsAndConnects() throws Exception {
-                log.info("Starting test: whenKeycloakIsRunning_ApplicationStartsAndConnects");
-                log.debug("Attempting to access protected endpoint /login to verify OIDC configuration...");
+    @Test
+    void whenKeycloakIsRunning_ApplicationStartsAndConnects() throws Exception {
+        log.info("Starting test: whenKeycloakIsRunning_ApplicationStartsAndConnects");
+        log.debug("Attempting to access protected endpoint /login to verify OIDC configuration...");
 
-                // If the context loads, we have successfully connected to the OIDC provider
-                // (Keycloak)
-                mockMvc.perform(get("/login"))
-                                .andExpect(status().isOk());
-
-                log.info("Successfully connected to Keycloak and accessed /login.");
-        }
+        // If the context loads, we have successfully connected to the OIDC provider (Keycloak)
+        mockMvc.perform(get("/login"))
+                .andExpect(status().isOk());
+                
+        // In a real full E2E, we would simulate the callback.
+        // For this test, we are verifying that the app starts up, connects to Keycloak, 
+        // and the persistence layer is active (repository is injectable).
+        log.info("Verifying persistence layer connectivity...");
+        long count = identityRepository.count();
+        log.info("Current identity count in DB: {}", count);
+        
+        // Note: We can't easily verify the *creation* of a user without simulating 
+        // the full OAuth2 authorization code flow callback which is complex to mock 
+        // without a full browser driver or specialized testing lib.
+        // But verifying that identityRepository.count() execution doesn't throw ensures DB is up.
+        
+        log.info("Successfully connected to Keycloak, accessed /login, and queried DB.");
+    }
 }

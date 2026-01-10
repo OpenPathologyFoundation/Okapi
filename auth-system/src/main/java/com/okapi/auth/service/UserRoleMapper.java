@@ -9,35 +9,45 @@ import java.util.Map;
 import java.util.Set;
 
 @Service
+@lombok.RequiredArgsConstructor
 public class UserRoleMapper {
 
+    private final com.okapi.auth.repository.IdpGroupMappingRepository mappingRepository;
+    private final com.okapi.auth.repository.RoleRepository roleRepository;
+
     /**
-     * Maps IdP attributes to internal Roles.
+     * Maps IdP attributes to internal Roles using Database mappings.
      * Expects a 'groups' or 'memberOf' attribute.
      */
     public Set<Role> mapRoles(Map<String, Object> attributes) {
         Set<Role> roles = new HashSet<>();
 
-        // Default mapping logic (placeholder)
-        // In a real scenario, this might read from a config file or DB
+        // Get groups from IdP attributes
+        // Keycloak uses "groups"
         Object groupsObj = attributes.get("groups");
+        List<String> groupNames = new java.util.ArrayList<>();
 
         if (groupsObj instanceof List<?>) {
-            List<?> groups = (List<?>) groupsObj;
-            for (Object group : groups) {
-                String groupName = group.toString();
-                if (groupName.contains("Okapi_Admins")) {
-                    roles.add(Role.ADMIN);
-                } else if (groupName.contains("Okapi_Pathologists")) {
-                    roles.add(Role.PATHOLOGIST);
-                } else if (groupName.contains("Okapi_Technicians")) {
-                    roles.add(Role.TECHNICIAN);
-                }
+            for (Object g : (List<?>) groupsObj) {
+                if (g != null)
+                    groupNames.add(g.toString());
             }
         }
 
-        // Fallback or default role if needed?
-        // roles.add(Role.PATHOLOGIST); // Example default
+        // DB Lookup
+        if (!groupNames.isEmpty()) {
+            List<com.okapi.auth.model.db.IdpGroupMappingEntity> mappings = mappingRepository
+                    .findByIdpGroupNameIn(groupNames);
+            for (com.okapi.auth.model.db.IdpGroupMappingEntity mapping : mappings) {
+                // Determine Role Enum from Entity Name (Simple matching for now)
+                try {
+                    String roleName = mapping.getRole().getName();
+                    roles.add(Role.valueOf(roleName));
+                } catch (IllegalArgumentException e) {
+                    // Log warning: Role in DB doesn't match Enum
+                }
+            }
+        }
 
         return roles;
     }

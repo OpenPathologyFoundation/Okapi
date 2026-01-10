@@ -1,6 +1,19 @@
 spring:
   application:
     name: okapi-auth-system
+  datasource:
+    url: jdbc:postgresql://localhost:${POSTGRES_PORT:5432}/${POSTGRES_DB:okapi_auth}
+    username: ${POSTGRES_USER:okapi_service}
+    password: ${POSTGRES_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: validate # We manage schema via init.sql (or Flyway in future)
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
   security:
     oauth2:
       client:

@@ -49,6 +49,37 @@ This project includes a Docker Compose environment for testing against a real Ke
 
 ---
 
+## 🐘 Connecting to the Database
+
+The project runs a Dockerized **PostgreSQL 16** instance.
+
+### Connection Details
+-   **Host**: `localhost`
+-   **Port**: `5432` (Default, see troubleshooting below)
+-   **Database**: `okapi_auth`
+-   **Username**: `okapi_service`
+-   **Password**: `postgres_dev_password` (defined in `.env`)
+
+### ⚠️ Troubleshooting: Port Conflicts
+If you have a **local PostgreSQL** installation running on port `5432`, Docker may fail to bind or you might accidentally connect to your local DB instead of the container.
+
+**Solution**: Change the Docker mapping in your `.env` file to use a different host port (e.g., `5433`):
+
+```bash
+# .env
+POSTGRES_PORT=5433
+```
+
+Then restart Docker:
+```bash
+docker compose down
+docker compose up -d
+```
+
+You can now connect via **`localhost:5433`** while the container internally uses 5432.
+
+---
+
 ## 🔐 Enabling Enterprise SAML Integration
 
 The system is pre-wired for SAML 2.0 but it is currently disabled to allow for OIDC-first development. Follow these strict steps to enable SAML for enterprise accounts.

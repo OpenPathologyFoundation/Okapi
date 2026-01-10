@@ -1,6 +1,7 @@
 services:
   keycloak:
     image: quay.io/keycloak/keycloak:latest
+    container_name: okapi-keycloak
     command: start-dev --import-realm
     environment:
       KEYCLOAK_ADMIN: admin
@@ -9,3 +10,20 @@ services:
       - "8180:8080"
     volumes:
       - ./keycloak-data:/opt/keycloak/data/import
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: okapi-postgres
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - ./postgres-data/init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5

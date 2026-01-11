@@ -104,3 +104,18 @@ The structural frame of the application once logged in.
 ## 5. Traceability
 -   **Requirements**: Implements PURS-UI-001 (Professional UI), PURS-UI-002 (Dark Mode).
 -   **Risks**: Mitigates RISK-UI-001 (User Fatigue/Glare) via Dark Mode.
+
+## 6. Theme System Specification
+
+### 6.1 Theme Modes
+-   **System**: (Default) Mirrors the OS `prefers-color-scheme`.
+-   **Dark**: Forces the "Clinical Dark" palette.
+-   **Light**: Forces the "Clinical Light" palette (High contrast, paper-white backgrounds).
+
+### 6.2 Selection & Persistence
+-   **Entry Point**: User Avatar Dropdown -> "Appearance".
+-   **Persistence**:
+    1.  **Server**: Stored in User Profile (`theme_preference`).
+    2.  **Local**: Cached in `localStorage` for immediate paint on load.
+-   **Reconciliation**: Local cache applies first (anti-flash), then updates if server profile differs.
+

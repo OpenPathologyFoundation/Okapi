@@ -24,6 +24,7 @@ This document records the specific hazards, failure modes, and risk controls for
 | **RISK-005** | Unauthorized Modification of AI Model | Insider threat or compromised CI/CD pipeline | 5 | 2 | **10 (Med)** | **SOP-ChangeControl**: Mandatory code reviews and Signed commits; **SYS-SEC-001**: Read-only model weights in production. | 5 | 1 | **5 (Low)** |
 | **RISK-006** | Audit Log Failure / Tampering | Disk full or malicious log deletion | 3 | 2 | **6 (Low)** | **Requirement SYS-AUD-001**: Use of immutable cloud logging (AWS CloudWatch/S3 with Object Lock). | 3 | 1 | **3 (Low)** |
 | **RISK-007** | Unreported System Errors / User Frustration | Complex bugs or usability issues are not reported, leading to "Shadow Workarounds" or safety risks. | 4 | 3 | **12 (Med)** | **Requirement SR-UX-01**: Implement "Echo" module for context-aware reporting; **SR-UX-02**: Auto-context capture. | 4 | 1 | **4 (Low)** |
+| **RISK-008** | User Fatigue / Glare (Visual Impairment) | Mismatch between screen brightness/theme and ambient lighting (e.g., bright light mode in a dark reading room). | 3 | 4 | **12 (Med)** | **Requirement SR-UX-04**: User-selectable Theme Modes (System/Dark/Light). | 3 | 1 | **3 (Low)** |
 
 # 3. Conclusion
 All identified risks are mitigated to an acceptable level (Low) through the implementation of the specified functional requirements and design controls.

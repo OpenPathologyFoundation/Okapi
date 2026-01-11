@@ -1,7 +1,11 @@
 <script lang="ts">
     import { page } from "$app/state";
+    import { onMount } from "svelte";
+    import { themeStore } from "$lib/stores/theme.svelte";
     // src/routes/app/+layout.svelte
     // Application Shell: Top Bar + Left Nav Rail
+
+    import Echo from "$lib/components/Echo.svelte"; // Import Echo
 
     // Mock User State
     const user = {
@@ -9,6 +13,10 @@
         role: "Pathologist",
         color: "bg-blue-600",
     };
+
+    onMount(() => {
+        themeStore.init();
+    });
 </script>
 
 <div
@@ -25,7 +33,10 @@
                 alt="Okapi"
                 class="h-10 w-auto opacity-80"
             />
-            <span class="font-bold tracking-tight text-gray-300">Okapi</span>
+            <span
+                class="font-bold tracking-tight text-gray-900 dark:text-gray-300"
+                >Okapi</span
+            >
         </div>
 
         <!-- Center: Omni-Search -->
@@ -51,7 +62,7 @@
                 <input
                     type="text"
                     placeholder="Search Cases, Patients, or Archive..."
-                    class="block w-full rounded-md border-0 bg-gray-900/50 py-1.5 pl-10 text-gray-300 ring-1 ring-inset ring-gray-700 placeholder:text-gray-600 focus:ring-2 focus:ring-inset focus:ring-clinical-primary sm:text-sm sm:leading-6 transition-all"
+                    class="block w-full rounded-md border-0 bg-gray-100 dark:bg-gray-900/50 py-1.5 pl-10 text-gray-900 dark:text-gray-300 ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-500 dark:placeholder:text-gray-600 focus:ring-2 focus:ring-inset focus:ring-clinical-primary sm:text-sm sm:leading-6 transition-all"
                 />
             </div>
         </div>
@@ -83,9 +94,31 @@
 
                 <!-- Dropdown Menu -->
                 <div
-                    class="absolute right-0 top-full mt-2 w-48 bg-clinical-surface border border-gray-700 rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 transform origin-top-right"
+                    class="absolute right-0 top-full mt-2 w-56 bg-clinical-surface border border-gray-700 rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 transform origin-top-right overflow-hidden"
                 >
                     <div class="py-1">
+                        <!-- Appearance Submenu in Main Menu -->
+                        <div
+                            class="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider border-b border-gray-700/50 mb-1"
+                        >
+                            Appearance
+                        </div>
+                        <div
+                            class="px-2 pb-2 border-b border-gray-700/50 mb-1 flex gap-1 justify-between"
+                        >
+                            {#each ["system", "dark", "light"] as m}
+                                <button
+                                    class="flex-1 px-2 py-1.5 text-xs rounded-md border transition-all capitalize {themeStore.mode ===
+                                    m
+                                        ? 'bg-clinical-primary/20 border-clinical-primary text-clinical-primary'
+                                        : 'border-transparent text-gray-400 hover:bg-white/5'}"
+                                    on:click={() => themeStore.setMode(m)}
+                                >
+                                    {m}
+                                </button>
+                            {/each}
+                        </div>
+
                         <a
                             href="/app/profile"
                             class="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 hover:text-white"
@@ -187,6 +220,11 @@
             </a>
 
             <div class="flex-1"></div>
+
+            <!-- Echo (Feedback) -->
+            <div class="mb-4">
+                <Echo />
+            </div>
 
             <!-- Settings -->
             <a

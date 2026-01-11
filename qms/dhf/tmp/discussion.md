@@ -1,196 +1,172 @@
-# Okapi Echo Module
+Below is a write-up you can drop into your product/spec repository. It is intentionally explicit (requirements, behaviors, acceptance criteria) and framed in user needs and clinical/business workflows.
 
 ---
 
-### **1. The UI Component: The "Echo" Anchor**
+# UI Specification: Theme Selection (System / Dark / Light) With Persistent User Preference
 
-You requested "semi-conspicuous in the left corner."
+## 1. Purpose and Rationale
 
-* **Location:** Bottom-Left of the Global Navigation Rail. This is "Prime Real Estate" for persistent tools but stays out of the way of the high-value diagnostic pixels in the center.
-* **Visual:** A small, circular icon.
-* *Iconography:* Not a generic "Help" question mark (`?`). Use a **"Speech Bubble with a Pulse"** or a **"Feedback Loop"** icon.
-* *State:* It is usually gray (inactive). However, if the system detects "Rage Clicking" (rapid clicking in one spot) or a system error, the icon gently pulses amber, proactively asking, *"Something wrong?"*
+Okapi is a daily-use clinical/business application used in variable environments (office, reading room, home, different monitors). A single forced theme (dark-only or light-only) creates avoidable friction and can materially impair usability for a subset of users due to ambient-light conditions, visual comfort, and accessibility needs.
 
+This feature provides:
 
-* **Hotkey:** `F1` or `~` (Tilde). Speed is key.
+* **User autonomy**: users can choose the display mode that best supports their work context.
+* **Consistency**: the user’s preference follows them across devices and sessions.
+* **Accessibility**: ensures legibility and operability for keyboard and low-vision users.
+* **Operational efficiency**: reduces “UI complaints” and removes a common adoption barrier.
 
----
+## 2. Scope
 
-### **2. The Interaction: The "Context Capsule"**
+Implement:
 
-When the user clicks the icon (or hits the hotkey), the screen does **not** navigate away.
+* Theme modes: **System / Dark / Light**
+* Preference persistence: **server-side** user profile + **client cache** for fast first paint
+* Toggle location: **User avatar menu (top-right)** and **Settings page**
+* Accessibility pass: **contrast**, **focus outlines**, **tooltips** for icon-only nav
 
-1. **The Snapshot (Invisible):** The system immediately freezes the state metadata:
-* *Case ID:* #12345
-* *Viewport:* 40x Zoom, Coordinates X/Y.
-* *Active Layers:* AI Heatmap ON, Annotations OFF.
-* *System Load:* Latency 40ms.
+Out of scope (for this iteration):
 
+* Per-feature or per-pane theming (e.g., viewer vs worklist different themes)
+* Custom theme palettes beyond dark/light
+* High-contrast mode (can be added later as an accessibility extension)
 
-2. **The Modal (Visible):** A compact, semi-transparent "glass" card slides out from the bottom left (overlaying the rail, not the image).
+## 3. User Needs and Scenarios
 
-#### **The Dialogue Interface (The "Linguistic Component")**
+### User Need 1: Comfortable visibility across lighting conditions
 
-Instead of a form with "Subject" and "Description," it is a **single input field** with a microphone icon (Voice-to-Text is crucial here).
+* **Scenario A (bright environment):** user works in a bright office; dark mode feels low-contrast and “muddy.”
+  **Need:** a **Light** option for crisp readability of tables and text.
+* **Scenario B (low-light environment):** user works in a reading room; light mode causes glare.
+  **Need:** a **Dark** option that reduces perceived glare and supports sustained viewing.
 
-* **User Action:** The user types or speaks:
-* *"I wish I could compare this section to the frozen section from yesterday side-by-side without losing my place."*
+### User Need 2: Consistency across devices and sessions
 
+* **Scenario:** user switches between workstation and laptop; expects the UI to remain consistent.
+  **Need:** preference persists in the user profile (server-side) and loads immediately.
 
+### User Need 3: Default behavior aligned with OS preference
 
-* **System Response (LLM Processing):** The system analyzes the intent and the context. It replies:
-* *"Captured. I've tagged this as a **Feature Request** for 'Synchronized Multi-Slide View.' I've also noted you are currently viewing Case #882."*
+* **Scenario:** a new user logs in; expects the app to match their system theme preference.
+  **Need:** default mode should be **System** unless user explicitly chooses otherwise.
 
+### User Need 4: Accessibility for keyboard and low-vision workflows
 
-* **User Action:** Click "Submit" (or just hit Enter).
+* **Scenario:** user navigates quickly by keyboard; must see focus location clearly.
+  **Need:** visible focus outlines and clear selected states in both themes.
+* **Scenario:** icon-only nav must be understandable without relying on memory.
+  **Need:** tooltips and accessible labels for icon buttons.
 
-**Why this works:** The user didn't have to know the technical term "Synchronized View." They just expressed a desire.
+## 4. Functional Requirements
 
----
+### 4.1 Theme Modes
 
-### **3. The Evolution: Technical vs. Clinical**
+The application shall support three theme modes:
 
-You mentioned this technology might be "transient" or evolve. Here is how we design it to handle that ambiguity:
+1. **System**
 
-#### **Phase 1: The "Wishlist" & "Bug" Catcher (Technical Focus)**
+* Follows OS/browser preference using `prefers-color-scheme`.
+* If OS preference changes while app is open, UI updates accordingly **only when mode = System**.
 
-The LLM acts as a Junior PM.
+2. **Dark**
 
-* *User:* "Why is this heatmap red? It's obviously fibrosis."
-* *System:* "Feedback logged: **AI Discrepancy**. I've captured the region of interest where you disagreed with the model. This will be sent to the ML training team."
+* Forces dark theme regardless of system setting.
 
-#### **Phase 2: The "Clinical Scribe" (Operational Focus)**
+3. **Light**
 
-As users get used to talking to the corner of the screen, we pivot the utility.
+* Forces light theme regardless of system setting.
 
-* *User:* "This area looks weird, remind me to show Dr. Smith."
-* *System:* "Flagged as **Clinical Note**. I've added a digital sticky note to this coordinate: 'Review with Dr. Smith'."
+**Default:** System.
 
----
+### 4.2 Theme Toggle Entry Points
 
-### **4. Design Artifact: The "Feedback Modal" Wireframe**
+#### A) Top-right user avatar menu (primary, immediate access)
 
-```text
-+-------------------------------------------------------+
-|  [Echo Feedback]                            [ X ]     |
-+-------------------------------------------------------+
-|  HISTORY:                                             |
-|  [System]: Screenshot & State Logs attached.          |
-|                                                       |
-|  [User]: "Make the measuring tool stickier."          |
-|                                                       |
-|  [System]: Clarifying: Do you mean you want it to     |
-|            snap to tissue edges automatically?        |
-|                                                       |
-|  [User]: "Yes, exactly."                              |
-+-------------------------------------------------------+
-|  > Type or hold [Space] to speak...             [ ^ ] |
-+-------------------------------------------------------+
-|  Suggested Tags: [Bug] [Wishlist] [Data Error]        |
-+-------------------------------------------------------+
+* Add menu item: **Appearance** (or **Theme**).
+* On selection, present a compact selector:
 
-```
+  * **System**
+  * **Dark**
+  * **Light**
+* The currently active mode must be visibly indicated (checkmark or radio).
 
-### **5. The "Feedback Loop" Dashboard (For You/Admins)**
+#### B) Settings page (secondary access)
 
-Since you want usage monitoring, you need a view to digest this.
+* Include the same selector under a section:
 
-* **The "Frustration Heatmap":** Don't just list tickets. Show a visual representation of the UI. If 50 users submit feedback while using the "Stain Order" menu, that menu glows red on your admin dashboard.
-* **The "Wishlist Cloud":** The LLM summarizes the free-text feedback into clusters:
-* *Cluster A:* "Search is too strict" (15 users)
-* *Cluster B:* "Need dark mode for reports" (8 users)
-* *Cluster C:* "AI missed micro-mets" (3 users - **Critical**)
+  * “Appearance” → “Theme”
+* Settings must reflect the current persisted preference.
 
+### 4.3 Persistence and Loading Behavior
 
+**Server-side source of truth**
 
-### **Summary of Benefits**
+* Theme preference stored on the user profile (e.g., `ui_theme_mode = system|dark|light`).
+* On login/session initialization, backend returns user profile including theme preference.
 
-1. **Low Friction:** "Complaint as a Service."
-2. **High Context:** You never get "It doesn't work" tickets. You get "It failed at 2:00 PM on Case X."
-3. **Therapeutic:** It gives the user a feeling of control over the tool ("I told the system what I want").
+**Client cache for fast paint**
 
+* Client stores last-selected mode locally (e.g., localStorage) to prevent a “flash” of wrong theme while awaiting profile fetch.
+* On app start:
 
-This approach makes perfect sense. By treating the "separation of concerns" (clinical vs. technical) as a backend problem for the LLM to sort out later, we keep the frontend **radically simple**. The user just has "something to say," and they say it.
+  1. Apply cached theme immediately if present.
+  2. Fetch user profile.
+  3. If server preference differs from cache, update UI to server preference and update cache.
 
-Here is the design proposal for the **"Okapi Echo"** linguistic interface, focusing on visual style and interaction.
+**Offline / error handling**
 
----
+* If profile fetch fails, app continues using cached theme or System default.
+* Do not block UI on profile load.
 
-### **The Visual Style: "The Glass Scribe"**
+### 4.4 UI Application Mechanism
 
-Since the application is in "Clinical Dark Mode" (Gunmetal/Charcoal), this component needs to feel lightweight but distinct. We will use **Glassmorphism** (frosted blur) to ensure it feels like it floats *above* the clinical work, capturing thoughts without obscuring the diagnosis.
+* The theme should be applied via a single root attribute/class (e.g., `<html data-theme="dark">` or `class="theme-dark"`).
+* All components must derive colors from design tokens (no hard-coded colors in component logic).
 
-#### **1. The Anchor (Collapsed State)**
+### 4.5 Accessibility Requirements
 
-* **Location:** Bottom-Left corner of the screen (fixed in the rail).
-* **Shape:** A perfect circle (48x48px).
-* **Color:** A translucent dark glass background with a **Warm Amber** accent (`#F59E0B`). We use Amber because it feels "attentive" and "waiting," distinct from the Clinical Blues (stability) and Red/Greens (alerts) of the main UI.
-* **Icon:** A combined icon: A **Microphone** merged with a **Text Cursor** (`|`). This visually cues "Speak or Type."
-* **Animation:** A very slow, rhythmic "breathing" glow (opacity shift 80% to 100%) helps the user find it peripherally without it being distracting.
+* **Contrast:** All text and icons must meet WCAG contrast targets appropriate for UI text (at minimum, normal text should meet a standard contrast baseline; headings/large text may have different thresholds).
+* **Focus indicators:** Visible focus outlines for all interactive elements using keyboard navigation in both themes.
+* **Icon navigation tooltips:**
 
-#### **2. The Interface (Active/Expanded State)**
+  * Left-side icon-only nav must have tooltips on hover and on keyboard focus.
+  * Each icon button must have an accessible label (ARIA label) matching tooltip text.
+* **Selected state clarity:** Selected menu item and selected worklist/nav state must be unambiguous in both themes (not color-only).
 
-When activated (Click or Hotkey `~`), it doesn't open a rigid rectangular window. It blooms upward from the icon.
+## 5. Non-Functional Requirements
 
-* **Container:** A "frosted glass" capsule. It blurs the background behind it (the slide or worklist) so the text is legible, but the context is still visible underneath.
-* **Typography:** Large, monospaced font (like `JetBrains Mono` or `Roboto Mono`). It should look like a terminal or a script, reinforcing that this is a direct line to the system's "brain."
-* **The Input Field:** There is no "Submit" button visible initially. Just a clean line waiting for input.
+* **Performance:** Theme should render correctly on first paint; minimize perceptible theme flicker.
+* **Consistency:** Theme tokens applied consistently across pages (worklist, search, case view, settings).
+* **Maintainability:** Use centralized design tokens and theming system; avoid duplication.
 
----
+## 6. Acceptance Criteria (Testable)
 
-### **The Interaction Flow (The "Linguistic" Experience)**
+### Theme selection and persistence
 
-This interface needs to feel faster than thinking.
+1. User can change theme from avatar menu in ≤2 clicks.
+2. User can change theme from Settings page and see it reflected immediately.
+3. Theme preference persists across logout/login and across devices (server-side).
+4. On cold start, UI uses cached preference immediately (no obvious flash) and then reconciles with server preference.
+5. When mode is System, changing OS theme changes app theme without user interaction.
+6. When mode is Dark or Light, changing OS theme does **not** affect app theme.
 
-#### **Mode A: Voice (The "Dictaphone" Feel)**
+### Accessibility and usability
 
-1. **Trigger:** User holds the Spacebar (Push-to-Talk) or clicks the Mic icon.
-2. **Visual:** The input line transforms into a **live audio waveform**.
-* *Design Detail:* The waveform reacts to the user's volume. It glows Amber.
+7. All interactive elements show a visible focus outline in both themes.
+8. Left navigation icons show tooltips on hover and keyboard focus.
+9. Tooltip text matches ARIA label for each icon.
+10. Primary text and key UI controls are legible in both themes (contrast check passes).
+11. Selected states (nav, menu radio/checkmarks) are visually distinct without relying solely on color.
 
+### Resilience
 
-3. **Feedback:** As the user speaks *"The segmentation on the cell boundaries is too fuzzy here,"* the text streams onto the screen in real-time (streaming transcription).
-4. **Release:** User releases Spacebar. The system flashes a small "check" icon. "Logged." The glass capsule fades away.
+12. If user profile fetch fails, app still renders using cached theme or System default.
+13. If local cache is missing, app renders using System until server preference arrives.
 
-#### **Mode B: Typing (The "Console" Feel)**
+## 7. Implementation Notes (Guidance, not requirements)
 
-1. **Trigger:** User hits `~` or clicks the icon.
-2. **Visual:** Focus is immediately in the text field.
-3. **Action:** User types: `search is slow on patient id 444` -> Hits `Enter`.
-4. **Reaction:** The box doesn't just disappear. It replies briefly using the LLM to confirm comprehension.
-* *User:* "Search is slow..."
-* *System (fade text):* "Performance issue noted on Search. Context captured." -> *Fade out.*
+* Prefer “System” default for first-run users.
+* Consider placing the theme toggle under an “Appearance” submenu to avoid clutter.
+* Use a single theme provider to avoid per-component divergence.
+* Include a small automated UI test (Cypress/Playwright) verifying mode switching and persistence.
 
 
-
----
-
-### **Visualizing the Component**
-
-Here is a conceptual wireframe of the "Active" state in the bottom left corner.
-
-```text
-+------------------------------------------------------------
-|  [ Main Pathology Viewer Content Is Visible But Blurred Here ]
-|
-|  +-------------------------------------------------------+
-|  |  ( ) Auto-Context: Case #1293 | Zoom: 40x | AI: ON    |  <-- Subtle Meta-data
-|  +-------------------------------------------------------+
-|  |                                                       |
-|  |  "The heatmap is obscuring the mitosis..."            |  <-- User Input (Large)
-|  |  _________________________________________            |
-|  |                                                       |
-|  |  [ ||||||||||||||||| ]  Listening...                  |  <-- Audio Waveform
-|  +------------------+------------------------------------+
-|                     |
-|  [ (Amber Icon) ] --+  <-- Anchor Point
-|
-+------------------------------------------------------------
-
-```
-
-### **Why this design works:**
-
-1. **No Cognitive Load:** The user doesn't have to categorize (is this a bug? a feature?). They just speak.
-2. **The "Amber" distinction:** By using a unique color (Amber) for this tool, we condition the user: *Blue is for the Patient, Amber is for the System.*
-3. **The "Linguistic" payoff:** The monospaced font and waveform visualization reinforce that this is a conversation with the machine, not a form submission to a generic IT department.

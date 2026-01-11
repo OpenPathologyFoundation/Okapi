@@ -7,10 +7,10 @@
     <div class="text-center max-w-lg animate-in fade-in zoom-in duration-500">
         <!-- Hero Icon (Empty State) -->
         <div
-            class="mx-auto h-24 w-24 rounded-full bg-gray-800/50 flex items-center justify-center mb-6 border border-gray-700"
+            class="mx-auto h-24 w-24 rounded-full bg-gray-200/50 dark:bg-gray-800/50 flex items-center justify-center mb-6 border border-gray-300 dark:border-gray-700"
         >
             <svg
-                class="h-10 w-10 text-gray-500"
+                class="h-10 w-10 text-gray-400 dark:text-gray-500"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -24,7 +24,9 @@
             </svg>
         </div>
 
-        <h1 class="text-3xl font-bold text-white tracking-tight mb-2">
+        <h1
+            class="text-3xl font-bold text-gray-900 dark:text-white tracking-tight mb-2"
+        >
             Ready to Orchestrate.
         </h1>
 

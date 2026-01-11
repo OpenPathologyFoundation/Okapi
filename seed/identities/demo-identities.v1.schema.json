@@ -1,0 +1,89 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://okapi.local/schemas/seed/demo-identities.v1.schema.json",
+  "title": "Okapi seed identities (v1)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "providerId", "identities"],
+  "properties": {
+    "version": {
+      "type": "string",
+      "const": "v1"
+    },
+    "providerId": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Issuer/provider identifier (e.g., Keycloak realm URL)."
+    },
+    "identities": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["subject", "username"],
+        "properties": {
+          "subject": {
+            "type": "string",
+            "minLength": 1,
+            "description": "External subject identifier (e.g., OIDC sub)."
+          },
+          "provider_id": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Issuer/provider identifier for this identity. Defaults to top-level providerId if omitted."
+          },
+          "username": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Keycloak username to create/use for demo provisioning."
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "display_name": {
+            "type": "string"
+          },
+          "name": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "given_name": { "type": "string" },
+              "family_name": { "type": "string" },
+              "middle_name": { "type": "string" },
+              "middle_initial": { "type": "string" },
+              "nickname": { "type": "string" },
+              "prefix": { "type": "string" },
+              "suffix": { "type": "string" }
+            }
+          },
+          "display": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "full": { "type": "string" },
+              "short": { "type": "string" }
+            }
+          },
+          "idp_groups": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "Keycloak/IdP group names to assign."
+          },
+          "local": {
+            "type": "object",
+            "additionalProperties": true,
+            "description": "Local Okapi-only metadata to be stored in the Okapi DB (may be mirrored into identities.attributes).",
+            "properties": {
+              "break_glass_enabled": { "type": "boolean" },
+              "account_type": {
+                "type": "string",
+                "enum": ["PRODUCTION", "TEST", "DEMO", "SERVICE"]
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

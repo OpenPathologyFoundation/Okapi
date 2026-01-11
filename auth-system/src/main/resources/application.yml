@@ -6,9 +6,12 @@ spring:
     username: ${POSTGRES_USER:okapi_service}
     password: ${POSTGRES_PASSWORD}
     driver-class-name: org.postgresql.Driver
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
   jpa:
     hibernate:
-      ddl-auto: validate # We manage schema via init.sql (or Flyway in future)
+      ddl-auto: validate
     show-sql: true
     properties:
       hibernate:
@@ -24,7 +27,18 @@ spring:
             scope: openid,profile,email
         provider:
           okta:
-            issuer-uri: ${OIDC_ISSUER_URI}
+            # Do NOT use `issuer-uri` here because it triggers OIDC discovery at app startup.
+            # Using explicit endpoints allows `bootRun` to start even if Keycloak isn't running.
+            # Defaults target a local Keycloak realm when `OIDC_ISSUER_URI` is set.
+            authorization-uri: ${OIDC_AUTHORIZATION_URI:${OIDC_ISSUER_URI}/protocol/openid-connect/auth}
+            token-uri: ${OIDC_TOKEN_URI:${OIDC_ISSUER_URI}/protocol/openid-connect/token}
+            user-info-uri: ${OIDC_USER_INFO_URI:${OIDC_ISSUER_URI}/protocol/openid-connect/userinfo}
+            jwk-set-uri: ${OIDC_JWK_SET_URI:${OIDC_ISSUER_URI}/protocol/openid-connect/certs}
+
+okapi:
+  oidc:
+    # Used as a stable provider identifier for DB lookups when `issuer-uri` is not configured.
+    provider-id: ${OIDC_PROVIDER_ID:${OIDC_ISSUER_URI:local-oidc}}
 #      saml2:
 #        relying-party:
 #          registration:

@@ -45,3 +45,8 @@ This plan defines the risk management process for Okapi, including scoring for S
 *   **Low (1-5)**: Acceptable.
 *   **Medium (6-12)**: Acceptable if ALARP (As Low As Reasonably Practicable).
 *   **High (15-25)**: Unacceptable; mandatory risk control required.
+
+# 5. Cybersecurity Risk Activities (IAM subset)
+- Threat modeling and cybersecurity requirements are captured in `qms/dhf/03-Cybersecurity.md`.
+- Authentication is delegated to external IdP policy (OIDC/SAML); Okapi focuses on authorization (RBAC), normalization, and audit evidence.
+- Verification evidence for cybersecurity-related requirements is tracked in `qms/dhf/06-VVP.md`.

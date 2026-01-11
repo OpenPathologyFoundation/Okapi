@@ -38,6 +38,16 @@ The project is currently focused on the Authentication foundation.
     ```
 2.  Follow the [Auth System README](auth-system/README.md) to start the local development environment (Docker + Keycloak + Postgres).
 
+### Demo provisioning (dev)
+
+If you want a fully working local demo with:
+- demo users/groups in Keycloak, and
+- normalized identities populated in Okapi/Postgres,
+
+see:
+- `auth-system/README.md` (end-to-end local run + Admin seeding endpoint)
+- `seed/README.md` (seed datasets + Keycloak seeding script)
+
 ## 📜 Quality & Compliance
 
 Okapi follows a strict Quality Management System (QMS) compliant with medical software standards.

@@ -17,9 +17,9 @@ public class UserRoleMapper {
 
     /**
      * Maps IdP attributes to internal Roles using Database mappings.
-     * Expects a 'groups' or 'memberOf' attribute.
+     * Expects a 'groups' (Keycloak) or similar attribute.
      */
-    public Set<Role> mapRoles(Map<String, Object> attributes) {
+    public Set<Role> mapRoles(String providerId, Map<String, Object> attributes) {
         Set<Role> roles = new HashSet<>();
 
         // Get groups from IdP attributes
@@ -35,16 +35,13 @@ public class UserRoleMapper {
         }
 
         // DB Lookup
-        if (!groupNames.isEmpty()) {
-            List<com.okapi.auth.model.db.IdpGroupMappingEntity> mappings = mappingRepository
-                    .findByIdpGroupNameIn(groupNames);
-            for (com.okapi.auth.model.db.IdpGroupMappingEntity mapping : mappings) {
-                // Determine Role Enum from Entity Name (Simple matching for now)
+        if (providerId != null && !providerId.isBlank() && !groupNames.isEmpty()) {
+            List<String> roleNames = mappingRepository.findRoleNamesByProviderIdAndGroupNames(providerId, groupNames);
+            for (String roleName : roleNames) {
                 try {
-                    String roleName = mapping.getRole().getName();
                     roles.add(Role.valueOf(roleName));
                 } catch (IllegalArgumentException e) {
-                    // Log warning: Role in DB doesn't match Enum
+                    // Role in DB doesn't match Enum
                 }
             }
         }

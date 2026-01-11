@@ -16,6 +16,14 @@ public class Identity implements OidcUser, UserDetails {
     private String externalSubject;
     private String providerId; // Renamed from issuer to avoid conflict
     private String displayName;
+    private String displayShort;
+    private String givenName;
+    private String familyName;
+    private String middleName;
+    private String middleInitial;
+    private String nickname;
+    private String prefix;
+    private String suffix;
     private String email;
 
     private Map<String, Object> attributes;

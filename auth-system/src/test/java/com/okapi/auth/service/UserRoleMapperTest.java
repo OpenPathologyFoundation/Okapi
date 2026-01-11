@@ -30,17 +30,12 @@ class UserRoleMapperTest {
         log.info("Testing mapRoles with Admin group...");
         Map<String, Object> attributes = Map.of("groups", List.of("Okapi_Admins"));
 
-        com.okapi.auth.model.db.RoleEntity adminRole = com.okapi.auth.model.db.RoleEntity.builder().name("ADMIN")
-                .build();
-        com.okapi.auth.model.db.IdpGroupMappingEntity mapping = com.okapi.auth.model.db.IdpGroupMappingEntity.builder()
-                .idpGroupName("Okapi_Admins")
-                .role(adminRole)
-                .build();
+        org.mockito.Mockito.when(mappingRepository.findRoleNamesByProviderIdAndGroupNames(
+                        org.mockito.ArgumentMatchers.anyString(),
+                        org.mockito.ArgumentMatchers.anyList()))
+                .thenReturn(List.of("ADMIN"));
 
-        org.mockito.Mockito.when(mappingRepository.findByIdpGroupNameIn(org.mockito.ArgumentMatchers.anyList()))
-                .thenReturn(List.of(mapping));
-
-        Set<Role> roles = userRoleMapper.mapRoles(attributes);
+        Set<Role> roles = userRoleMapper.mapRoles("http://localhost:8180/realms/okapi", attributes);
 
         log.debug("Mapped roles: {}", roles);
         assertTrue(roles.contains(Role.ADMIN));
@@ -51,17 +46,12 @@ class UserRoleMapperTest {
         log.info("Testing mapRoles with Pathologist group...");
         Map<String, Object> attributes = Map.of("groups", List.of("Okapi_Pathologists"));
 
-        com.okapi.auth.model.db.RoleEntity pathRole = com.okapi.auth.model.db.RoleEntity.builder().name("PATHOLOGIST")
-                .build();
-        com.okapi.auth.model.db.IdpGroupMappingEntity mapping = com.okapi.auth.model.db.IdpGroupMappingEntity.builder()
-                .idpGroupName("Okapi_Pathologists")
-                .role(pathRole)
-                .build();
+        org.mockito.Mockito.when(mappingRepository.findRoleNamesByProviderIdAndGroupNames(
+                        org.mockito.ArgumentMatchers.anyString(),
+                        org.mockito.ArgumentMatchers.anyList()))
+                .thenReturn(List.of("PATHOLOGIST"));
 
-        org.mockito.Mockito.when(mappingRepository.findByIdpGroupNameIn(org.mockito.ArgumentMatchers.anyList()))
-                .thenReturn(List.of(mapping));
-
-        Set<Role> roles = userRoleMapper.mapRoles(attributes);
+        Set<Role> roles = userRoleMapper.mapRoles("http://localhost:8180/realms/okapi", attributes);
 
         log.debug("Mapped roles: {}", roles);
         assertTrue(roles.contains(Role.PATHOLOGIST));
@@ -72,10 +62,12 @@ class UserRoleMapperTest {
         log.info("Testing mapRoles with unknown groups...");
         Map<String, Object> attributes = Map.of("groups", List.of("UnknownUserGroup"));
 
-        org.mockito.Mockito.when(mappingRepository.findByIdpGroupNameIn(org.mockito.ArgumentMatchers.anyList()))
+        org.mockito.Mockito.when(mappingRepository.findRoleNamesByProviderIdAndGroupNames(
+                        org.mockito.ArgumentMatchers.anyString(),
+                        org.mockito.ArgumentMatchers.anyList()))
                 .thenReturn(Collections.emptyList());
 
-        Set<Role> roles = userRoleMapper.mapRoles(attributes);
+        Set<Role> roles = userRoleMapper.mapRoles("http://localhost:8180/realms/okapi", attributes);
 
         log.debug("Mapped roles: {}", roles);
         assertTrue(roles.isEmpty());
@@ -86,7 +78,7 @@ class UserRoleMapperTest {
         log.info("Testing mapRoles with empty attributes...");
         Map<String, Object> attributes = Collections.emptyMap();
 
-        Set<Role> roles = userRoleMapper.mapRoles(attributes);
+        Set<Role> roles = userRoleMapper.mapRoles("http://localhost:8180/realms/okapi", attributes);
 
         log.debug("Mapped roles: {}", roles);
         assertTrue(roles.isEmpty());

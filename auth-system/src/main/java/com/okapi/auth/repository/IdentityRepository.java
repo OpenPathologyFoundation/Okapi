@@ -10,4 +10,6 @@ public interface IdentityRepository extends JpaRepository<IdentityEntity, Long> 
     Optional<IdentityEntity> findByEmail(String email);
 
     Optional<IdentityEntity> findByExternalSubject(String externalSubject);
+
+    Optional<IdentityEntity> findByProviderIdAndExternalSubject(String providerId, String externalSubject);
 }

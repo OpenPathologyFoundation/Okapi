@@ -50,3 +50,9 @@ secrets.properties
 .settings/
 bin/
 .DS_Store
+
+# Seed script outputs
+seed/keycloak/out/
+
+# Junie output logs
+.output.txt

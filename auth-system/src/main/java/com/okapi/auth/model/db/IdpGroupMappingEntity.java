@@ -18,10 +18,9 @@ public class IdpGroupMappingEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "idp_group_name", unique = true, nullable = false)
-    private String idpGroupName;
+    @Column(name = "provider_id", nullable = false)
+    private String providerId;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "role_id", nullable = false)
-    private RoleEntity role;
+    @Column(name = "idp_group_name", nullable = false)
+    private String idpGroupName;
 }

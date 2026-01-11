@@ -10,6 +10,9 @@ import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import lombok.extern.slf4j.Slf4j;
 
+import java.net.InetSocketAddress;
+import java.net.Socket;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -25,11 +28,35 @@ public class KeycloakIntegrationTest {
         // Note: The docker-compose.yml maps 8180:8080
         private static final String KEYCLOAK_URL = "http://localhost:8180";
 
+        private static final boolean KEYCLOAK_AVAILABLE = isKeycloakReachable();
+
+        private static boolean isKeycloakReachable() {
+                try (Socket socket = new Socket()) {
+                        socket.connect(new InetSocketAddress("localhost", 8180), 250);
+                        return true;
+                } catch (Exception e) {
+                        return false;
+                }
+        }
+
         @DynamicPropertySource
         static void dynamicProperties(DynamicPropertyRegistry registry) {
-                log.info("Configuring Keycloak OIDC issuer to: {}/realms/okapi", KEYCLOAK_URL);
-                registry.add("spring.security.oauth2.client.provider.okta.issuer-uri",
-                                () -> KEYCLOAK_URL + "/realms/okapi");
+                if (KEYCLOAK_AVAILABLE) {
+                        log.info("Configuring Keycloak OIDC issuer to: {}/realms/okapi", KEYCLOAK_URL);
+                        registry.add("spring.security.oauth2.client.provider.okta.issuer-uri",
+                                        () -> KEYCLOAK_URL + "/realms/okapi");
+                } else {
+                        // Avoid OIDC discovery at context startup when Keycloak isn't running.
+                        registry.add("spring.security.oauth2.client.provider.okta.authorization-uri",
+                                        () -> "http://localhost:8080/test/authorize");
+                        registry.add("spring.security.oauth2.client.provider.okta.token-uri",
+                                        () -> "http://localhost:8080/test/token");
+                        registry.add("spring.security.oauth2.client.provider.okta.user-info-uri",
+                                        () -> "http://localhost:8080/test/userinfo");
+                        registry.add("spring.security.oauth2.client.provider.okta.jwk-set-uri",
+                                        () -> "http://localhost:8080/test/jwks");
+                }
+
                 registry.add("spring.security.oauth2.client.registration.okta.client-id", () -> "okapi-client");
                 registry.add("spring.security.oauth2.client.registration.okta.client-secret", () -> "okapi-secret");
                 registry.add("spring.security.oauth2.client.registration.okta.authorization-grant-type",
@@ -44,6 +71,9 @@ public class KeycloakIntegrationTest {
 
     @Test
     void whenKeycloakIsRunning_ApplicationStartsAndConnects() throws Exception {
+        org.junit.jupiter.api.Assumptions.assumeTrue(KEYCLOAK_AVAILABLE,
+                "Keycloak is not reachable on localhost:8180; skipping integration test.");
+
         log.info("Starting test: whenKeycloakIsRunning_ApplicationStartsAndConnects");
         log.debug("Attempting to access protected endpoint /login to verify OIDC configuration...");
 

@@ -1,0 +1,335 @@
+{
+  "version": "v1",
+  "providerId": "http://localhost:8180/realms/okapi",
+  "identities": [
+    {
+      "subject": "45e9bc75-548b-4833-9912-dceabb0ba458",
+      "provider_id": "http://localhost:8180/realms/okapi",
+      "username": "admin.bombalurina",
+      "email": "admin.bombalurina@okapi.invalid",
+      "display_name": "Bombalurina Q. Whiskerquill, MD",
+      "name": {
+        "given_name": "Bombalurina",
+        "family_name": "Whiskerquill",
+        "middle_initial": "Q",
+        "nickname": "Bombalurina",
+        "prefix": "Dr",
+        "suffix": "MD"
+      },
+      "display": {
+        "full": "Bombalurina Q. Whiskerquill, MD",
+        "short": "Whiskerquill, B.Q."
+      },
+      "idp_groups": ["Okapi_Admins"],
+      "local": { "break_glass_enabled": true, "account_type": "DEMO" }
+    },
+    {
+      "subject": "9a25a638-8212-4434-9d53-f228c9be0b29",
+      "provider_id": "http://localhost:8180/realms/okapi",
+      "username": "admin.macavity",
+      "email": "admin.macavity@okapi.invalid",
+      "display_name": "Macavity R. Shadowpounce",
+      "name": {
+        "given_name": "Macavity",
+        "family_name": "Shadowpounce",
+        "middle_initial": "R",
+        "nickname": "Macavity"
+      },
+      "display": {
+        "full": "Macavity R. Shadowpounce",
+        "short": "Shadowpounce, M.R."
+      },
+      "idp_groups": ["Okapi_Admins"],
+      "local": { "break_glass_enabled": true, "account_type": "DEMO" }
+    },
+
+    {
+      "subject": "60201c17-008b-4f75-a198-008de2c5a28c",
+      "provider_id": "http://localhost:8180/realms/okapi",
+      "username": "path.rumtugger",
+      "email": "path.rumtugger@okapi.invalid",
+      "display_name": "Rum Tum Tugger A. Slideweaver, MD",
+      "name": {
+        "given_name": "Rum",
+        "family_name": "Slideweaver",
+        "middle_name": "Tum Tugger",
+        "middle_initial": "A",
+        "nickname": "Tugger",
+        "prefix": "Dr",
+        "suffix": "MD"
+      },
+      "display": {
+        "full": "Rum Tum Tugger A. Slideweaver, MD",
+        "short": "Slideweaver, R.A."
+      },
+      "idp_groups": ["Okapi_Pathologists"],
+      "local": { "account_type": "DEMO" }
+    },
+    {
+      "subject": "aa44481b-583a-4c84-bfa5-0694f75467fe",
+      "provider_id": "http://localhost:8180/realms/okapi",
+      "username": "path.skimbleshanks",
+      "email": "path.skimbleshanks@okapi.invalid",
+      "display_name": "Skimbleshanks J. Railstain, MD",
+      "name": {
+        "given_name": "Skimbleshanks",
+        "family_name": "Railstain",
+        "middle_initial": "J",
+        "nickname": "Skimbleshanks",
+        "prefix": "Dr",
+        "suffix": "MD"
+      },
+      "display": {
+        "full": "Skimbleshanks J. Railstain, MD",
+        "short": "Railstain, S.J."
+      },
+      "idp_groups": ["Okapi_Pathologists"],
+      "local": { "account_type": "DEMO" }
+    },
+    {
+      "subject": "827998e5-53ef-4a9c-9f2d-ccb92cdcda5b",
+      "provider_id": "http://localhost:8180/realms/okapi",
+      "username": "path.deuteronomy",
+      "email": "path.deuteronomy@okapi.invalid",
+      "display_name": "Old Deuteronomy P. Deepfocus, MD",
+      "name": {
+        "given_name": "Deuteronomy",
+        "family_name": "Deepfocus",
+        "middle_initial": "P",
+        "nickname": "Old Deuteronomy",
+        "prefix": "Dr",
+        "suffix": "MD"
+      },
+      "display": {
+        "full": "Old Deuteronomy P. Deepfocus, MD",
+        "short": "Deepfocus, D.P."
+      },
+      "idp_groups": ["Okapi_Pathologists"],
+      "local": { "account_type": "DEMO" }
+    },
+    {
+      "subject": "bcc52d3c-aef4-4a14-9dd0-34c2207c5bb3",
+      "provider_id": "http://localhost:8180/realms/okapi",
+      "username": "path.mungojerrie",
+      "email": "path.mungojerrie@okapi.invalid",
+      "display_name": "Mungojerrie S. Blockrunner, MD",
+      "name": {
+        "given_name": "Mungojerrie",
+        "family_name": "Blockrunner",
+        "middle_initial": "S",
+        "nickname": "Mungojerrie",
+        "prefix": "Dr",
+        "suffix": "MD"
+      },
+      "display": {
+        "full": "Mungojerrie S. Blockrunner, MD",
+        "short": "Blockrunner, M.S."
+      },
+      "idp_groups": ["Okapi_Pathologists"],
+      "local": { "account_type": "DEMO" }
+    },
+
+    {
+      "subject": "c47baf92-2157-4714-8d32-4516572066c0",
+      "provider_id": "http://localhost:8180/realms/okapi",
+      "username": "tech.quacksaw",
+      "email": "tech.quacksaw@okapi.invalid",
+      "display_name": "Quacksaw L. Cassetteclick",
+      "name": {
+        "given_name": "Quacksaw",
+        "family_name": "Cassetteclick",
+        "middle_initial": "L",
+        "nickname": "Quacksaw"
+      },
+      "display": {
+        "full": "Quacksaw L. Cassetteclick",
+        "short": "Cassetteclick, Q.L."
+      },
+      "idp_groups": ["Okapi_Technicians"],
+      "local": { "account_type": "DEMO" }
+    },
+    {
+      "subject": "f7e00b50-af49-4ea8-bf6b-e039772deff2",
+      "provider_id": "http://localhost:8180/realms/okapi",
+      "username": "tech.jellicle",
+      "email": "tech.jellicle@okapi.invalid",
+      "display_name": "Jellicle N. Accessionwhirl",
+      "name": {
+        "given_name": "Jellicle",
+        "family_name": "Accessionwhirl",
+        "middle_initial": "N",
+        "nickname": "Jellicle"
+      },
+      "display": {
+        "full": "Jellicle N. Accessionwhirl",
+        "short": "Accessionwhirl, J.N."
+      },
+      "idp_groups": ["Okapi_Technicians"],
+      "local": { "account_type": "DEMO" }
+    },
+
+    {
+      "subject": "50fc060c-c97e-4e60-b6ed-b805c6bdd02a",
+      "provider_id": "http://localhost:8180/realms/okapi",
+      "username": "res.jololorum",
+      "email": "res.jololorum@okapi.invalid",
+      "display_name": "Jololorum M. Draftline, MD",
+      "name": {
+        "given_name": "Jololorum",
+        "family_name": "Draftline",
+        "middle_initial": "M",
+        "nickname": "Jololorum",
+        "prefix": "Dr",
+        "suffix": "MD"
+      },
+      "display": {
+        "full": "Jololorum M. Draftline, MD",
+        "short": "Draftline, J.M."
+      },
+      "idp_groups": ["Okapi_Residents"],
+      "local": { "account_type": "DEMO" }
+    },
+    {
+      "subject": "a8f5a7f1-6b81-48a0-9561-c1329a7f62a3",
+      "provider_id": "http://localhost:8180/realms/okapi",
+      "username": "res.pawsworth",
+      "email": "res.pawsworth@okapi.invalid",
+      "display_name": "Pawsworth T. Marginnote, MD",
+      "name": {
+        "given_name": "Pawsworth",
+        "family_name": "Marginnote",
+        "middle_initial": "T",
+        "nickname": "Pawsworth",
+        "prefix": "Dr",
+        "suffix": "MD"
+      },
+      "display": {
+        "full": "Pawsworth T. Marginnote, MD",
+        "short": "Marginnote, P.T."
+      },
+      "idp_groups": ["Okapi_Residents"],
+      "local": { "account_type": "DEMO" }
+    },
+
+    {
+      "subject": "fe6e8b8b-8e0d-4067-a501-abb37c893eb7",
+      "provider_id": "http://localhost:8180/realms/okapi",
+      "username": "fellow.grizabella",
+      "email": "fellow.grizabella@okapi.invalid",
+      "display_name": "Grizabella V. Amendleaf, MD",
+      "name": {
+        "given_name": "Grizabella",
+        "family_name": "Amendleaf",
+        "middle_initial": "V",
+        "nickname": "Grizabella",
+        "prefix": "Dr",
+        "suffix": "MD"
+      },
+      "display": {
+        "full": "Grizabella V. Amendleaf, MD",
+        "short": "Amendleaf, G.V."
+      },
+      "idp_groups": ["Okapi_Fellows"],
+      "local": { "account_type": "DEMO" }
+    },
+    {
+      "subject": "b58aa381-f349-4f84-b701-87e79d649490",
+      "provider_id": "http://localhost:8180/realms/okapi",
+      "username": "fellow.mistoffelees",
+      "email": "fellow.mistoffelees@okapi.invalid",
+      "display_name": "Mr. Mistoffelees K. Editspell, MD",
+      "name": {
+        "given_name": "Mistoffelees",
+        "family_name": "Editspell",
+        "middle_initial": "K",
+        "nickname": "Mr. Mistoffelees",
+        "prefix": "Dr",
+        "suffix": "MD"
+      },
+      "display": {
+        "full": "Mr. Mistoffelees K. Editspell, MD",
+        "short": "Editspell, M.K."
+      },
+      "idp_groups": ["Okapi_Fellows"],
+      "local": { "account_type": "DEMO" }
+    },
+
+    {
+      "subject": "7aa8169c-4148-427d-8a52-d92b96fa3f20",
+      "provider_id": "http://localhost:8180/realms/okapi",
+      "username": "histo.gingham",
+      "email": "histo.gingham@okapi.invalid",
+      "display_name": "Gingham U. Ribboncut",
+      "name": {
+        "given_name": "Gingham",
+        "family_name": "Ribboncut",
+        "middle_initial": "U",
+        "nickname": "Gingham"
+      },
+      "display": {
+        "full": "Gingham U. Ribboncut",
+        "short": "Ribboncut, G.U."
+      },
+      "idp_groups": ["Okapi_HistoTechs"],
+      "local": { "account_type": "DEMO" }
+    },
+    {
+      "subject": "d0f3d8a0-3bdb-4896-8a86-3406ad6f24ea",
+      "provider_id": "http://localhost:8180/realms/okapi",
+      "username": "histo.tatterdemalion",
+      "email": "histo.tatterdemalion@okapi.invalid",
+      "display_name": "Tatterdemalion E. Paraffinwhiff",
+      "name": {
+        "given_name": "Tatterdemalion",
+        "family_name": "Paraffinwhiff",
+        "middle_initial": "E",
+        "nickname": "Tatterdemalion"
+      },
+      "display": {
+        "full": "Tatterdemalion E. Paraffinwhiff",
+        "short": "Paraffinwhiff, T.E."
+      },
+      "idp_groups": ["Okapi_HistoTechs"],
+      "local": { "account_type": "DEMO" }
+    },
+
+    {
+      "subject": "9e05a822-cf07-4042-b528-39ef12eb082d",
+      "provider_id": "http://localhost:8180/realms/okapi",
+      "username": "cyto.coriander",
+      "email": "cyto.coriander@okapi.invalid",
+      "display_name": "Coriander B. Smearcraft",
+      "name": {
+        "given_name": "Coriander",
+        "family_name": "Smearcraft",
+        "middle_initial": "B",
+        "nickname": "Coriander"
+      },
+      "display": {
+        "full": "Coriander B. Smearcraft",
+        "short": "Smearcraft, C.B."
+      },
+      "idp_groups": ["Okapi_CytoTechs"],
+      "local": { "account_type": "DEMO" }
+    },
+    {
+      "subject": "84788029-6325-4108-8146-afe33ad5ca88",
+      "provider_id": "http://localhost:8180/realms/okapi",
+      "username": "cyto.pepper",
+      "email": "cyto.pepper@okapi.invalid",
+      "display_name": "Pepper D. Cellwhisper",
+      "name": {
+        "given_name": "Pepper",
+        "family_name": "Cellwhisper",
+        "middle_initial": "D",
+        "nickname": "Pepper"
+      },
+      "display": {
+        "full": "Pepper D. Cellwhisper",
+        "short": "Cellwhisper, P.D."
+      },
+      "idp_groups": ["Okapi_CytoTechs"],
+      "local": { "account_type": "DEMO" }
+    }
+  ]
+}

@@ -3,7 +3,7 @@
   <br>
   <h1>Okapi</h1>
   <p>
-    <b>Orchestration Kernel for Anatomic Pathology Interoperability</b>
+    <b>Orchestration Kernel for Anatomic Pathology Intelligence</b>
   </p>
 </div>
 

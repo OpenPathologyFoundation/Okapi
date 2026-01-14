@@ -12,13 +12,23 @@ trace_source: SRS-001
 
 # 1. Introduction
 
-This Software Design Specification (SDS) describes the technical architecture and design for the Okapi system, with a focus on the Identity and Access Management (IAM) framework. To ensure a clear separation of concerns, the system distinguishes between **Authentication (AuthN)**—the proof of identity—and **Authorization (AuthZ)**—the determination of permissions.
+This Software Design Specification (SDS) describes the technical architecture and design for the Okapi system. The current baseline focuses on:
+- Identity and Access Management (IAM)
+- Histology Asset Tracking (HAT)
+
+To ensure a clear separation of concerns, IAM distinguishes between **Authentication (AuthN)**—the proof of identity—and **Authorization (AuthZ)**—the determination of permissions.
 
 # 2. Architectural Overview
 
 Okapi follows a "Connector + Normalization" architecture for identity.
 - **AuthN** is delegated to external Enterprise Identity Providers (IdPs).
 - **AuthZ** is managed internally within Okapi using Role-Based Access Control (RBAC).
+
+For HAT, Okapi follows a similar separation-of-concerns pattern:
+- **Facts/state** about physical assets (identifiers, location, custody, provenance, history)
+- **Intent/work** captured as requests and executed steps, recorded as events
+
+Detailed HAT design is defined in `qms/dhf/04-SDS/04-HAT-Architecture.md`.
 
 # 3. Authentication (AuthN) Design
 
@@ -52,11 +62,11 @@ The system also provides an authenticated identity introspection endpoint ("who 
 ## 4.1 Role-Based Access Control (RBAC)
 Okapi manages permissions via Roles. Each authenticated user is mapped to one or more roles.
 
-| Role | Permissions |
-| :--- | :--- |
-| `Pathologist` | View cases, create AI suggestions, confirm results, write-back to Epic. |
-| `Technician` | View cases, manage data ingestion. |
-| `Admin` | Manage system configuration, view audit logs. |
+| Role | Permissions                                                            |
+| :--- |:-----------------------------------------------------------------------|
+| `Pathologist` | View cases, create AI suggestions, confirm results, write-back to EHR. |
+| `Technician` | View cases, manage data ingestion.                                     |
+| `Admin` | Manage system configuration, view audit logs.                          |
 
 ## 4.2 Role Mapping
 Okapi supports mapping IdP groups (e.g., OIDC `groups`, SAML `memberOf`) to internal Roles via database mappings. Mappings are **issuer-scoped** to avoid cross-IdP collisions.

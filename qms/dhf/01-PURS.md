@@ -1,6 +1,6 @@
 # 01-PURS
 ---
-title: User Requirements Specification - Authentication Module
+title: Product & User Requirements Specification (PURS) - IAM + Histology Asset Tracking
 document_id: URS-001
 version: 1.0
 status: DRAFT
@@ -11,12 +11,18 @@ trace_destination: SRS-001
 ---
 
 # 1. Purpose
-To define the user needs for the Authentication and Authorization module of the [Project Name] system, ensuring secure and efficient access for clinical users.
+To define user needs for Okapi modules in scope for the current baseline, including:
+- Identity and Access Management (IAM) (authentication + authorization)
+- Histology Asset Tracking (HAT)
 
 # 2. Scope
-This document covers user needs for login, identity federation, and **role-based access** for clinical users of Okapi.
+This document covers user needs for:
+- login, identity federation, and **role-based access** for clinical users of Okapi
+- tracking and orchestrating work on histology physical assets (slides/blocks/specimen parts)
 
 # 3. User Needs
+
+## 3.1 IAM (Authentication + Authorization)
 
 | ID | User Need Statement | Rationale/Clinical Justification |
 | :--- | :--- | :--- |
@@ -29,6 +35,20 @@ This document covers user needs for login, identity federation, and **role-based
 | **UN-007** | The user needs the system to record authentication and authorization-relevant events in an auditable manner. | Supports security monitoring, investigations, and regulatory expectations. |
 | **UN-008** | The administrator needs a reliable, low-error way to grant and revoke access by managing centralized identity provider groups and Okapi-local permission mappings (without creating credentials in Okapi). | Reduces configuration mistakes and avoids “shadow accounts”; supports controlled access management aligned to institutional identity governance. |
 | **UN-009** | The user needs access provisioning and updates to occur in a timely manner to avoid care delays caused by missing or incorrect permissions. | Delayed access can cause clinical workflow interruption; timely provisioning reduces pressure to bypass security controls. |
+
+## 3.2 HAT (Histology Asset Tracking)
+
+HAT separates **facts** (what the system knows about an asset: identifiers/status/location/custody/provenance/history) from **intent/work** (requests and execution steps performed by staff).
+
+| ID | User Need Statement | Rationale/Clinical Justification |
+| :--- | :--- | :--- |
+| **UN-HAT-001** | The user needs scan-first asset lookup (barcode-first) with robust normalization and deterministic outcomes (matched / not found / ambiguous). | Prevents wrong-asset handling and reduces delays at the bench. |
+| **UN-HAT-002** | The user needs to see an asset’s current state: status, location, custody (who/when/due back), lifecycle flags, and provenance (which system asserted what). | Supports safe chain-of-custody and reduces loss/misplacement. |
+| **UN-HAT-003** | The user needs a defensible, immutable event history for asset status/location/custody changes, including who/when/comment and non-destructive corrections. | Supports traceability, investigation, and regulatory defensibility. |
+| **UN-HAT-004** | The user needs to request work on assets (retrieve, stain, QA, distribute, scan, etc.) with priority/due date, assignee/team, and partial fulfillment support. | Enables orchestration without relying on ad hoc email/paper processes; supports clinical throughput. |
+| **UN-HAT-005** | Histology staff needs an execution/work-queue view where tasks are scan-confirmed and intermediate milestones are recorded with completion evidence (e.g., tracking number, destination, receipt/return). | Prevents wrong-asset actions and creates end-to-end accountability. |
+| **UN-HAT-006** | The user needs list-driven workflows (bulk lookup and bulk request creation) and resilient handling of unknown assets (create placeholder + reconcile later). | Supports real-world batch workflows and reduces operational friction when assets are not yet in the system. |
+| **UN-HAT-007** | The system must enforce role-based access and governance for high-risk actions (e.g., external distribution, research release) and apply privacy controls for searching where required. | Reduces risk of unauthorized release/misuse and avoids inappropriate exposure of identifiers/PHI. |
 
 # 4. Notes
 System requirements are defined in `qms/dhf/02-SRS.md` and verified per `qms/dhf/06-VVP.md`.

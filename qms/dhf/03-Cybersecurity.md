@@ -11,13 +11,20 @@ trace_destination: DHF-06-VVP
 ---
 
 # 1. Purpose
-Define cybersecurity assumptions, threat model (STRIDE), and security requirements for Okapi’s Authentication/Authorization capability.
+Define cybersecurity assumptions, threat model (STRIDE), and security requirements for Okapi modules in scope, including:
+- IAM (Authentication/Authorization)
+- HAT (Histology Asset Tracking)
 
 # 2. System Context (security-relevant)
 ## 2.1 Trust boundaries
 - **External IdP (OIDC/SAML):** authenticates users; Okapi trusts issuer metadata and signed tokens.
 - **Okapi Auth System:** enforces internal RBAC (authorization) based on normalized identity + group→role mappings.
 - **Database (PostgreSQL):** stores normalized identities, RBAC mappings, and audit-event records.
+
+For HAT:
+- **Source systems (LIS/LIMS):** authoritative or semi-authoritative assertions about asset existence/state (e.g., CoPath, Beaker).
+- **HAT users & devices:** scanners, workstations, and humans performing physical actions on assets.
+- **HAT data store:** stores current state, requests, and append-only event history for traceability.
 
 ## 2.3 Identity provisioning and access management assumptions
 - **Identity source of truth:** user accounts and group membership are managed in the external IdP (e.g., Keycloak). Okapi does not create primary credentials.
@@ -30,6 +37,12 @@ Define cybersecurity assumptions, threat model (STRIDE), and security requiremen
 - Audit evidence (audit events)
 - Secrets (OIDC client secret, DB credentials)
 
+HAT-specific assets:
+- Chain-of-custody evidence (who handled which physical asset, when, where)
+- Asset identifiers and crosswalk mappings (barcodes, LIS IDs, external consult IDs)
+- Request intent (what should be done to which assets, by whom, by when)
+- Reconciliation decisions (conflicts between sources and their resolutions)
+
 # 3. Threat Model (STRIDE summary)
 | STRIDE | Threat (example) | Impact | Primary mitigations |
 |--------|-------------------|--------|---------------------|
@@ -39,6 +52,17 @@ Define cybersecurity assumptions, threat model (STRIDE), and security requiremen
 | **I** Information disclosure | Secrets committed or leaked via logs | PHI/security exposure | No committed secrets (`SYS-SEC-010`); log hygiene |
 | **D** Denial of service | IdP outage prevents login | Loss of availability | Clear outage behavior; health checks; degraded mode policies (site-dependent) |
 | **E** Elevation of privilege | Group mapping collision across issuers | Unauthorized role grants | Issuer-scoped uniqueness and mappings (`SYS-AUTH-009`, `SYS-AUTH-006`) |
+
+## 3.1 HAT threat highlights (STRIDE, abbreviated)
+
+| STRIDE | HAT threat (example) | Impact | Primary mitigations |
+|--------|-----------------------|--------|---------------------|
+| **S** Spoofing | User acts under wrong identity or uses a shared workstation session | Incorrect custody/actions; audit gaps | Strong session handling; RBAC for HAT actions (`SYS-HAT-013`); audit attribution (`SYS-HAT-005`) |
+| **T** Tampering | Asset history edited/deleted or custody changed without trace | Loss of defensibility; wrong operational decisions | Append-only history (`SYS-HAT-005`, `SYS-HAT-006`); authorization controls (`SYS-HAT-013`); change control |
+| **R** Repudiation | User disputes having marked an asset missing or shipped | Investigation difficulty | Immutable event history with actor/comment (`SYS-HAT-005`) |
+| **I** Information disclosure | Search or displays expose patient-identifying data beyond policy | Privacy breach | Privacy-limited search modes (`SYS-HAT-003`); RBAC and least-privilege UI/API (`SYS-HAT-013`) |
+| **D** Denial of service | HAT unavailable; users bypass scan confirmation or recordkeeping | Increased wrong-asset risk | Resilience patterns; offline/degraded procedures; audit of deviations (deployment policy) |
+| **E** Elevation of privilege | Low-privilege user performs distribution/release actions | Unauthorized release | Fine-grained privileges + governance for high-risk actions (`SYS-HAT-013`); approvals as policy |
 
 Additional IAM-specific threats to track:
 - **Mis-provisioning / delayed access:** incorrect or late group membership updates can block appropriate users from timely access, creating workflow disruption and “break-glass” pressure.
@@ -56,7 +80,17 @@ The following security requirements are defined in `qms/dhf/02-SRS.md` and verif
 - `SYS-DATA-003`: Flyway-managed schema as a controlled baseline
 - `SYS-SEC-010`: Secrets supplied via env/secret store, not committed
 
+HAT security-relevant requirements:
+- `SYS-HAT-005`/`SYS-HAT-006`: Append-only history and non-destructive corrections
+- `SYS-HAT-003`: Privacy-limited search modes (site policy)
+- `SYS-HAT-013`: RBAC + governance controls for high-risk actions
+- `SYS-HAT-014`: Traceability from request → events → current state
+
 # 5. Verification Approach (summary)
 - **Unit tests:** authorization mapping logic and config wiring (fast, in-memory DB).
 - **Integration tests:** OIDC discovery against a real IdP (Keycloak) and Flyway migrations against Postgres (Docker/Testcontainers).
 - **Manual verification (dev):** `bootRun` against Docker Postgres to confirm Flyway migration and app startup.
+
+For HAT (planned):
+- **Unit tests:** identifier normalization, deterministic match outcomes, state transition rules.
+- **Integration tests:** event append-only invariants; request lifecycle; RBAC constraints.

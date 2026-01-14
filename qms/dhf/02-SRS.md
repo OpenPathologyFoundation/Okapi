@@ -34,10 +34,33 @@ trace_destination: TP-001 (Test Plan)
 | **SYS-DATA-003** | The database schema for AuthN/AuthZ shall be managed via Flyway migrations at application startup. | UN-006 | Inspection |
 | **SYS-SEC-010** | Secrets (DB credentials, OIDC client secret) shall not be committed to source control and shall be supplied via environment variables/secret store. | UN-003 | Inspection |
 
+## 1.1 HAT (Histology Asset Tracking) requirements
+
+HAT requirements are written to enforce the separation between:
+- **Asset facts** (identifiers, current status/location/custody, provenance, history)
+- **Intent/work** (requests, execution events, and completion evidence)
+
+| ID | System Requirement                                                                                                                                                                                                                            | Trace to User Need | Verification Method |
+| :--- |:----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| :--- | :--- |
+| **SYS-HAT-001** | The system shall support scan-first lookup of histology assets by barcode/identifier and apply deterministic identifier normalization (prefix variants, whitespace/hyphens, case, leading zeros).                                             | UN-HAT-001 | Test |
+| **SYS-HAT-002** | The system shall return deterministic lookup outcomes: `MATCHED`, `NOT_FOUND`, or `AMBIGUOUS`, and provide sufficient data to guide the next step (e.g., candidate list for ambiguous matches).                                               | UN-HAT-001 | Test |
+| **SYS-HAT-003** | The system shall support fallback asset search by accession/part/date/stain/etc. subject to deployment privacy policy constraints (e.g., accession-based workflows when PHI search is restricted).                                            | UN-HAT-001, UN-HAT-007 | Analysis/Test |
+| **SYS-HAT-004** | The system shall display the current asset state as a single authoritative view including: current status, current location, custody (holder + timestamps + due-back when applicable), lifecycle flags, and provenance of the asserted state. | UN-HAT-002 | Test |
+| **SYS-HAT-005** | The system shall maintain an append-only event history for asset status/location/custody changes including actor, timestamp, optional comment, and linked request context when applicable.                                                    | UN-HAT-003 | Test |
+| **SYS-HAT-006** | The system shall support non-destructive corrections by appending correcting events without deleting or editing prior events.                                                                                                                 | UN-HAT-003 | Inspection/Test |
+| **SYS-HAT-007** | The system shall support creating asset-work requests encoding intent: target assets (or asset selectors), requested action(s), priority, due date, requester identity, and assignee (team/person).                                           | UN-HAT-004 | Test |
+| **SYS-HAT-008** | The system shall support request lifecycle tracking: `OPEN` → `IN_PROGRESS` → `DONE`/`CANCELLED`, including partial fulfillment at the per-asset/per-action level.                                                                            | UN-HAT-004 | Test |
+| **SYS-HAT-009** | The system shall provide a histology execution/work-queue view filtered by role/permissions and ensure execution steps are scan-confirmed (asset identity confirmed at the time of action).                                                   | UN-HAT-005 | Test |
+| **SYS-HAT-010** | The system shall record intermediate execution milestones as events (e.g., pulled, stained, in QA, packaged, shipped) and store completion evidence fields relevant to the action (e.g., tracking number, destination, receipt/return).       | UN-HAT-005 | Test |
+| **SYS-HAT-011** | The system shall support creation of placeholder assets for unknown identifiers and later reconciliation to authoritative sources, while preserving provenance and history.                                                                   | UN-HAT-006 | Test |
+| **SYS-HAT-012** | The system shall support explicit reconciliation workflows when source systems disagree (orchestration kernel vs LIS vs physical), including recording the conflict, resolution decision, and actor attribution.                              | UN-HAT-003, UN-HAT-006 | Test |
+| **SYS-HAT-013** | The system shall enforce role-based access controls for HAT and apply additional governance controls for high-risk actions (e.g., external distribution/research release), including approvals when required by deployment policy.            | UN-HAT-007 | Analysis/Test |
+| **SYS-HAT-014** | The system shall provide audit defensibility for HAT by ensuring traceability from request → execution events → current state and by preventing unauthorized modification of history.                                                         | UN-HAT-003, UN-HAT-007 | Test/Inspection |
+
 # 2. Interface Requirements
 
-| ID | Interface Requirement | Trace | Verification |
-| :--- | :--- | :--- | :--- |
-| **IR-001** | The system shall validate all Epic write-back transactions using checksums and HL7 ACK/NACK protocols. | N/A | Test |
+| ID | Interface Requirement                                                                                          | Trace | Verification |
+| :--- |:---------------------------------------------------------------------------------------------------------------| :--- | :--- |
+| **IR-001** | The system shall validate all EHR write-back transactions using checksums and HL7 ACK/NACK protocols.          | N/A | Test |
 | **API-01** | The system shall support OIDC authorization-code redirect handling via Spring Security OAuth2 login endpoints. | UN-002 | Test |
-| **UI-01** | The login screen shall display the "Log in with Institution" button prominently. | UN-002 | Inspection |
+| **UI-01** | The login screen shall display the "Log in with Institution" button prominently.                               | UN-002 | Inspection |

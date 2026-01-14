@@ -35,7 +35,7 @@
                 href="/"
                 class="text-clinical-primary hover:text-white transition-colors font-medium"
             >
-                Return to Login Portal &rarr;
+                Return to Login Page &rarr;
             </a>
         </div>
     </div>

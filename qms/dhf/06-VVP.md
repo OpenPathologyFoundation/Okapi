@@ -39,6 +39,12 @@ Out of scope (this iteration):
 - Start Postgres (Docker Compose) and run `./gradlew bootRun`.
 - Acceptance signal: Flyway applies migrations (`v1`, `v2`) and app starts.
 
+## 3.4 HAT verification approach (planned)
+HAT verification will be implemented incrementally as the module is built. At minimum:
+- Unit tests for identifier normalization and deterministic match outcomes.
+- Integration tests for append-only history invariants, request lifecycle transitions, and RBAC constraints.
+- Manual workflows for scanner-driven confirmation and exception handling.
+
 # 4. Requirements Verification Matrix (AuthN/AuthZ subset)
 | SRS ID | Requirement (summary) | Verification method | Evidence/artifact |
 |--------|------------------------|---------------------|------------------|
@@ -53,6 +59,24 @@ Out of scope (this iteration):
 | `SYS-AUD-002` | Audit-event schema exists | Inspection | Flyway `V1__init_schema.sql` (`audit_events`) |
 | `SYS-DATA-003` | Flyway-managed schema at startup | Integration + manual | Flyway logs; `flyway_schema_history` table |
 | `SYS-SEC-010` | No committed secrets; env/secret store | Inspection | `.gitignore` + configuration review; no secrets in DHF |
+
+## 4.1 Requirements Verification Matrix (HAT subset)
+| SRS ID | Requirement (summary) | Verification method | Evidence/artifact |
+|--------|------------------------|---------------------|------------------|
+| `SYS-HAT-001` | Scan-first lookup + identifier normalization | Unit test | (Planned) `hat` module tests for normalization |
+| `SYS-HAT-002` | Deterministic match outcomes | Unit test | (Planned) lookup outcome tests |
+| `SYS-HAT-003` | Privacy-limited search modes | Analysis + test | Policy review + targeted tests (when implemented) |
+| `SYS-HAT-004` | Authoritative current state view | Integration test | (Planned) current-state projection tests |
+| `SYS-HAT-005` | Append-only event history | Integration test | (Planned) persistence + immutability invariants |
+| `SYS-HAT-006` | Non-destructive corrections | Integration test | (Planned) correction-event tests |
+| `SYS-HAT-007` | Create requests encoding intent | Integration test | (Planned) request-create tests |
+| `SYS-HAT-008` | Request lifecycle + partial fulfillment | Integration test | (Planned) state transition tests |
+| `SYS-HAT-009` | Execution queue + scan-confirmation | Integration + manual | (Planned) API tests + manual scanner workflow |
+| `SYS-HAT-010` | Milestones + completion evidence | Integration test | (Planned) evidence persistence tests |
+| `SYS-HAT-011` | Placeholder assets + reconcile later | Integration test | (Planned) placeholder + reconciliation tests |
+| `SYS-HAT-012` | Explicit conflict resolution workflow | Integration test | (Planned) conflict + resolution event tests |
+| `SYS-HAT-013` | RBAC + governance for high-risk actions | Unit + integration | (Planned) authorization tests |
+| `SYS-HAT-014` | Traceability request → events → current state | Integration test | (Planned) traceability assertions |
 
 # 5. Validation Notes
 Clinical workflow validation (usability, human factors, and operational monitoring) will be defined in later V&V activities once clinical workflows are implemented beyond IAM.

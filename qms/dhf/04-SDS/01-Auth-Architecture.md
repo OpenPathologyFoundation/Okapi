@@ -126,7 +126,7 @@ Okapi Auth separates **who you are** (Authentication) from **what you can do** (
 
 **Supported Protocols:**
 - **OIDC** → Okta, Entra ID (Azure AD), Auth0
-- **SAML 2.0** → Hospital enterprise SSO (e.g., Epic, Cerner integrations)
+- **SAML 2.0** → Hospital enterprise SSO 
 
 ### AuthZ Module (Authorization)
 
@@ -142,7 +142,7 @@ Okapi Auth separates **who you are** (Authentication) from **what you can do** (
 
 | Role | Permissions |
 |------|-------------|
-| `PATHOLOGIST` | VIEW_CASES, CREATE_AI_SUGGESTIONS, CONFIRM_RESULTS, WRITE_BACK_EPIC |
+| `PATHOLOGIST` | VIEW_CASES, CREATE_AI_SUGGESTIONS, CONFIRM_RESULTS, WRITE_BACK_EHR |
 | `TECHNICIAN` | VIEW_CASES, MANAGE_DATA_INGESTION |
 | `ADMIN` | MANAGE_CONFIG, VIEW_AUDIT_LOGS |
 

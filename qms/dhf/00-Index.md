@@ -15,11 +15,11 @@ This DHF covers the design and evolution of the Okapi platform, including:
 - Cloud-hosted deployment (AWS)
 - Clinical decision support (CDS) and workflow automation
 - AI-assisted suggestions (assistive, clinician-in-the-loop)
-- Write-back / interoperability with Epic Beaker / Epic via HL7 v2, FHIR, and CSV export channels
+- Write-back / interoperability with Traditional AP LIS / EHR via HL7 v2, FHIR, and other export channels
 - Identity, authorization, and auditability across trust boundaries (hospital network ↔ cloud)
 
 Out of scope (unless explicitly pulled into scope by change control):
-- Epic Beaker internal configuration artifacts (owned by Epic/hospital teams)
+- Traditional AP LIS internal configuration artifacts (owned by hospital teams)
 - Third-party vendor software DHFs (retained as supplier documentation)
 
 ## 3. Document Control and Approvals
@@ -80,6 +80,7 @@ The following artifacts constitute the DHF for this system.
 | 04 | SDS | Software Design Spec (folder) | qms/dhf/04-SDS/ | Draft/Active |
 | 04-00 | SDS Overview | High-level architecture, component boundaries | qms/dhf/04-SDS/00-SDS-Overview.md | Draft/Active |
 | 04-01 | Auth Architecture | Detailed AuthN/AuthZ design, data model | qms/dhf/04-SDS/01-Auth-Architecture.md | Draft/Active |
+| 04-04 | HAT Architecture | Histology Asset Tracking architecture, data concepts, and controls | qms/dhf/04-SDS/04-HAT-Architecture.md | Draft/Active |
 
 ### 5.4 RISK & QUALITY (The "Safety")
 | ID | Artifact | Purpose | Path | Status |

@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="assets/logo.png" alt="Okapi Logo" width="200">
+  <img src="assets/card.png" alt="Okapi Logo" width="200">
   <br>
   <h1>Okapi</h1>
   <p>
@@ -16,7 +16,7 @@ Okapi is a cloud-native platform designed to modernize Anatomic Pathology workfl
 
 Okapi serves as the "Orchestration Kernel" that enables:
 -   **AI-Assisted Diagnostics**: Seamlessly integrating AI suggestions into the pathologist's workflow.
--   **Interoperability**: Connecting on-premise hospital networks (Epic Beaker, Cerner) with cloud-hosted utilities via HL7/FHIR.
+-   **Interoperability**: Connecting on-premise hospital networks (Traditional AP LIS, Cerner) with cloud-hosted utilities via HL7/FHIR.
 -   **Clinical Decision Support (CDS)**: Automating routine tasks to reduce burnout and error rates.
 
 ## 🗺️ Repository Structure

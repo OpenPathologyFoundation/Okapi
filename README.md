@@ -1,12 +1,6 @@
 <div align="center">
   <img src="assets/card.jpg" alt="Okapi Logo" width="600">
-  <br>
-  <h1>Okapi</h1>
-  <p>
-    <b>Orchestration Kernel for Anatomic Pathology Intelligence</b>
-  </p>
 </div>
-
 
 Okapi is a cloud-native platform designed to modernize Anatomic Pathology workflows by bridging the gap between hospital Laboratory Information Systems (LIS) and advanced AI decision support tools.
 

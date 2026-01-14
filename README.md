@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="assets/card.jpg" alt="Okapi Logo" width="200">
+  <img src="assets/card.jpg" alt="Okapi Logo" width="600">
   <br>
   <h1>Okapi</h1>
   <p>

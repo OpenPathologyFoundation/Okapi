@@ -14,6 +14,13 @@
         color: "bg-blue-600",
     };
 
+    // Navigation active state helper
+    function isActive(path: string): boolean {
+        const currentPath = page.url.pathname;
+        if (path === "/app") return currentPath === "/app";
+        return currentPath.startsWith(path);
+    }
+
     onMount(() => {
         themeStore.init();
     });
@@ -112,7 +119,10 @@
                                     m
                                         ? 'bg-clinical-primary/20 border-clinical-primary text-clinical-primary'
                                         : 'border-transparent text-gray-400 hover:bg-white/5'}"
-                                    on:click={() => themeStore.setMode(m)}
+                                    on:click={() =>
+                                        themeStore.setMode(
+                                            m as "system" | "dark" | "light",
+                                        )}
                                 >
                                     {m}
                                 </button>
@@ -145,7 +155,9 @@
             <!-- Nav Icons -->
             <a
                 href="/app"
-                class="p-2 rounded-lg text-clinical-primary bg-clinical-primary/10 hover:bg-clinical-primary/20 transition-all group relative"
+                class="p-2 rounded-lg transition-all group relative {isActive('/app') && !isActive('/app/')
+                    ? 'text-clinical-primary bg-clinical-primary/10 hover:bg-clinical-primary/20'
+                    : 'text-gray-500 hover:text-gray-300 hover:bg-white/5'}"
                 title="Dashboard"
             >
                 <svg
@@ -164,7 +176,9 @@
 
             <a
                 href="/app/worklist"
-                class="p-2 rounded-lg text-gray-500 hover:text-gray-300 hover:bg-white/5 transition-all group relative"
+                class="p-2 rounded-lg transition-all group relative {isActive('/app/worklist')
+                    ? 'text-clinical-primary bg-clinical-primary/10'
+                    : 'text-gray-500 hover:text-gray-300 hover:bg-white/5'}"
                 title="Worklist"
             >
                 <svg
@@ -183,7 +197,9 @@
 
             <a
                 href="/app/archive"
-                class="p-2 rounded-lg text-gray-500 hover:text-gray-300 hover:bg-white/5 transition-all group relative"
+                class="p-2 rounded-lg transition-all group relative {isActive('/app/archive')
+                    ? 'text-clinical-primary bg-clinical-primary/10'
+                    : 'text-gray-500 hover:text-gray-300 hover:bg-white/5'}"
                 title="Archive Search"
             >
                 <svg
@@ -201,8 +217,31 @@
             </a>
 
             <a
+                href="/app/hat"
+                class="p-2 rounded-lg transition-all group relative {isActive('/app/hat')
+                    ? 'text-clinical-primary bg-clinical-primary/10'
+                    : 'text-gray-500 hover:text-gray-300 hover:bg-white/5'}"
+                title="Asset Tracking"
+            >
+                <svg
+                    class="w-6 h-6"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    ><path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
+                    ></path></svg
+                >
+            </a>
+
+            <a
                 href="/app/ai"
-                class="p-2 rounded-lg text-gray-500 hover:text-gray-300 hover:bg-white/5 transition-all group relative"
+                class="p-2 rounded-lg transition-all group relative {isActive('/app/ai')
+                    ? 'text-clinical-primary bg-clinical-primary/10'
+                    : 'text-gray-500 hover:text-gray-300 hover:bg-white/5'}"
                 title="AI Tools"
             >
                 <svg

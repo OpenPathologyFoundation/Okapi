@@ -62,3 +62,76 @@ body {
   overflow: hidden;
   transition: background-color 0.2s ease, color 0.2s ease;
 }
+
+/* ============================================
+   HAT (Histology Asset Tracking) Status Colors
+   Trace: qms/dhf/04-SDS/04-HAT-Architecture.md
+   ============================================ */
+:root {
+  /* HAT Status Colors - Light Mode */
+  --hat-status-available: #0D9488;
+  --hat-status-checked-out: #F59E0B;
+  --hat-status-in-transit: #6366F1;
+  --hat-status-in-qa: #8B5CF6;
+  --hat-status-distributed: #3B82F6;
+  --hat-status-returned: #10B981;
+  --hat-status-missing: #EF4444;
+  --hat-status-destroyed: #6B7280;
+
+  /* HAT Priority Colors */
+  --hat-priority-stat: #EF4444;
+  --hat-priority-urgent: #F59E0B;
+  --hat-priority-routine: #6B7280;
+
+  /* HAT Request Status Colors */
+  --hat-request-open: #3B82F6;
+  --hat-request-in-progress: #F59E0B;
+  --hat-request-done: #10B981;
+  --hat-request-cancelled: #6B7280;
+}
+
+:root.dark {
+  /* HAT Status Colors - Dark Mode (brighter for contrast) */
+  --hat-status-available: #14B8A6;
+  --hat-status-checked-out: #FBBF24;
+  --hat-status-in-transit: #818CF8;
+  --hat-status-in-qa: #A78BFA;
+  --hat-status-distributed: #60A5FA;
+  --hat-status-returned: #34D399;
+  --hat-status-missing: #F87171;
+  --hat-status-destroyed: #9CA3AF;
+
+  /* HAT Priority Colors - Dark Mode */
+  --hat-priority-stat: #F87171;
+  --hat-priority-urgent: #FBBF24;
+  --hat-priority-routine: #9CA3AF;
+
+  /* HAT Request Status Colors - Dark Mode */
+  --hat-request-open: #60A5FA;
+  --hat-request-in-progress: #FBBF24;
+  --hat-request-done: #34D399;
+  --hat-request-cancelled: #9CA3AF;
+}
+
+@theme {
+  /* HAT Status Color Utilities */
+  --color-hat-status-available: var(--hat-status-available);
+  --color-hat-status-checked-out: var(--hat-status-checked-out);
+  --color-hat-status-in-transit: var(--hat-status-in-transit);
+  --color-hat-status-in-qa: var(--hat-status-in-qa);
+  --color-hat-status-distributed: var(--hat-status-distributed);
+  --color-hat-status-returned: var(--hat-status-returned);
+  --color-hat-status-missing: var(--hat-status-missing);
+  --color-hat-status-destroyed: var(--hat-status-destroyed);
+
+  /* HAT Priority Color Utilities */
+  --color-hat-priority-stat: var(--hat-priority-stat);
+  --color-hat-priority-urgent: var(--hat-priority-urgent);
+  --color-hat-priority-routine: var(--hat-priority-routine);
+
+  /* HAT Request Status Color Utilities */
+  --color-hat-request-open: var(--hat-request-open);
+  --color-hat-request-in-progress: var(--hat-request-in-progress);
+  --color-hat-request-done: var(--hat-request-done);
+  --color-hat-request-cancelled: var(--hat-request-cancelled);
+}

@@ -50,5 +50,19 @@ HAT separates **facts** (what the system knows about an asset: identifiers/statu
 | **UN-HAT-006** | The user needs list-driven workflows (bulk lookup and bulk request creation) and resilient handling of unknown assets (create placeholder + reconcile later). | Supports real-world batch workflows and reduces operational friction when assets are not yet in the system. |
 | **UN-HAT-007** | The system must enforce role-based access and governance for high-risk actions (e.g., external distribution, research release) and apply privacy controls for searching where required. | Reduces risk of unauthorized release/misuse and avoids inappropriate exposure of identifiers/PHI. |
 
+## 3.3 Work List Module (WL)
+
+The Work List is the "Front Door" to the Pathology Portal, serving as the primary case discovery and organization tool.
+
+| ID | User Need Statement | Rationale/Clinical Justification |
+| :--- | :--- | :--- |
+| **UN-WL-001** | The pathologist needs a central work list that aggregates cases from LIS, imaging, and internal authoring workflows into a single view. | Eliminates the need to check multiple systems; provides a single "source of truth" for daily work. |
+| **UN-WL-002** | The user needs to see the real-time status of slide digitization and report drafting directly on the work list without opening the case. | Saves time by preventing users from opening cases that are not yet ready (e.g., slides not scanned) or are already being worked on by others. |
+| **UN-WL-003** | The user needs to distinguish between "clinical view" (full PHI) and "teaching view" (masked PHI) on demand. | Facilitates safe use of the system in semi-public settings (conference rooms, educational rounds) without risking PHI exposure. |
+| **UN-WL-004** | The user needs to filter and sort cases by clinical priority (stat/urgent), service type, and age. | Ensures critical cases are addressed first; helps manage large caseloads efficiently. |
+| **UN-WL-005** | The user needs visibility into multi-author collaboration states (e.g., "Draft by Resident", "Pending Attending Review"). | Essential for academic workflows; prevents "blind handoffs" and clarifies responsibilities. |
+| **UN-WL-006** | The user needs a "Break-Glass" mechanism to access cases not normally assigned to them in emergency or coverage situations. | Ensures patient safety isn't compromised by rigid permission models during staff absences or emergencies. |
+| **UN-WL-007** | The user needs the system to clearly indicate when information is "stale" or updating. | Prevents clinical decisions based on outdated information; builds trust in system reliability. |
+
 # 4. Notes
 System requirements are defined in `qms/dhf/02-SRS.md` and verified per `qms/dhf/06-VVP.md`.

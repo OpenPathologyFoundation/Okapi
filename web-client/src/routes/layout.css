@@ -20,6 +20,12 @@
   /* Gray-900 */
   --clinical-muted: #6B7280;
   /* Gray-500 */
+  --clinical-border: #E5E7EB;
+  /* Gray-200 */
+  --clinical-border-subtle: #F3F4F6;
+  /* Gray-100 */
+  --clinical-hover: rgba(0, 0, 0, 0.05);
+  /* Light hover */
 
   --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
@@ -38,6 +44,12 @@
   /* Gray-100 */
   --clinical-muted: #9CA3AF;
   /* Gray-400 */
+  --clinical-border: #374151;
+  /* Gray-700 */
+  --clinical-border-subtle: #1F2937;
+  /* Gray-800 */
+  --clinical-hover: rgba(255, 255, 255, 0.05);
+  /* Dark hover */
 }
 
 @theme {
@@ -48,6 +60,9 @@
   --color-clinical-success: var(--clinical-success);
   --color-clinical-text: var(--clinical-text);
   --color-clinical-muted: var(--clinical-muted);
+  --color-clinical-border: var(--clinical-border);
+  --color-clinical-border-subtle: var(--clinical-border-subtle);
+  --color-clinical-hover: var(--clinical-hover);
 
   --font-sans: var(--font-sans);
 }
@@ -134,4 +149,75 @@ body {
   --color-hat-request-in-progress: var(--hat-request-in-progress);
   --color-hat-request-done: var(--hat-request-done);
   --color-hat-request-cancelled: var(--hat-request-cancelled);
+
+  /* Worklist Case Status Color Utilities */
+  --color-worklist-status-accessioned: var(--worklist-status-accessioned);
+  --color-worklist-status-grossing: var(--worklist-status-grossing);
+  --color-worklist-status-processing: var(--worklist-status-processing);
+  --color-worklist-status-slides-cut: var(--worklist-status-slides-cut);
+  --color-worklist-status-pending-signout: var(--worklist-status-pending-signout);
+  --color-worklist-status-under-review: var(--worklist-status-under-review);
+  --color-worklist-status-signed-out: var(--worklist-status-signed-out);
+  --color-worklist-status-amended: var(--worklist-status-amended);
+
+  /* Worklist Priority Color Utilities */
+  --color-worklist-priority-stat: var(--worklist-priority-stat);
+  --color-worklist-priority-urgent: var(--worklist-priority-urgent);
+  --color-worklist-priority-routine: var(--worklist-priority-routine);
+
+  /* Worklist Service Color Utilities */
+  --color-worklist-service-surgical: var(--worklist-service-surgical);
+  --color-worklist-service-cytology: var(--worklist-service-cytology);
+  --color-worklist-service-hematology: var(--worklist-service-hematology);
+  --color-worklist-service-autopsy: var(--worklist-service-autopsy);
+}
+
+/* ============================================
+   Worklist Case Status/Priority/Service Colors
+   Trace: qms/dhf/04-SDS/05-Worklist-Architecture.md
+   ============================================ */
+:root {
+  /* Worklist Case Status Colors - Light Mode */
+  --worklist-status-accessioned: #6B7280;
+  --worklist-status-grossing: #D97706;
+  --worklist-status-processing: #CA8A04;
+  --worklist-status-slides-cut: #2563EB;
+  --worklist-status-pending-signout: #EA580C;
+  --worklist-status-under-review: #7C3AED;
+  --worklist-status-signed-out: #059669;
+  --worklist-status-amended: #0D9488;
+
+  /* Worklist Priority Colors - Light Mode */
+  --worklist-priority-stat: #DC2626;
+  --worklist-priority-urgent: #D97706;
+  --worklist-priority-routine: #6B7280;
+
+  /* Worklist Service Colors - Light Mode */
+  --worklist-service-surgical: #2563EB;
+  --worklist-service-cytology: #7C3AED;
+  --worklist-service-hematology: #EA580C;
+  --worklist-service-autopsy: #4B5563;
+}
+
+:root.dark {
+  /* Worklist Case Status Colors - Dark Mode (brighter) */
+  --worklist-status-accessioned: #9CA3AF;
+  --worklist-status-grossing: #FBBF24;
+  --worklist-status-processing: #FCD34D;
+  --worklist-status-slides-cut: #60A5FA;
+  --worklist-status-pending-signout: #FB923C;
+  --worklist-status-under-review: #A78BFA;
+  --worklist-status-signed-out: #34D399;
+  --worklist-status-amended: #2DD4BF;
+
+  /* Worklist Priority Colors - Dark Mode */
+  --worklist-priority-stat: #F87171;
+  --worklist-priority-urgent: #FBBF24;
+  --worklist-priority-routine: #9CA3AF;
+
+  /* Worklist Service Colors - Dark Mode */
+  --worklist-service-surgical: #60A5FA;
+  --worklist-service-cytology: #A78BFA;
+  --worklist-service-hematology: #FB923C;
+  --worklist-service-autopsy: #9CA3AF;
 }

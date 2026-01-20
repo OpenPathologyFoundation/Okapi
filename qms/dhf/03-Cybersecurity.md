@@ -64,6 +64,15 @@ HAT-specific assets:
 | **D** Denial of service | HAT unavailable; users bypass scan confirmation or recordkeeping | Increased wrong-asset risk | Resilience patterns; offline/degraded procedures; audit of deviations (deployment policy) |
 | **E** Elevation of privilege | Low-privilege user performs distribution/release actions | Unauthorized release | Fine-grained privileges + governance for high-risk actions (`SYS-HAT-013`); approvals as policy |
 
+## 3.2 Work List Module (WL) threat highlights
+
+| STRIDE | WL Threat (example) | Impact | Primary mitigations |
+|--------|---------------------|--------|---------------------|
+| **S** Spoofing | User impersonates another pathologist to view their work list | Unauthorized PHI access | `SYS-WL-003`: Service-layer capability gating; `SYS-WL-007`: Break-glass audit trail. |
+| **I** Information Disclosure | Work list viewed in public area exposes PHI | Accidental Privacy Breach | `SYS-WL-004`: "Teaching View" (Masked Mode); default to masked in public terminals. |
+| **R** Repudiation | User denies using "Break-Glass" to view VIP case | Abuse of emergency access | `SYS-WL-007`: Mandatory audit event with reason code for all break-glass actions. |
+| **D** Denial of Service | "Grim Reaper" attack: User assigns all cases to a black hole queue | Clinical workflow stoppage | `SYS-WL-003`: Reassignment capability strictly limited by RBAC; Rate limiting on assignment APIs. |
+
 Additional IAM-specific threats to track:
 - **Mis-provisioning / delayed access:** incorrect or late group membership updates can block appropriate users from timely access, creating workflow disruption and “break-glass” pressure.
 - **Privilege escalation by mapping drift:** unauthorized changes to group→role mappings can elevate access; mitigated by change control + audit evidence.

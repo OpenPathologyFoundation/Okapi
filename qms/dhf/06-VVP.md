@@ -78,5 +78,14 @@ HAT verification will be implemented incrementally as the module is built. At mi
 | `SYS-HAT-013` | RBAC + governance for high-risk actions | Unit + integration | (Planned) authorization tests |
 | `SYS-HAT-014` | Traceability request → events → current state | Integration test | (Planned) traceability assertions |
 
+## 4.2 Requirements Verification Matrix (Work List subset)
+| SRS ID | Requirement (summary) | Verification method | Evidence/artifact |
+|--------|-----------------------|---------------------|-------------------|
+| `SYS-WL-001` | Read Model aggregation & Latency (<30s) | Performance Test | Load test report (simulated LIS/WSI events) |
+| `SYS-WL-003` | Service-layer Capability Gating | Unit/Integration Test | `WorklistServiceTest`: Verify `Scope` filter applied to DB queries |
+| `SYS-WL-004` | Privacy Modes (`TEACHING` vs `CLINICAL`) | UI Test (E2E) | Screenshot/Cypress: Verify MRN masking in Teaching Mode |
+| `SYS-WL-007` | **Break-Glass** Workflow | Integration Test | Verify `AuditLog` contains `BREAK_GLASS` event with reason code |
+| `SYS-WL-008` | Smart Filters ("Needs Attention") | Unit Test | Verify logic correctly flags "Old" and "Stat" cases |
+
 # 5. Validation Notes
 Clinical workflow validation (usability, human factors, and operational monitoring) will be defined in later V&V activities once clinical workflows are implemented beyond IAM.

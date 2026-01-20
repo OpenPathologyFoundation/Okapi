@@ -37,6 +37,8 @@ Stage your changes and create a snapshot.
 git add path/to/file.js
 
 # OR Stage all changes (Use with caution - check git status first)
+
+git status
 git add .
 
 # Commit with a descriptive message
@@ -45,6 +47,7 @@ git commit -m "Brief summary of changes (e.g., Add JWT authentication logic)"
 
 ### 4. Push to Remote
 
+Make sure you are on the correct branch before pushing.
 Push your branch to the remote server. The `-u` flag establishes tracking.
 
 ```bash
@@ -95,6 +98,7 @@ git checkout main
 # 2. Pull the new changes (including your merged work)
 git pull origin main
 
-# 3. Delete the local feature branch
-git branch -d feature/your-branch-name
+# 3. Delete the local feature branch se -d if merged normally, or -D if "Squash and Merge" was used
+
+feature/your-branch-name
 ```

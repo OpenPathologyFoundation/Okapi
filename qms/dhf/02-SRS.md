@@ -59,6 +59,22 @@ HAT requirements are written to enforce the separation between:
 
 # 2. Interface Requirements
 
+## 1.2 Work List Module (WL) Requirements
+
+| ID | System Requirement | Trace to User Need | Verification Method |
+| :--- | :--- | :--- | :--- |
+| **SYS-WL-001** | The system shall maintain a "Read Model" that aggregates data from LIS (HL7), Imaging (API), and Internal Authoring services, ensuring <30s latency from source events. | UN-WL-001, UN-WL-007 | Test |
+| **SYS-WL-002** | The system shall enforce data precedence when conflicts occur: LIS > Authoring > WSI > Derived Rules. | UN-WL-001 | Analysis/Test |
+| **SYS-WL-003** | The system shall enforce "Capability-Gated" rendering: strictly filtering returned cases at the service layer based on user permissions (e.g., `VIEW_SERVICE_WORKLISTS`). | UN-WL-003, UN-WL-006 | Test |
+| **SYS-WL-004** | The system shall support rendering of privacy modes: `CLINICAL_VIEW` (Full PHI) and `TEACHING_VIEW` (Masked PHI), toggleable by authorized users. | UN-WL-003 | Test |
+| **SYS-WL-005** | The system shall provide visual indicators for "Enrichment Signals" (WSI status, AI status, Annotations), loading them asynchronously to prevent blocking core list display. | UN-WL-002 | Test |
+| **SYS-WL-006** | The system shall display composite status states for multi-author workflows (e.g., `Draft in progress`, `Pending review`) derived from internal authoring events. | UN-WL-005 | Test |
+| **SYS-WL-007** | The system shall support a "Break-Glass" workflow demanding: explicit action, reason selection, and generation of a specific audit event (`break_glass_invoked`). | UN-WL-006 | Test |
+| **SYS-WL-008** | The system shall support "Smart Filters" including: "Sign-out ready" (all prerequisites met) and "Needs attention" (old/urgent/alerted). | UN-WL-004 | Test |
+| **SYS-WL-009** | The work list shall emit workflow events (`case_open_requested`, `viewer_launch_requested`) but shall NOT emit or retain fine-grained telemetry (mouse coords, dwell time). | UN-WL-003 | Inspection |
+
+# 2. Interface Requirements
+
 | ID | Interface Requirement                                                                                          | Trace | Verification |
 | :--- |:---------------------------------------------------------------------------------------------------------------| :--- | :--- |
 | **IR-001** | The system shall validate all EHR write-back transactions using checksums and HL7 ACK/NACK protocols.          | N/A | Test |

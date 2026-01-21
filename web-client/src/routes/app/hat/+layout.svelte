@@ -26,7 +26,7 @@
 
 <div class="h-full flex flex-col">
 	<!-- HAT Sub-navigation -->
-	<nav class="shrink-0 px-6 py-3 bg-clinical-surface border-b border-gray-800">
+	<nav class="shrink-0 px-6 py-3 bg-clinical-surface border-b border-clinical-border">
 		<div class="flex items-center gap-6">
 			<h1 class="text-lg font-semibold text-clinical-text flex items-center gap-2">
 				<svg class="w-5 h-5 text-clinical-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -46,7 +46,7 @@
 						href={tab.href}
 						class="px-4 py-2 text-sm font-medium rounded-md transition-all {isTabActive(tab)
 							? 'bg-clinical-primary/10 text-clinical-primary'
-							: 'text-clinical-muted hover:text-clinical-text hover:bg-white/5'}"
+							: 'text-clinical-muted hover:text-clinical-text hover:bg-clinical-hover'}"
 					>
 						{tab.label}
 					</a>
@@ -57,7 +57,7 @@
 			<div class="ml-auto flex items-center gap-2">
 				<a
 					href="/app/hat/requests/new"
-					class="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-clinical-text bg-white/5 hover:bg-white/10 border border-gray-700 rounded-md transition-colors"
+					class="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-clinical-text bg-clinical-hover hover:bg-clinical-border/50 border border-clinical-border rounded-md transition-colors"
 				>
 					<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />

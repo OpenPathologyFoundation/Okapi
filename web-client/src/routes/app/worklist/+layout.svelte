@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { onMount } from 'svelte';
-	import { worklistStore } from '$lib/stores/worklist.svelte';
+	import { worklistStore, MOCK_PATHOLOGISTS } from '$lib/stores/worklist.svelte';
 
 	let { children } = $props();
 
@@ -16,6 +16,12 @@
 			return currentPath === tab.href;
 		}
 		return currentPath.startsWith(tab.href);
+	}
+
+	function handleUserChange(event: Event) {
+		const select = event.target as HTMLSelectElement;
+		const userId = parseInt(select.value, 10);
+		worklistStore.setCurrentUser(userId);
 	}
 
 	onMount(() => {
@@ -57,6 +63,22 @@
 				{/each}
 			</div>
 
+			<!-- Dev: User selector for testing -->
+			<div class="flex items-center gap-2 rounded-md border border-dashed border-amber-500/50 bg-amber-500/5 px-3 py-1.5">
+				<span class="text-[10px] font-medium uppercase tracking-wider text-amber-600 dark:text-amber-400">Dev</span>
+				<select
+					value={worklistStore.currentUser.id}
+					onchange={handleUserChange}
+					class="bg-transparent text-xs text-clinical-text focus:outline-none cursor-pointer"
+				>
+					{#each MOCK_PATHOLOGISTS as pathologist}
+						<option value={pathologist.id} class="bg-clinical-surface text-clinical-text">
+							{pathologist.display}
+						</option>
+					{/each}
+				</select>
+			</div>
+
 			<!-- Stats summary -->
 			{#if worklistStore.counts}
 				<div class="ml-auto flex items-center gap-4 text-sm text-clinical-muted">
@@ -69,6 +91,30 @@
 					<span>
 						<span class="font-medium text-clinical-text">{worklistStore.counts.total}</span> Total
 					</span>
+					<div class="h-4 w-px bg-clinical-border"></div>
+					<!-- Refresh timestamp (clickable per spec §12.1) -->
+					<button
+						type="button"
+						onclick={() => worklistStore.loadMockData()}
+						class="flex items-center gap-1.5 text-xs hover:text-clinical-primary"
+						title="Click to refresh"
+						disabled={worklistStore.isLoading}
+					>
+						<svg
+							class="h-3.5 w-3.5 {worklistStore.isLoading ? 'animate-spin' : ''}"
+							fill="none"
+							viewBox="0 0 24 24"
+							stroke="currentColor"
+						>
+							<path
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								stroke-width="2"
+								d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+							/>
+						</svg>
+						{worklistStore.getLastRefreshDisplay()}
+					</button>
 				</div>
 			{/if}
 		</div>

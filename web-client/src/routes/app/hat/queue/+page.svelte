@@ -120,7 +120,7 @@
 		{#if currentRequest}
 			<div class="max-w-2xl mx-auto">
 				<!-- Scan to confirm -->
-				<div class="bg-clinical-surface border border-gray-700 rounded-xl p-6 mb-6">
+				<div class="bg-clinical-surface border border-clinical-border rounded-xl p-6 mb-6">
 					<h2 class="text-sm font-medium text-clinical-muted uppercase tracking-wider mb-4">
 						Scan to Confirm
 					</h2>
@@ -176,7 +176,7 @@
 				</div>
 
 				<!-- Current request details -->
-				<div class="bg-clinical-surface border border-gray-700 rounded-xl p-6 mb-6">
+				<div class="bg-clinical-surface border border-clinical-border rounded-xl p-6 mb-6">
 					<div class="flex items-center justify-between mb-4">
 						<div class="flex items-center gap-3">
 							<h3 class="font-mono text-lg text-clinical-text">{currentRequest.id}</h3>
@@ -199,7 +199,7 @@
 							</span>
 							<span>{Math.round(getProgress(currentRequest))}%</span>
 						</div>
-						<div class="h-2 bg-gray-700 rounded-full overflow-hidden">
+						<div class="h-2 bg-clinical-border rounded-full overflow-hidden">
 							<div
 								class="h-full bg-clinical-primary rounded-full transition-all"
 								style="width: {getProgress(currentRequest)}%"
@@ -214,14 +214,14 @@
 								class="flex items-center justify-between p-3 rounded-lg {asset.status === 'COMPLETED'
 									? 'bg-clinical-success/5 border border-clinical-success/20'
 									: asset.status === 'PENDING'
-										? 'bg-white/5 border border-gray-700'
+										? 'bg-clinical-hover border border-clinical-border'
 										: 'bg-hat-request-in-progress/5 border border-hat-request-in-progress/20'}"
 							>
 								<div class="flex items-center gap-3">
 									<div
 										class="h-6 w-6 rounded-full flex items-center justify-center {asset.status === 'COMPLETED'
 											? 'bg-clinical-success text-white'
-											: 'bg-gray-700 text-clinical-muted'}"
+											: 'bg-clinical-border text-clinical-muted'}"
 									>
 										{#if asset.status === 'COMPLETED'}
 											<svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -261,7 +261,7 @@
 			<div class="h-full flex items-center justify-center">
 				<div class="text-center">
 					<div
-						class="mx-auto h-16 w-16 rounded-full bg-clinical-surface flex items-center justify-center mb-4 border border-gray-700"
+						class="mx-auto h-16 w-16 rounded-full bg-clinical-surface flex items-center justify-center mb-4 border border-clinical-border"
 					>
 						<svg class="h-8 w-8 text-clinical-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 							<path
@@ -280,7 +280,7 @@
 	</div>
 
 	<!-- Queue sidebar -->
-	<div class="w-80 border-l border-gray-700 bg-clinical-surface p-4 overflow-auto">
+	<div class="w-80 border-l border-clinical-border bg-clinical-surface p-4 overflow-auto">
 		<h3 class="text-sm font-medium text-clinical-muted uppercase tracking-wider mb-4">
 			Queue ({mockQueue.filter((r) => r.status !== 'DONE').length})
 		</h3>
@@ -291,7 +291,7 @@
 					onclick={() => selectRequest(request)}
 					class="w-full text-left p-3 rounded-lg border transition-colors {currentRequest?.id === request.id
 						? 'bg-clinical-primary/10 border-clinical-primary'
-						: 'bg-white/5 border-gray-700 hover:bg-white/10'}"
+						: 'bg-clinical-hover border-clinical-border hover:bg-clinical-border/50'}"
 				>
 					<div class="flex items-center justify-between mb-1">
 						<span class="font-mono text-sm text-clinical-text">{request.id}</span>
@@ -300,13 +300,13 @@
 
 					<div class="flex flex-wrap gap-1 mb-2">
 						{#each request.actions as action}
-							<span class="text-[10px] px-1.5 py-0.5 rounded bg-white/10 text-clinical-muted">
+							<span class="text-[10px] px-1.5 py-0.5 rounded bg-clinical-border/50 text-clinical-muted">
 								{ACTION_LABELS[action]}
 							</span>
 						{/each}
 					</div>
 
-					<div class="h-1 bg-gray-700 rounded-full overflow-hidden">
+					<div class="h-1 bg-clinical-border rounded-full overflow-hidden">
 						<div
 							class="h-full bg-clinical-primary rounded-full"
 							style="width: {getProgress(request)}%"

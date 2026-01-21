@@ -61,8 +61,8 @@
 </script>
 
 <div
-	class="bg-clinical-surface border border-gray-700 rounded-lg p-4 transition-colors {onClick
-		? 'hover:bg-white/5 cursor-pointer'
+	class="bg-clinical-surface border border-clinical-border rounded-lg p-4 transition-colors {onClick
+		? 'hover:bg-clinical-hover cursor-pointer'
 		: ''}"
 	onclick={onClick}
 	onkeydown={(e) => e.key === 'Enter' && onClick?.()}
@@ -85,7 +85,7 @@
 			<!-- Actions -->
 			<div class="flex flex-wrap gap-1.5 mb-2">
 				{#each request.actions as action}
-					<span class="text-xs px-2 py-0.5 rounded bg-white/5 text-clinical-text">
+					<span class="text-xs px-2 py-0.5 rounded bg-clinical-hover text-clinical-text">
 						{ACTION_LABELS[action]}
 					</span>
 				{/each}
@@ -98,7 +98,7 @@
 						<span>{progress.completed}/{progress.total} assets</span>
 						<span>{Math.round((progress.completed / progress.total) * 100)}%</span>
 					</div>
-					<div class="h-1.5 bg-gray-700 rounded-full overflow-hidden">
+					<div class="h-1.5 bg-clinical-border rounded-full overflow-hidden">
 						<div
 							class="h-full bg-clinical-primary rounded-full transition-all"
 							style="width: {(progress.completed / progress.total) * 100}%"

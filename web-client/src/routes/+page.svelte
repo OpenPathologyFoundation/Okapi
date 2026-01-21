@@ -6,46 +6,60 @@
 <div
   class="flex h-screen w-screen overflow-hidden text-clinical-text bg-clinical-bg font-sans"
 >
-  <!-- Left Half: The Brand Canvas -->
+  <!-- Left Half: The Brand Canvas (Always Dark) -->
   <div
-    class="hidden lg:flex w-1/2 relative bg-gray-900 border-r border-gray-800"
+    class="hidden lg:flex w-1/2 relative bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 border-r border-slate-700/50"
   >
     <!-- Abstract Digital H&E Background Layer -->
-    <div class="absolute inset-0 opacity-40">
-      <!-- Placeholder for specialized graphic - using a CSS pattern for 'Digital Tissue' vibe -->
+    <div class="absolute inset-0">
+      <!-- Subtle gradient overlay -->
       <div
-        class="w-full h-full bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-clinical-primary/20 via-gray-900 to-black"
+        class="w-full h-full bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-clinical-primary/10 via-transparent to-transparent"
       ></div>
-      <div class="absolute inset-0 bg-[url('/grid.svg')] opacity-10"></div>
-      <!-- Optional faint grid -->
+      <!-- Decorative grid pattern -->
+      <div class="absolute inset-0 bg-[url('/grid.svg')] opacity-5"></div>
+      <!-- Subtle noise texture feel -->
+      <div
+        class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent"
+      ></div>
     </div>
 
     <!-- Content Overlay -->
     <div class="relative z-10 p-12 flex flex-col justify-between h-full">
       <!-- Logo Area -->
       <div class="flex items-center gap-3">
-        <img src="/logo-nb.png" alt="Okapi Logo" class="h-16 w-auto" />
-        <span class="text-2xl font-bold tracking-tight text-white">Okapi</span>
+        <img
+          src="/logo-nb.png"
+          alt="Okapi Logo"
+          class="h-16 w-auto drop-shadow-lg"
+        />
+        <span
+          class="text-2xl font-bold tracking-tight text-white drop-shadow-sm"
+          >Okapi</span
+        >
       </div>
 
       <!-- Hero Typography -->
       <div class="mb-24">
         <h1
-          class="text-5xl font-extrabold tracking-tight text-white leading-tight mb-6"
+          class="text-5xl font-extrabold tracking-tight text-white leading-tight mb-6 drop-shadow-sm"
         >
           Orchestrating <br />
-          <span class="text-clinical-primary">Precision Diagnostics.</span>
+          <span
+            class="text-clinical-primary drop-shadow-[0_0_20px_rgba(59,130,246,0.3)]"
+            >Precision Diagnostics.</span
+          >
         </h1>
         <p
-          class="text-xl text-clinical-text/80 font-light max-w-md border-l-2 border-clinical-primary pl-6"
+          class="text-xl text-slate-300 font-light max-w-md border-l-2 border-clinical-primary/70 pl-6"
         >
           Unified workflow for Pathology, AI, <br />and Clinical Search.
         </p>
       </div>
 
       <!-- Footer/Copyright -->
-      <div class="text-sm text-gray-500">
-        &copy; 2026 Okapi Health. FDA Clearance Pending.
+      <div class="text-sm text-slate-500">
+        &copy; 2026 Open Pathology Foundation. FDA Clearance Pending.
       </div>
     </div>
   </div>
@@ -57,7 +71,7 @@
     <div class="w-full max-w-md space-y-8">
       <!-- Welcome Header -->
       <div class="text-center">
-        <h2 class="text-3xl font-bold text-white tracking-tight">
+        <h2 class="text-3xl font-bold text-clinical-text tracking-tight">
           Welcome Back
         </h2>
         <p class="mt-2 text-sm text-clinical-muted">
@@ -68,13 +82,13 @@
       <!-- SSO Button (Primary) -->
       <button
         type="button"
-        class="group relative flex w-full justify-center items-center gap-3 rounded-md bg-white px-4 py-3 text-sm font-semibold text-gray-900 hover:bg-gray-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white transition-all shadow-md"
+        class="group relative flex w-full justify-center items-center gap-3 rounded-md bg-clinical-bg px-4 py-3 text-sm font-semibold text-clinical-text hover:bg-clinical-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-clinical-primary transition-all shadow-md border border-clinical-border"
       >
         <!-- Mock Provider Icon (e.g. Microsoft/Okta) -->
         <svg class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
           <path
             d="M10.5 2h-8c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h8V2zm10.5 0h-8v20h8c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"
-            class="text-gray-400 group-hover:text-clinical-primary transition-colors"
+            class="text-clinical-muted group-hover:text-clinical-primary transition-colors"
           />
           <!-- Simple Door Icon as placeholder for SSO -->
         </svg>
@@ -84,11 +98,11 @@
       <!-- Divider -->
       <div class="relative">
         <div class="absolute inset-0 flex items-center" aria-hidden="true">
-          <div class="w-full border-t border-gray-700"></div>
+          <div class="w-full border-t border-clinical-border"></div>
         </div>
         <div class="relative flex justify-center text-sm font-medium leading-6">
           <span
-            class="bg-clinical-surface px-6 text-gray-400 hover:text-gray-300 cursor-pointer select-none"
+            class="bg-clinical-surface px-6 text-clinical-muted hover:text-clinical-text cursor-pointer select-none"
             >Or sign in with email</span
           >
         </div>
@@ -99,7 +113,7 @@
         <div>
           <label
             for="email"
-            class="block text-sm font-medium leading-6 text-white"
+            class="block text-sm font-medium leading-6 text-clinical-text"
             >Email address</label
           >
           <div class="mt-2">
@@ -109,7 +123,7 @@
               type="email"
               autocomplete="email"
               required
-              class="block w-full rounded-md border-0 bg-white/5 py-1.5 text-white shadow-sm ring-1 ring-inset ring-gray-700 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-clinical-primary sm:text-sm sm:leading-6 pl-3"
+              class="block w-full rounded-md border-0 bg-clinical-bg py-1.5 text-clinical-text shadow-sm ring-1 ring-inset ring-clinical-border placeholder:text-clinical-muted focus:ring-2 focus:ring-inset focus:ring-clinical-primary sm:text-sm sm:leading-6 pl-3"
             />
           </div>
         </div>
@@ -118,7 +132,7 @@
           <div class="flex items-center justify-between">
             <label
               for="password"
-              class="block text-sm font-medium leading-6 text-white"
+              class="block text-sm font-medium leading-6 text-clinical-text"
               >Password</label
             >
             <div class="text-sm">
@@ -136,7 +150,7 @@
               type="password"
               autocomplete="current-password"
               required
-              class="block w-full rounded-md border-0 bg-white/5 py-1.5 text-white shadow-sm ring-1 ring-inset ring-gray-700 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-clinical-primary sm:text-sm sm:leading-6 pl-3"
+              class="block w-full rounded-md border-0 bg-clinical-bg py-1.5 text-clinical-text shadow-sm ring-1 ring-inset ring-clinical-border placeholder:text-clinical-muted focus:ring-2 focus:ring-inset focus:ring-clinical-primary sm:text-sm sm:leading-6 pl-3"
             />
           </div>
         </div>

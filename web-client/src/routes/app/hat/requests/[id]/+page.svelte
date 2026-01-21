@@ -79,7 +79,7 @@
 		</div>
 
 		<!-- Header -->
-		<div class="bg-clinical-surface border border-gray-700 rounded-xl p-6 mb-6">
+		<div class="bg-clinical-surface border border-clinical-border rounded-xl p-6 mb-6">
 			<div class="flex items-start justify-between">
 				<div>
 					<div class="flex items-center gap-3 mb-2">
@@ -94,7 +94,7 @@
 
 					<div class="flex flex-wrap gap-2 mb-4">
 						{#each request.actions as action}
-							<span class="text-sm px-3 py-1 rounded bg-white/5 text-clinical-text">
+							<span class="text-sm px-3 py-1 rounded bg-clinical-hover text-clinical-text">
 								{ACTION_LABELS[action]}
 							</span>
 						{/each}
@@ -129,7 +129,7 @@
 							Execute
 						</button>
 						<button
-							class="px-4 py-2 text-sm font-medium text-clinical-text bg-white/5 hover:bg-white/10 border border-gray-700 rounded-lg transition-colors"
+							class="px-4 py-2 text-sm font-medium text-clinical-text bg-clinical-hover hover:bg-clinical-border/50 border border-clinical-border rounded-lg transition-colors"
 						>
 							Edit
 						</button>
@@ -139,14 +139,14 @@
 		</div>
 
 		<!-- Progress -->
-		<div class="bg-clinical-surface border border-gray-700 rounded-xl p-6 mb-6">
+		<div class="bg-clinical-surface border border-clinical-border rounded-xl p-6 mb-6">
 			<div class="flex items-center justify-between mb-2">
 				<h3 class="text-sm font-medium text-clinical-muted uppercase tracking-wider">Progress</h3>
 				<span class="text-sm text-clinical-text">
 					{progress.completed}/{progress.total} assets completed
 				</span>
 			</div>
-			<div class="h-2 bg-gray-700 rounded-full overflow-hidden">
+			<div class="h-2 bg-clinical-border rounded-full overflow-hidden">
 				<div
 					class="h-full bg-clinical-primary rounded-full transition-all"
 					style="width: {(progress.completed / progress.total) * 100}%"
@@ -155,7 +155,7 @@
 		</div>
 
 		<!-- Assets -->
-		<div class="bg-clinical-surface border border-gray-700 rounded-xl p-6">
+		<div class="bg-clinical-surface border border-clinical-border rounded-xl p-6">
 			<h3 class="text-sm font-medium text-clinical-muted uppercase tracking-wider mb-4">
 				Assets ({request.assets.length})
 			</h3>
@@ -163,7 +163,7 @@
 			<div class="space-y-3">
 				{#each request.assets as assetExec, index}
 					<div
-						class="flex items-center justify-between p-4 bg-clinical-bg border border-gray-700 rounded-lg"
+						class="flex items-center justify-between p-4 bg-clinical-bg border border-clinical-border rounded-lg"
 					>
 						<div class="flex items-center gap-4">
 							<div
@@ -171,7 +171,7 @@
 									? 'bg-clinical-success/20 text-clinical-success'
 									: assetExec.status === 'IN_PROGRESS'
 										? 'bg-hat-request-in-progress/20 text-hat-request-in-progress'
-										: 'bg-gray-700 text-clinical-muted'}"
+										: 'bg-clinical-border text-clinical-muted'}"
 							>
 								{#if assetExec.status === 'COMPLETED'}
 									<svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">

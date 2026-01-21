@@ -29,8 +29,8 @@
 </script>
 
 <div
-	class="bg-clinical-surface border border-gray-700 rounded-lg p-4 transition-colors {onClick
-		? 'hover:bg-white/5 cursor-pointer'
+	class="bg-clinical-surface border border-clinical-border rounded-lg p-4 transition-colors {onClick
+		? 'hover:bg-clinical-hover cursor-pointer'
 		: ''}"
 	onclick={onClick}
 	onkeydown={(e) => e.key === 'Enter' && onClick?.()}

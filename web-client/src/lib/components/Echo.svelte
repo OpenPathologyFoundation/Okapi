@@ -212,14 +212,14 @@
         e.stopPropagation();
         toggleEcho();
     }}
-    class="relative h-10 w-10 rounded-full bg-clinical-surface border border-gray-700 flex items-center justify-center group transition-all duration-300 hover:bg-amber-500/10 hover:border-amber-500/60 {isListening
+    class="relative h-10 w-10 rounded-full bg-clinical-surface border border-clinical-border flex items-center justify-center group transition-all duration-300 hover:bg-amber-500/10 hover:border-amber-500/60 {isListening
         ? 'animate-pulse ring-2 ring-amber-500'
         : ''}"
     title="Ask questions or provide feedback (~)"
 >
     <!-- Icon: Mic + Cursor -->
     <svg
-        class="w-5 h-5 text-gray-500 group-hover:text-amber-400 transition-colors"
+        class="w-5 h-5 text-clinical-muted group-hover:text-amber-400 transition-colors"
         fill="none"
         viewBox="0 0 24 24"
         stroke="currentColor"

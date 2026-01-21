@@ -22,7 +22,7 @@
 
 <div class="space-y-6">
 	<!-- Header with identifiers -->
-	<div class="bg-clinical-surface border border-gray-700 rounded-xl p-6">
+	<div class="bg-clinical-surface border border-clinical-border rounded-xl p-6">
 		<div class="flex items-start justify-between">
 			<div>
 				<div class="flex items-center gap-3 mb-3">
@@ -70,13 +70,13 @@
 				</button>
 				<button
 					onclick={onUpdateStatus}
-					class="px-4 py-2 text-sm font-medium text-clinical-text bg-white/5 hover:bg-white/10 border border-gray-700 rounded-lg transition-colors"
+					class="px-4 py-2 text-sm font-medium text-clinical-text bg-clinical-hover hover:bg-clinical-border/50 border border-clinical-border rounded-lg transition-colors"
 				>
 					Update Status
 				</button>
 				<button
 					onclick={onTransferCustody}
-					class="px-4 py-2 text-sm font-medium text-clinical-text bg-white/5 hover:bg-white/10 border border-gray-700 rounded-lg transition-colors"
+					class="px-4 py-2 text-sm font-medium text-clinical-text bg-clinical-hover hover:bg-clinical-border/50 border border-clinical-border rounded-lg transition-colors"
 				>
 					Transfer Custody
 				</button>
@@ -87,7 +87,7 @@
 	<!-- Current State Grid -->
 	<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 		<!-- Location -->
-		<div class="bg-clinical-surface border border-gray-700 rounded-xl p-5">
+		<div class="bg-clinical-surface border border-clinical-border rounded-xl p-5">
 			<div class="flex items-center gap-2 mb-4">
 				<svg class="h-5 w-5 text-clinical-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 					<path
@@ -117,7 +117,7 @@
 				</div>
 
 				{#if asset.location.room || asset.location.storage}
-					<div class="pt-2 border-t border-gray-700">
+					<div class="pt-2 border-t border-clinical-border">
 						{#if asset.location.room}
 							<p class="text-sm text-clinical-muted">Room: {asset.location.room}</p>
 						{/if}
@@ -134,7 +134,7 @@
 		</div>
 
 		<!-- Custody -->
-		<div class="bg-clinical-surface border border-gray-700 rounded-xl p-5">
+		<div class="bg-clinical-surface border border-clinical-border rounded-xl p-5">
 			<div class="flex items-center gap-2 mb-4">
 				<svg class="h-5 w-5 text-clinical-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 					<path
@@ -164,7 +164,7 @@
 					{/if}
 
 					{#if asset.custody.purpose}
-						<p class="text-sm text-clinical-muted pt-2 border-t border-gray-700">
+						<p class="text-sm text-clinical-muted pt-2 border-t border-clinical-border">
 							Purpose: {asset.custody.purpose}
 						</p>
 					{/if}
@@ -179,7 +179,7 @@
 	</div>
 
 	<!-- Provenance -->
-	<div class="bg-clinical-surface border border-gray-700 rounded-xl p-5">
+	<div class="bg-clinical-surface border border-clinical-border rounded-xl p-5">
 		<div class="flex items-center gap-2 mb-4">
 			<svg class="h-5 w-5 text-clinical-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 				<path

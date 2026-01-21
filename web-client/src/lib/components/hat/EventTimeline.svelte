@@ -64,7 +64,7 @@
 
 <div class="relative">
 	<!-- Timeline line -->
-	<div class="absolute left-4 top-0 bottom-0 w-0.5 bg-gray-700"></div>
+	<div class="absolute left-4 top-0 bottom-0 w-0.5 bg-clinical-border"></div>
 
 	<div class="space-y-4">
 		{#each events as event, index}
@@ -77,7 +77,7 @@
 			>
 				<!-- Timeline dot -->
 				<div
-					class="absolute left-2 top-1.5 w-4 h-4 rounded-full border-2 border-gray-700 bg-clinical-surface flex items-center justify-center {eventTypeConfig[event.type].color}"
+					class="absolute left-2 top-1.5 w-4 h-4 rounded-full border-2 border-clinical-border bg-clinical-surface flex items-center justify-center {eventTypeConfig[event.type].color}"
 				>
 					{#if event.type === 'CORRECTION'}
 						<div class="w-2 h-2 rounded-full bg-hat-priority-urgent"></div>
@@ -90,7 +90,7 @@
 
 				<!-- Event card -->
 				<div
-					class="bg-clinical-surface border border-gray-700 rounded-lg p-4 hover:bg-white/5 transition-colors cursor-pointer {event.type === 'CORRECTION' ? 'border-hat-priority-urgent/30' : ''}"
+					class="bg-clinical-surface border border-clinical-border rounded-lg p-4 hover:bg-clinical-hover transition-colors cursor-pointer {event.type === 'CORRECTION' ? 'border-hat-priority-urgent/30' : ''}"
 				>
 					<div class="flex items-start justify-between gap-2">
 						<div class="flex-1 min-w-0">
@@ -131,7 +131,7 @@
 					</div>
 
 					{#if event.linkedRequestId}
-						<div class="mt-2 pt-2 border-t border-gray-700">
+						<div class="mt-2 pt-2 border-t border-clinical-border">
 							<a
 								href="/app/hat/requests/{event.linkedRequestId}"
 								class="text-xs text-clinical-primary hover:underline"

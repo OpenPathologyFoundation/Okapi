@@ -101,7 +101,7 @@
 
 		<form onsubmit={(e) => { e.preventDefault(); handleSubmit(); }} class="space-y-8">
 			<!-- Actions -->
-			<div class="bg-clinical-surface border border-gray-700 rounded-xl p-6">
+			<div class="bg-clinical-surface border border-clinical-border rounded-xl p-6">
 				<h3 class="text-sm font-medium text-clinical-muted uppercase tracking-wider mb-4">
 					Actions <span class="text-hat-status-missing">*</span>
 				</h3>
@@ -113,7 +113,7 @@
 							onclick={() => toggleAction(action)}
 							class="px-4 py-2 text-sm font-medium rounded-lg border transition-colors {selectedActions.includes(action)
 								? 'bg-clinical-primary text-white border-clinical-primary'
-								: 'bg-white/5 text-clinical-text border-gray-700 hover:bg-white/10'}"
+								: 'bg-clinical-hover text-clinical-text border-clinical-border hover:bg-clinical-border/50'}"
 						>
 							{ACTION_LABELS[action]}
 						</button>
@@ -122,7 +122,7 @@
 			</div>
 
 			<!-- Priority -->
-			<div class="bg-clinical-surface border border-gray-700 rounded-xl p-6">
+			<div class="bg-clinical-surface border border-clinical-border rounded-xl p-6">
 				<h3 class="text-sm font-medium text-clinical-muted uppercase tracking-wider mb-4">
 					Priority
 				</h3>
@@ -134,7 +134,7 @@
 							onclick={() => (priority = p as RequestPriority)}
 							class="flex-1 py-3 text-sm font-medium rounded-lg border transition-colors {priority === p
 								? 'bg-clinical-primary/10 border-clinical-primary text-clinical-primary'
-								: 'bg-white/5 border-gray-700 text-clinical-text hover:bg-white/10'}"
+								: 'bg-clinical-hover border-clinical-border text-clinical-text hover:bg-clinical-border/50'}"
 						>
 							<PriorityBadge priority={p as RequestPriority} />
 						</button>
@@ -143,7 +143,7 @@
 			</div>
 
 			<!-- Assets -->
-			<div class="bg-clinical-surface border border-gray-700 rounded-xl p-6">
+			<div class="bg-clinical-surface border border-clinical-border rounded-xl p-6">
 				<h3 class="text-sm font-medium text-clinical-muted uppercase tracking-wider mb-4">
 					Assets <span class="text-hat-status-missing">*</span>
 				</h3>
@@ -183,7 +183,7 @@
 			</div>
 
 			<!-- Optional fields -->
-			<div class="bg-clinical-surface border border-gray-700 rounded-xl p-6 space-y-4">
+			<div class="bg-clinical-surface border border-clinical-border rounded-xl p-6 space-y-4">
 				<h3 class="text-sm font-medium text-clinical-muted uppercase tracking-wider mb-4">
 					Additional Details
 				</h3>
@@ -195,7 +195,7 @@
 						type="text"
 						bind:value={assignee}
 						placeholder="Team or person to assign..."
-						class="w-full px-4 py-2 bg-clinical-bg border border-gray-700 rounded-lg text-clinical-text placeholder:text-clinical-muted focus:ring-2 focus:ring-clinical-primary focus:border-transparent"
+						class="w-full px-4 py-2 bg-clinical-bg border border-clinical-border rounded-lg text-clinical-text placeholder:text-clinical-muted focus:ring-2 focus:ring-clinical-primary focus:border-transparent"
 					/>
 				</div>
 
@@ -205,7 +205,7 @@
 						id="dueDate"
 						type="datetime-local"
 						bind:value={dueDate}
-						class="w-full px-4 py-2 bg-clinical-bg border border-gray-700 rounded-lg text-clinical-text focus:ring-2 focus:ring-clinical-primary focus:border-transparent"
+						class="w-full px-4 py-2 bg-clinical-bg border border-clinical-border rounded-lg text-clinical-text focus:ring-2 focus:ring-clinical-primary focus:border-transparent"
 					/>
 				</div>
 
@@ -216,7 +216,7 @@
 						bind:value={notes}
 						rows="3"
 						placeholder="Additional instructions or notes..."
-						class="w-full px-4 py-2 bg-clinical-bg border border-gray-700 rounded-lg text-clinical-text placeholder:text-clinical-muted focus:ring-2 focus:ring-clinical-primary focus:border-transparent resize-none"
+						class="w-full px-4 py-2 bg-clinical-bg border border-clinical-border rounded-lg text-clinical-text placeholder:text-clinical-muted focus:ring-2 focus:ring-clinical-primary focus:border-transparent resize-none"
 					></textarea>
 				</div>
 			</div>
@@ -225,7 +225,7 @@
 			<div class="flex justify-end gap-4">
 				<a
 					href="/app/hat/requests"
-					class="px-6 py-3 text-sm font-medium text-clinical-text bg-white/5 hover:bg-white/10 border border-gray-700 rounded-lg transition-colors"
+					class="px-6 py-3 text-sm font-medium text-clinical-text bg-clinical-hover hover:bg-clinical-border/50 border border-clinical-border rounded-lg transition-colors"
 				>
 					Cancel
 				</a>

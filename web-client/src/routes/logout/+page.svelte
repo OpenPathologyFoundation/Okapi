@@ -16,24 +16,24 @@
         </div>
 
         <div>
-            <h1 class="text-3xl font-bold text-white tracking-tight mb-2">
+            <h1 class="text-3xl font-bold text-clinical-text tracking-tight mb-2">
                 Session Securely Terminated.
             </h1>
-            <p class="text-gray-400">
+            <p class="text-clinical-muted">
                 Thank you for your contribution to precision diagnostics today.
             </p>
         </div>
 
         <!-- Divider -->
-        <div class="w-16 h-px bg-gray-800 mx-auto"></div>
+        <div class="w-16 h-px bg-clinical-border mx-auto"></div>
 
-        <div class="text-sm text-gray-500">
+        <div class="text-sm text-clinical-muted">
             <p class="mb-4">
                 You have been signed out of the secure environment.
             </p>
             <a
                 href="/"
-                class="text-clinical-primary hover:text-white transition-colors font-medium"
+                class="text-clinical-primary hover:text-clinical-text transition-colors font-medium"
             >
                 Return to Login Page &rarr;
             </a>

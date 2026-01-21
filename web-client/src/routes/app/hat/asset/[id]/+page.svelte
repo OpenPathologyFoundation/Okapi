@@ -175,14 +175,14 @@
 				<p class="text-hat-status-missing">{error}</p>
 				<button
 					onclick={loadAsset}
-					class="mt-4 px-4 py-2 text-sm font-medium text-clinical-text bg-white/5 hover:bg-white/10 border border-gray-700 rounded-lg transition-colors"
+					class="mt-4 px-4 py-2 text-sm font-medium text-clinical-text bg-clinical-hover hover:bg-clinical-border/50 border border-clinical-border rounded-lg transition-colors"
 				>
 					Retry
 				</button>
 			</div>
 		{:else if asset}
 			<!-- Tabs -->
-			<div class="flex gap-4 mb-6 border-b border-gray-700">
+			<div class="flex gap-4 mb-6 border-b border-clinical-border">
 				<button
 					onclick={() => (activeTab = 'details')}
 					class="px-4 py-2 text-sm font-medium border-b-2 transition-colors {activeTab === 'details'
@@ -198,7 +198,7 @@
 						: 'border-transparent text-clinical-muted hover:text-clinical-text'}"
 				>
 					Event History
-					<span class="ml-1.5 text-xs px-1.5 py-0.5 rounded-full bg-white/10">
+					<span class="ml-1.5 text-xs px-1.5 py-0.5 rounded-full bg-clinical-border/50">
 						{events.length}
 					</span>
 				</button>
@@ -213,7 +213,7 @@
 					onTransferCustody={handleTransferCustody}
 				/>
 			{:else}
-				<div class="bg-clinical-surface border border-gray-700 rounded-xl p-6">
+				<div class="bg-clinical-surface border border-clinical-border rounded-xl p-6">
 					<EventTimeline {events} onEventClick={handleEventClick} />
 				</div>
 			{/if}

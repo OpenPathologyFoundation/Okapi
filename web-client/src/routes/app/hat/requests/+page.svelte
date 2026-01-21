@@ -103,7 +103,7 @@
 							onclick={() => (statusFilter = status as RequestStatus | 'ALL')}
 							class="px-3 py-1 text-xs font-medium rounded transition-colors {statusFilter === status
 								? 'bg-clinical-primary text-white'
-								: 'bg-white/5 text-clinical-muted hover:bg-white/10'}"
+								: 'bg-clinical-hover text-clinical-muted hover:bg-clinical-border/50'}"
 						>
 							{status === 'ALL' ? 'All' : status.replace('_', ' ')}
 						</button>
@@ -120,7 +120,7 @@
 							onclick={() => (priorityFilter = priority as RequestPriority | 'ALL')}
 							class="px-3 py-1 text-xs font-medium rounded transition-colors {priorityFilter === priority
 								? 'bg-clinical-primary text-white'
-								: 'bg-white/5 text-clinical-muted hover:bg-white/10'}"
+								: 'bg-clinical-hover text-clinical-muted hover:bg-clinical-border/50'}"
 						>
 							{priority === 'ALL' ? 'All' : priority}
 						</button>
@@ -138,7 +138,7 @@
 			{#if filteredRequests.length === 0}
 				<div class="text-center py-12">
 					<div
-						class="mx-auto h-16 w-16 rounded-full bg-clinical-surface flex items-center justify-center mb-4 border border-gray-700"
+						class="mx-auto h-16 w-16 rounded-full bg-clinical-surface flex items-center justify-center mb-4 border border-clinical-border"
 					>
 						<svg class="h-8 w-8 text-clinical-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 							<path

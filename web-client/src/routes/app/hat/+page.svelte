@@ -106,7 +106,7 @@
 						{#if lookup.match}
 							<button
 								onclick={() => lookup.match && handleViewAsset(lookup.match)}
-								class="w-full flex items-center justify-between p-4 bg-clinical-surface hover:bg-white/5 border border-gray-700 rounded-lg transition-colors text-left"
+								class="w-full flex items-center justify-between p-4 bg-clinical-surface hover:bg-clinical-hover border border-clinical-border rounded-lg transition-colors text-left"
 							>
 								<div class="flex items-center gap-4">
 									<div
@@ -165,7 +165,7 @@
 		{#if !currentResult && recentMatches.length === 0}
 			<div class="text-center py-12">
 				<div
-					class="mx-auto h-16 w-16 rounded-full bg-clinical-surface flex items-center justify-center mb-4 border border-gray-700"
+					class="mx-auto h-16 w-16 rounded-full bg-clinical-surface flex items-center justify-center mb-4 border border-clinical-border"
 				>
 					<svg
 						class="h-8 w-8 text-clinical-muted"

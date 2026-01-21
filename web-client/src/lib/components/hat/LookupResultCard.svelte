@@ -104,7 +104,7 @@
 				</button>
 				<button
 					onclick={() => result.match && onCreateRequest(result.match)}
-					class="px-4 py-2 text-sm font-medium text-clinical-text bg-white/5 hover:bg-white/10 border border-gray-700 rounded-lg transition-colors"
+					class="px-4 py-2 text-sm font-medium text-clinical-text bg-clinical-hover hover:bg-clinical-border/50 border border-clinical-border rounded-lg transition-colors"
 				>
 					Create Request
 				</button>
@@ -171,7 +171,7 @@
 			{#each result.candidates as candidate}
 				<button
 					onclick={() => onSelectCandidate(candidate)}
-					class="w-full flex items-center justify-between p-4 bg-white/5 hover:bg-white/10 border border-gray-700 rounded-lg transition-colors text-left"
+					class="w-full flex items-center justify-between p-4 bg-clinical-hover hover:bg-clinical-border/50 border border-clinical-border rounded-lg transition-colors text-left"
 				>
 					<div>
 						<div class="flex items-center gap-2">

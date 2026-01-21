@@ -39,7 +39,10 @@ git add path/to/file.js
 # OR Stage all changes (Use with caution - check git status first)
 
 git status
-git add .
+git add . 
+#Or better
+git add -A
+# That includes deleted files.
 
 # Commit with a descriptive message
 git commit -m "Brief summary of changes (e.g., Add JWT authentication logic)"

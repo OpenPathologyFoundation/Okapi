@@ -123,7 +123,7 @@
 			bind:value={inputValue}
 			onkeydown={handleKeydown}
 			type="text"
-			class="block w-full pl-12 pr-12 py-4 text-lg bg-clinical-surface border border-gray-300 dark:border-gray-700 rounded-xl text-clinical-text placeholder:text-clinical-muted focus:ring-2 focus:ring-clinical-primary focus:border-transparent transition-all font-mono"
+			class="block w-full pl-12 pr-12 py-4 text-lg bg-clinical-surface border border-clinical-border rounded-xl text-clinical-text placeholder:text-clinical-muted focus:ring-2 focus:ring-clinical-primary focus:border-transparent transition-all font-mono"
 			{placeholder}
 			{autofocus}
 			autocomplete="off"

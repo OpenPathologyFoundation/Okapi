@@ -101,7 +101,6 @@ git checkout main
 # 2. Pull the new changes (including your merged work)
 git pull origin main
 
-# 3. Delete the local feature branch se -d if merged normally, or -D if "Squash and Merge" was used
-
-feature/your-branch-name
+# 3. Delete the local feature branch
+git branch -d feature/your-branch-name
 ```

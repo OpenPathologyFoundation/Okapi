@@ -126,7 +126,7 @@ public class WorklistSeedService {
                     // Look up identity by seed_username in attributes
                     Optional<IdentityEntity> assignee = findIdentityByUsername(username);
                     if (assignee.isPresent()) {
-                        entity.setAssignedToId(assignee.get().getId());
+                        entity.setAssignedToIdentityId(assignee.get().getIdentityId());
                         entity.setAssignedToDisplay(
                                 seedCase.assignment().display() != null
                                         ? seedCase.assignment().display()
@@ -209,8 +209,11 @@ public class WorklistSeedService {
     }
 
     private Optional<IdentityEntity> findIdentityByUsername(String username) {
-        // Find identity with matching seed_username in attributes
-        // This is a simple implementation; production would use a custom query
+        // Prefer explicit username column, fallback to seed metadata in attributes.
+        Optional<IdentityEntity> byUsername = identityRepository.findByUsername(username);
+        if (byUsername.isPresent()) {
+            return byUsername;
+        }
         return identityRepository.findAll().stream()
                 .filter(identity -> {
                     if (identity.getAttributes() == null) return false;

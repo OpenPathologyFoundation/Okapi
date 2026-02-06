@@ -30,7 +30,12 @@ The project is currently focused on the Authentication foundation.
     ```bash
     cd auth-system
     ```
-2.  Follow the [Auth System README](auth-system/README.md) to start the local development environment (Docker + Keycloak + Postgres).
+2.  Follow the [Auth System README](auth-system/README.md) to start the local development environment (Docker + Keycloak + Postgres), run tests, and see how other modules can consume the auth service.
+
+## 📘 Integration Guide
+
+For an end-to-end walkthrough (setup, login flow, token handling, backend verification, role checks, and deployment notes), see:
+- [OIDC Authentication & JWT Authorization Guide](docs/OIDC-Authentication-JWT-Authorization-Guide.md)
 
 ### Demo provisioning (dev)
 
@@ -47,4 +52,4 @@ see:
 Okapi follows a strict Quality Management System (QMS) compliant with medical software standards.
 
 -   **Design History File**: Start with the [DHF Index](qms/dhf/00-Index.md) to understand the system definition.
--   **Contributing**: All changes must follow the [Git Contribution Workflow (SOP-DocControl)](qms/sops/SOP-DocControl.md).
+-   **Contributing**: All changes must follow the [Git Contribution Workflow (SOP-DocControl)](sops/SOP-DocControl.md).

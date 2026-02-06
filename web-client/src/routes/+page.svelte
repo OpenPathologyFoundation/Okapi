@@ -16,8 +16,8 @@
       <div
         class="w-full h-full bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-clinical-primary/10 via-transparent to-transparent"
       ></div>
-      <!-- Decorative grid pattern -->
-      <div class="absolute inset-0 bg-[url('/grid.svg')] opacity-5"></div>
+      <!-- Decorative grid pattern (CSS-based) -->
+      <div class="absolute inset-0 opacity-5" style="background-image: linear-gradient(to right, rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.1) 1px, transparent 1px); background-size: 40px 40px;"></div>
       <!-- Subtle noise texture feel -->
       <div
         class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent"
@@ -80,20 +80,19 @@
       </div>
 
       <!-- SSO Button (Primary) -->
-      <button
-        type="button"
-        class="group relative flex w-full justify-center items-center gap-3 rounded-md bg-clinical-bg px-4 py-3 text-sm font-semibold text-clinical-text hover:bg-clinical-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-clinical-primary transition-all shadow-md border border-clinical-border"
+      <a
+        href="/oauth2/authorization/okta"
+        class="group relative flex w-full justify-center items-center gap-3 rounded-md bg-clinical-bg px-4 py-3 text-sm font-semibold text-clinical-text hover:bg-clinical-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-clinical-primary transition-all shadow-md border border-clinical-border no-underline"
       >
-        <!-- Mock Provider Icon (e.g. Microsoft/Okta) -->
+        <!-- Provider Icon -->
         <svg class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
           <path
             d="M10.5 2h-8c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h8V2zm10.5 0h-8v20h8c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"
             class="text-clinical-muted group-hover:text-clinical-primary transition-colors"
           />
-          <!-- Simple Door Icon as placeholder for SSO -->
         </svg>
         <span>Continue with Institutional ID</span>
-      </button>
+      </a>
 
       <!-- Divider -->
       <div class="relative">
@@ -136,10 +135,10 @@
               >Password</label
             >
             <div class="text-sm">
-              <a
-                href="#"
+              <button
+                type="button"
                 class="font-semibold text-clinical-primary hover:text-clinical-primary/80"
-                >Forgot password?</a
+                >Forgot password?</button
               >
             </div>
           </div>

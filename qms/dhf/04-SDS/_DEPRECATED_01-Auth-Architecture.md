@@ -165,10 +165,10 @@ Okapi Auth separates **who you are** (Authentication) from **what you can do** (
 
 | Control | Implementation | Requirement |
 |---------|----------------|-------------|
-| **External AuthN** | Authentication is delegated to external IdP (OIDC/SAML). Okapi does not store passwords. | SYS-AUTH-001, SYS-AUTH-002 |
-| **Fail closed on invalid tokens** | Invalid/expired tokens or missing auth context results in `401/403`. | SYS-AUTH-007 |
-| **Issuer-scoped identity** | Identity uniqueness is enforced per IdP issuer via `(provider_id, external_subject)`. | SYS-AUTH-006 |
-| **Least privilege RBAC** | Roles are derived from IdP groups via DB mappings; unmapped groups yield no elevated access. | SYS-AUTH-004, SYS-AUTH-009 |
+| **External AuthN** | Authentication is delegated to external IdP (OIDC/SAML). Okapi does not store passwords. | SYS-AUTHN-001, SYS-AUTHN-002 |
+| **Fail closed on invalid tokens** | Invalid/expired tokens or missing auth context results in `401/403`. | SYS-AUTHN-006 |
+| **Issuer-scoped identity** | Identity uniqueness is enforced per IdP issuer via `(provider_id, external_subject)`. | SYS-AUTHN-005 |
+| **Least privilege RBAC** | Roles are derived from IdP groups via DB mappings; unmapped groups yield no elevated access. | SYS-AUTHZ-001, SYS-AUTHZ-002 |
 | **Audit foundation** | `audit_events` schema exists for security/ops auditing; events to be emitted by the app in later iterations. | SYS-AUD-002 |
 | **No committed secrets** | IdP and DB secrets are supplied via env vars/secret stores (`.env` is dev-only and gitignored). | SYS-SEC-010 |
 
@@ -213,9 +213,9 @@ Okapi Auth separates **who you are** (Authentication) from **what you can do** (
 
 | Design Element | System Requirement | Risk Control |
 |----------------|-------------------|--------------|
-| AuthN Gateway (OIDC/SAML) | SYS-AUTH-001, SYS-AUTH-002 | RISK-001 |
-| Session/cookie policy (duration, remember-device) | SYS-AUTH-008 | RISK-011 |
+| AuthN Gateway (OIDC/SAML) | SYS-AUTHN-001, SYS-AUTHN-002 | RISK-001 |
+| Session/cookie policy (duration, remember-device) | SYS-AUTHN-007 | RISK-011 |
 | Immutable Audit Logs | SYS-AUD-001 | RISK-006 |
-| RBAC Enforcement | SYS-AUTH-004, SYS-AUTH-009 | RISK-010 |
-| Identity introspection (`/auth/me`) | SYS-AUTH-010 | RISK-013 |
-| Admin provisioning model (IdP groups + local mappings) | SYS-AUTH-011, SYS-AUTH-012 | RISK-013, RISK-014 |
+| RBAC Enforcement | SYS-AUTHZ-001, SYS-AUTHZ-002 | RISK-010 |
+| Identity introspection (`/auth/me`) | SYS-AUTHN-008 | RISK-013 |
+| Admin provisioning model (IdP groups + local mappings) | SYS-AUTHZ-005, SYS-AUTHZ-006 | RISK-013, RISK-014 |

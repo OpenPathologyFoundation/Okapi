@@ -180,6 +180,7 @@
 										type="button"
 										onclick={(e) => openCase(item.accessionNumber, e)}
 										class="rounded p-1.5 text-clinical-muted hover:bg-clinical-primary/10 hover:text-clinical-primary"
+										aria-label="Open case"
 									>
 										<svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 											<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -195,6 +196,7 @@
 										onclick={(e) => launchViewer(item.accessionNumber, e)}
 										class="rounded p-1.5 text-clinical-muted hover:bg-clinical-primary/10 hover:text-clinical-primary"
 										disabled={item.slideScanned === 0}
+										aria-label={item.slideScanned === 0 ? 'No slides scanned' : 'Launch viewer'}
 									>
 										<svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 											<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />

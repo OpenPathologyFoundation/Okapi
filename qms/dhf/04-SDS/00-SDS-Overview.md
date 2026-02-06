@@ -1,113 +1,144 @@
 # 04-SDS
 
 ---
-title: Software Design Specification
+title: Software Design Specification - Overview
 document_id: DHF-04
-version: 1.0
+version: 2.0
 status: DRAFT
 owner: Lead Architect
 created_date: 2026-01-09
+updated_date: 2026-01-26
 trace_source: SRS-001
 ---
 
 # 1. Introduction
 
-This Software Design Specification (SDS) describes the technical architecture and design for the Okapi system. The current baseline focuses on:
-- Identity and Access Management (IAM)
-- Histology Asset Tracking (HAT)
+This Software Design Specification (SDS) describes the technical architecture and design for the Okapi system. The SDS is organized into the following component documents:
 
-To ensure a clear separation of concerns, IAM distinguishes between **Authentication (AuthN)**—the proof of identity—and **Authorization (AuthZ)**—the determination of permissions.
+| Document | ID | Description |
+|----------|-----|-------------|
+| [01-AuthN-Architecture.md](01-AuthN-Architecture.md) | DHF-04-01 | Authentication: Identity federation, session management, device trust |
+| [02-AuthZ-Architecture.md](02-AuthZ-Architecture.md) | DHF-04-02 | Authorization: RBAC, permissions, IdP group mapping, break-glass, research grants |
+| [03-IAM-Schema.md](03-IAM-Schema.md) | DHF-04-03 | IAM database schema specification |
+| [04-HAT-Architecture.md](04-HAT-Architecture.md) | DHF-04-04 | Histology Asset Tracking module design |
+| [05-Worklist-Architecture.md](05-Worklist-Architecture.md) | DHF-04-05 | Work List module design |
 
 # 2. Architectural Overview
 
-Okapi follows a "Connector + Normalization" architecture for identity.
-- **AuthN** is delegated to external Enterprise Identity Providers (IdPs).
-- **AuthZ** is managed internally within Okapi using Role-Based Access Control (RBAC).
+## 2.1 IAM Architecture
 
-For HAT, Okapi follows a similar separation-of-concerns pattern:
+Okapi follows a "Connector + Normalization" architecture for identity, with clear separation between:
+
+- **Authentication (AuthN)** — Proving identity; delegated to external Enterprise Identity Providers (IdPs)
+- **Authorization (AuthZ)** — Determining permissions; managed internally via Role-Based Access Control (RBAC)
+
+Institutional SSO is the source of authentication truth (Keycloak used to emulate OIDC/SAML in development). Authorization is derived from Okapi's internal IAM schema (roles, permissions, grants) and is used to augment access tokens for downstream services.
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                              USER FLOW                                       │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+    ┌──────────┐         ┌──────────────────┐         ┌──────────────────┐
+    │          │         │                  │         │                  │
+    │   User   │────────▶│   Okapi Web UI   │────────▶│  Okapi Auth API  │
+    │          │         │  (Clinical +     │         │                  │
+    │          │         │   Admin views)   │         │                  │
+    └──────────┘         └──────────────────┘         └────────┬─────────┘
+                                                               │
+                         ┌─────────────────────────────────────┼─────────────┐
+                         │                                     │             │
+                         ▼                                     ▼             │
+              ┌─────────────────────┐              ┌─────────────────────┐   │
+              │   AuthN Module      │              │   AuthZ Module      │   │
+              │   (DHF-04-01)       │              │   (DHF-04-02)       │   │
+              │                     │              │                     │   │
+              │  • OIDC Client      │──Identity───▶│  • RBAC Engine      │   │
+              │  • SAML 2.0 SP      │              │  • Permission Check │   │
+              │  • Session Mgmt     │              │  • Break-Glass      │   │
+              │  • Device Trust     │              │  • Research Grants  │   │
+              └──────────┬──────────┘              └──────────┬──────────┘   │
+                         │                                    │              │
+                         ▼                                    ▼              │
+              ┌─────────────────────┐              ┌─────────────────────┐   │
+              │   External IdPs     │              │   IAM Schema        │   │
+              │                     │              │   (DHF-04-03)       │   │
+              │  • Okta             │              │                     │   │
+              │  • Entra ID         │              │  • iam.identity     │   │
+              │  • Auth0            │              │  • iam.role         │   │
+              │  • Hospital SAML    │              │  • iam.permission   │   │
+              └─────────────────────┘              │  • iam.audit_event  │   │
+                                                  └─────────────────────┘   │
+                                                                             │
+                         ┌───────────────────────────────────────────────────┘
+                         ▼
+              ┌─────────────────────┐
+              │   Audit Service     │
+              │                     │
+              │  • Login/Logout     │
+              │  • Access Denied    │
+              │  • Role Changes     │
+              │  • Break-Glass      │
+              └─────────────────────┘
+```
+
+## 2.2 HAT Architecture
+
+Histology Asset Tracking follows a separation-of-concerns pattern:
 - **Facts/state** about physical assets (identifiers, location, custody, provenance, history)
 - **Intent/work** captured as requests and executed steps, recorded as events
 
-Detailed HAT design is defined in `qms/dhf/04-SDS/04-HAT-Architecture.md`.
+See [04-HAT-Architecture.md](04-HAT-Architecture.md) for detailed design.
 
-# 3. Authentication (AuthN) Design
+## 2.3 Work List Architecture
 
-## 3.1 Protocol Handling
-Okapi acts as a Service Provider (SAML 2.0) and an OIDC Client.
+The Work List module aggregates case data from multiple sources (LIS, imaging, internal authoring) into a unified view with privacy controls.
 
-- **OIDC (OpenID Connect):** Used for modern cloud IdPs (Okta, Entra ID, Auth0).
-- **SAML 2.0:** Used for hospital enterprise SSO (e.g., YNHH).
+See [05-Worklist-Architecture.md](05-Worklist-Architecture.md) for detailed design.
 
-## 3.2 Identity Normalization
-The AuthN layer maps various IdP claims into a stable internal `Identity` object and persists a normalized identity record.
+# 3. Cross-Cutting Concerns
 
-| Field | Source | Description |
-| :--- | :--- | :--- |
-| `external_subject` | `sub` (OIDC) or `NameID` (SAML) | External subject identifier. |
-| `provider_id` | `iss` (OIDC) or EntityID (SAML) | Provider/issuer identifier; uniqueness is scoped to provider. |
-| `display_name` | `name` or IdP-provided display attribute | User's display name (full). |
-| `display_short` | IdP-provided display attribute | User's short display name (e.g., "Family, G.M.") for compact UI surfaces. |
-| `given_name` / `family_name` | OIDC `given_name` / `family_name` (if provided) | Structured components to support clinical formatting and disambiguation. |
-| `email` | `email` | User's institutional email. |
+## 3.1 Security Controls
 
-The system also provides an authenticated identity introspection endpoint ("who am I") to support UI integration and operational troubleshooting:
-- `GET /auth/me` returns the current normalized identity summary (provider ID, subject, display name/email when available, and derived roles/authorities).
+| Control | Implementation | Requirement |
+|---------|----------------|-------------|
+| **External AuthN** | Authentication delegated to external IdPs; no password storage | SYS-AUTHN-001, SYS-AUTHN-002 |
+| **Fail Closed** | Invalid tokens or missing auth context yields 401/403 | SYS-AUTHN-006 |
+| **Least Privilege RBAC** | Fine-grained permissions with IdP group derivation | SYS-AUTHZ-001, SYS-AUTHZ-003 |
+| **Break-Glass Audit** | Emergency access is justified, time-bounded, fully audited | SYS-AUTHZ-008 |
+| **PHI Controls** | Research grants enforce minimum necessary PHI exposure | SYS-RES-002 |
+| **No Committed Secrets** | Secrets via env vars/secret store | SYS-SEC-010 |
+| **Admin API Gating** | All admin endpoints require `ROLE_ADMIN`; UI checks advisory only | SYS-ADMIN-001, SYS-ADMIN-009 |
+| **Admin Audit Trail** | All admin operations recorded with actor attribution | SYS-ADMIN-003 |
 
-## 3.3 Session Management
-- Session establishment and cookie properties are handled by Spring Security.
-- Session duration and “remember device” behavior are defined in SRS and will be validated in VVP (implementation may evolve).
+## 3.2 Audit Foundation
 
-# 4. Authorization (AuthZ) Design
+All IAM-related events are recorded in `iam.audit_event` with:
+- Actor identity and context
+- Target entity type and ID
+- Outcome and reason
+- Request/session correlation
+- Structured metadata
 
-## 4.1 Role-Based Access Control (RBAC)
-Okapi manages permissions via Roles. Each authenticated user is mapped to one or more roles.
+## 3.3 Data Management
 
-| Role | Permissions                                                            |
-| :--- |:-----------------------------------------------------------------------|
-| `Pathologist` | View cases, create AI suggestions, confirm results, write-back to EHR. |
-| `Technician` | View cases, manage data ingestion.                                     |
-| `Admin` | Manage system configuration, view audit logs.                          |
+- Schema is managed via Flyway migrations
+- IAM uses a dedicated `iam` PostgreSQL schema
+- No cross-schema foreign keys; domain tables reference IAM by ID
 
-## 4.2 Role Mapping
-Okapi supports mapping IdP groups (e.g., OIDC `groups`, SAML `memberOf`) to internal Roles via database mappings. Mappings are **issuer-scoped** to avoid cross-IdP collisions.
-
-### 4.2.1 Administrative access management
-- Okapi does **not** create primary user credentials.
-- Administrative capability is derived from centralized IdP group membership (e.g., `Okapi_Admins`) and mapped to the internal `ADMIN` role.
-- Okapi manages local authorization policy via issuer-scoped mappings and local permission assignments (e.g., permission groups).
-
-This approach reduces manual configuration error and supports timely access provisioning for clinical users.
-
-## 4.3 Authorization Data Model (summary)
-- Schema management is owned by Flyway migrations under `auth-system/src/main/resources/db/migration/`.
-- Baseline reference data (roles and IdP group mappings) is seeded via Flyway; sample identities are not seeded in baseline migrations.
-
-# 5. Component Boundaries
-
-```mermaid
-graph TD
-    User((User)) --> UI[Okapi Web UI]
-    UI --> API[Okapi API Gateway]
-    API --> AuthN[AuthN Module]
-    AuthN --> IdP{External IdP}
-    AuthN -- Normalized Identity --> AuthZ[AuthZ Module]
-    AuthZ --> DB[(Okapi DB - RBAC)]
-    AuthZ -- Permission Granted --> BusinessLogic[Clinical Logic / AI]
-```
-
-# 6. Audit and Security Controls
-
-- **External AuthN:** Okapi delegates authentication to external IdPs (no password storage).
-- **Fail Closed:** Invalid tokens or missing auth context yields `401/403`.
-- **Audit foundation:** The database includes an `audit_events` table; event emission and downstream immutability controls are verified per VVP.
-- **No committed secrets:** IdP and DB secrets are supplied via environment variables / secret store (dev uses `.env`, gitignored).
-
-# 7. Traceability
+# 4. Traceability Summary
 
 | Design Element | System Requirement | Risk Control |
-| :--- | :--- | :--- |
-| AuthN Gateway (OIDC/SAML) | SYS-AUTH-001, SYS-AUTH-002 | RISK-001 |
-| Issuer-scoped identity normalization | SYS-AUTH-006 | RISK-009 |
-| RBAC enforcement via group→role mapping | SYS-AUTH-004, SYS-AUTH-009 | RISK-010 |
-| Flyway-managed schema + baseline seed | SYS-DATA-003 | RISK-012 |
-| Audit event schema + event emission plan | SYS-AUD-002 | RISK-006 |
+|----------------|-------------------|--------------|
+| AuthN Gateway (OIDC/SAML) | SYS-AUTHN-001, SYS-AUTHN-002 | RISK-001 |
+| Issuer-scoped identity | SYS-AUTHN-005 | RISK-009 |
+| Session/device trust | SYS-AUTHN-007, SYS-AUTHN-009 | RISK-011 |
+| RBAC enforcement | SYS-AUTHZ-001, SYS-AUTHZ-002 | RISK-010 |
+| Time-bounded roles | SYS-AUTHZ-004 | RISK-011 |
+| Break-glass access | SYS-AUTHZ-008 | RISK-015 |
+| Research grants | SYS-RES-001, SYS-RES-002 | RISK-016 |
+| Audit events | SYS-AUD-001, SYS-AUD-002 | RISK-006 |
+| Flyway migrations | SYS-DATA-001 | RISK-012 |
+| Admin API (ROLE_ADMIN gated) | SYS-ADMIN-001, SYS-ADMIN-009 | RISK-ADMIN-003 |
+| Admin audit trail | SYS-ADMIN-003 | RISK-ADMIN-001 |
+| Role-conditional navigation | SYS-ADMIN-007 | RISK-ADMIN-001 |

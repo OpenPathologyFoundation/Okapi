@@ -39,6 +39,21 @@ okapi:
   oidc:
     # Used as a stable provider identifier for DB lookups when `issuer-uri` is not configured.
     provider-id: ${OIDC_PROVIDER_ID:${OIDC_ISSUER_URI:local-oidc}}
+    end-session-uri: ${OIDC_END_SESSION_URI:${OIDC_ISSUER_URI}/protocol/openid-connect/logout}
+  jwt:
+    issuer: ${OKAPI_JWT_ISSUER:okapi}
+    secret: ${OKAPI_JWT_SECRET:dev-secret-change-dev-secret-change}
+    ttl-seconds: ${OKAPI_JWT_TTL_SECONDS:600}
+  authz:
+    version: ${OKAPI_AUTHZ_VERSION:2026.01.26+dev}
+  device:
+    trust:
+      ttl-days: ${OKAPI_DEVICE_TRUST_TTL_DAYS:30}
+  break-glass:
+    ttl-hours: ${OKAPI_BREAK_GLASS_TTL_HOURS:24}
+  research:
+    grant:
+      ttl-days: ${OKAPI_RESEARCH_GRANT_TTL_DAYS:90}
 #      saml2:
 #        relying-party:
 #          registration:

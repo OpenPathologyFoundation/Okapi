@@ -114,10 +114,11 @@ public class IdentitySeedService {
                         .findByProviderIdAndExternalSubject(providerId, subject)
                         .orElseGet(() -> IdentityEntity.builder().build());
 
-                boolean isNew = entity.getId() == null;
+                boolean isNew = entity.getIdentityId() == null;
 
                 entity.setProviderId(providerId);
                 entity.setExternalSubject(subject);
+                entity.setUsername(username);
 
                 // Seed-controlled fields (clinical display accuracy)
                 String displayFull = seed.display() != null && seed.display().full() != null && !seed.display().full().isBlank()
@@ -133,8 +134,6 @@ public class IdentitySeedService {
                     setIfNonBlank(entity::setGivenName, seed.name().given_name());
                     setIfNonBlank(entity::setFamilyName, seed.name().family_name());
                     setIfNonBlank(entity::setMiddleName, seed.name().middle_name());
-                    setIfNonBlank(entity::setMiddleInitial, seed.name().middle_initial());
-                    setIfNonBlank(entity::setNickname, seed.name().nickname());
                     setIfNonBlank(entity::setPrefix, seed.name().prefix());
                     setIfNonBlank(entity::setSuffix, seed.name().suffix());
                 }
@@ -146,18 +145,8 @@ public class IdentitySeedService {
                     entity.setEmail(kcUser.email());
                 }
 
-                // Local flags from seed
+                // Local flags from seed (stored in attributes for now)
                 Map<String, Object> local = seed.local() == null ? Map.of() : seed.local();
-                Object accountType = local.get("account_type");
-                if (accountType instanceof String s && !s.isBlank()) {
-                    entity.setAccountType(s);
-                    entity.setDemoUser("DEMO".equalsIgnoreCase(s));
-                    entity.setTestUser("TEST".equalsIgnoreCase(s));
-                }
-                Object breakGlass = local.get("break_glass_enabled");
-                if (breakGlass instanceof Boolean b) {
-                    entity.setBreakGlassEnabled(b);
-                }
 
                 // Attributes: keep seed metadata to support future automation (permission groups etc.)
                 Map<String, Object> mergedAttributes = new HashMap<>();
@@ -167,6 +156,14 @@ public class IdentitySeedService {
                 mergedAttributes.put("seed_username", username);
                 mergedAttributes.put("seed_idp_groups", seed.idp_groups() == null ? List.of() : seed.idp_groups());
                 mergedAttributes.put("seed_local", local);
+                if (seed.name() != null) {
+                    if (seed.name().middle_initial() != null && !seed.name().middle_initial().isBlank()) {
+                        mergedAttributes.put("middle_initial", seed.name().middle_initial());
+                    }
+                    if (seed.name().nickname() != null && !seed.name().nickname().isBlank()) {
+                        mergedAttributes.put("nickname", seed.name().nickname());
+                    }
+                }
                 entity.setAttributes(mergedAttributes);
 
                 identityRepository.save(entity);

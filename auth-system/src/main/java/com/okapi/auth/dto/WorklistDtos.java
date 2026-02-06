@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * DTOs for Worklist API responses and requests.
@@ -30,7 +31,7 @@ public final class WorklistDtos {
             String wsiStatus,
             String authoringStatus,
             String priority,
-            Long assignedToId,
+            UUID assignedToIdentityId,
             String assignedToDisplay,
             Integer slideCount,
             Integer slidePending,
@@ -56,7 +57,7 @@ public final class WorklistDtos {
                     entity.getWsiStatus(),
                     entity.getAuthoringStatus(),
                     entity.getPriority(),
-                    entity.getAssignedToId(),
+                    entity.getAssignedToIdentityId(),
                     entity.getAssignedToDisplay(),
                     entity.getSlideCount(),
                     entity.getSlidePending(),
@@ -93,7 +94,7 @@ public final class WorklistDtos {
             List<String> services,
             List<String> statuses,
             List<String> priorities,
-            Long assignedToId,
+            UUID assignedToIdentityId,
             Boolean myCasesOnly,
             String search,
             LocalDate fromDate,

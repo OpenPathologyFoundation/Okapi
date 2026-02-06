@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
 public interface WorklistRepository extends JpaRepository<WorklistItemEntity, Long>,
@@ -14,7 +15,7 @@ public interface WorklistRepository extends JpaRepository<WorklistItemEntity, Lo
 
     Optional<WorklistItemEntity> findByAccessionNumber(String accessionNumber);
 
-    List<WorklistItemEntity> findByAssignedToId(Long assignedToId);
+    List<WorklistItemEntity> findByAssignedToIdentityId(UUID assignedToIdentityId);
 
     List<WorklistItemEntity> findByService(String service);
 
@@ -22,9 +23,9 @@ public interface WorklistRepository extends JpaRepository<WorklistItemEntity, Lo
 
     List<WorklistItemEntity> findByPriority(String priority);
 
-    List<WorklistItemEntity> findByAssignedToIdAndStatusNotIn(Long assignedToId, List<String> excludedStatuses);
+    List<WorklistItemEntity> findByAssignedToIdentityIdAndStatusNotIn(UUID assignedToIdentityId, List<String> excludedStatuses);
 
-    long countByAssignedToId(Long assignedToId);
+    long countByAssignedToIdentityId(UUID assignedToIdentityId);
 
     long countByService(String service);
 

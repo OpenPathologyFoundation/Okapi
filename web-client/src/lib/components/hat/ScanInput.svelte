@@ -118,6 +118,7 @@
 		</div>
 
 		<!-- Input Field -->
+		<!-- svelte-ignore a11y_autofocus -->
 		<input
 			bind:this={inputElement}
 			bind:value={inputValue}
@@ -125,7 +126,7 @@
 			type="text"
 			class="block w-full pl-12 pr-12 py-4 text-lg bg-clinical-surface border border-clinical-border rounded-xl text-clinical-text placeholder:text-clinical-muted focus:ring-2 focus:ring-clinical-primary focus:border-transparent transition-all font-mono"
 			{placeholder}
-			{autofocus}
+			autofocus={autofocus}
 			autocomplete="off"
 			spellcheck="false"
 		/>
@@ -136,6 +137,7 @@
 			onclick={handleSubmit}
 			disabled={!inputValue.trim() || isLoading}
 			class="absolute inset-y-0 right-0 pr-4 flex items-center text-clinical-muted hover:text-clinical-primary disabled:opacity-30 disabled:hover:text-clinical-muted transition-colors"
+			aria-label="Search"
 		>
 			<svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 				<path

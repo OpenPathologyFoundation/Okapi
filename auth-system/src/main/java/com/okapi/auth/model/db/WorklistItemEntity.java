@@ -12,6 +12,7 @@ import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @Entity
 @Table(name = "pathology_worklist")
@@ -65,8 +66,8 @@ public class WorklistItemEntity {
     private String priority = "ROUTINE";
 
     // Assignment
-    @Column(name = "assigned_to_id")
-    private Long assignedToId;
+    @Column(name = "assigned_to_identity_id")
+    private UUID assignedToIdentityId;
 
     @Column(name = "assigned_to_display")
     private String assignedToDisplay;

@@ -1,6 +1,7 @@
 {
   "realm": "okapi",
   "enabled": true,
+  "loginTheme": "okapi",
   "users": [
     {
       "username": "testuser",
@@ -18,6 +19,23 @@
       "groups": [
         "Okapi_Pathologists"
       ]
+    },
+    {
+      "username": "admin.bombalurina",
+      "enabled": true,
+      "email": "admin.bombalurina@okapi.invalid",
+      "firstName": "Bombalurina",
+      "lastName": "Whiskerquill",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "password",
+          "temporary": false
+        }
+      ],
+      "groups": [
+        "Okapi_Admins"
+      ]
     }
   ],
   "clients": [
@@ -27,8 +45,12 @@
       "clientAuthenticatorType": "client-secret",
       "secret": "okapi-secret",
       "redirectUris": [
-        "http://localhost:8080/login/oauth2/code/okta"
+        "http://localhost:8080/login/oauth2/code/okta",
+        "http://localhost:5173/login/oauth2/code/okta"
       ],
+      "attributes": {
+        "post.logout.redirect.uris": "http://localhost:8080/logged-out##http://localhost:5173/logged-out"
+      },
       "defaultClientScopes": [
         "web-origins",
         "acr",
@@ -41,10 +63,29 @@
         "phone",
         "offline_access",
         "microprofile-jwt"
+      ],
+      "protocolMappers": [
+        {
+          "name": "group-membership",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-group-membership-mapper",
+          "consentRequired": false,
+          "config": {
+            "full.path": "false",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "claim.name": "groups",
+            "userinfo.token.claim": "true"
+          }
+        }
       ]
     }
   ],
   "groups": [
+    {
+      "name": "Okapi_Admins",
+      "path": "/Okapi_Admins"
+    },
     {
       "name": "Okapi_Pathologists",
       "path": "/Okapi_Pathologists"

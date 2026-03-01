@@ -186,7 +186,7 @@ Okapi Auth separates **who you are** (Authentication) from **what you can do** (
 - Schema and baseline reference data are created via Flyway migrations at application startup.
 
 ### Unit tests
-- Use in-memory H2 with Hibernate `ddl-auto: create-drop` and Flyway disabled.
+- Use Testcontainers Postgres with Flyway migrations (identical to production schema).
 
 ### Migration management
 - Flyway migrations live in `auth-system/src/main/resources/db/migration/`.

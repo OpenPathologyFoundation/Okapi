@@ -102,10 +102,22 @@ The Work List is the "Front Door" to the Pathology Portal, serving as the primar
 | **UN-WL-005** | The user needs visibility into multi-author collaboration states (e.g., "Draft by Resident", "Pending Attending Review"). | Essential for academic workflows; prevents "blind handoffs" and clarifies responsibilities. |
 | **UN-WL-006** | The user needs a "Break-Glass" mechanism to access cases not normally assigned to them in emergency or coverage situations. | Ensures patient safety isn't compromised by rigid permission models during staff absences or emergencies. |
 | **UN-WL-007** | The user needs the system to clearly indicate when information is "stale" or updating. | Prevents clinical decisions based on outdated information; builds trust in system reliability. |
+| **UN-WL-008** | The user needs to search for cases by accession number, patient name, or MRN from the global navigation bar and navigate directly to a case from the results. | Enables rapid case lookup from anywhere in the application without navigating to the worklist first; reduces time-to-case for pathologists responding to clinical inquiries. |
 
-## 3.7 IAM Administration (Admin)
+## 3.7 Case Assignment (CA)
 
-User needs for the institutional administrator managing identities, roles, permissions, IdP mappings, grants, and audit.
+Pathologist assignment to cases is a source-of-truth relationship in the core data model, not merely a worklist display attribute. Assignment drives the worklist ("my cases"), audit attribution (who signed out this case), and downstream reporting (turnaround time by pathologist).
+
+| ID | User Need Statement | Rationale/Clinical Justification |
+| :--- | :--- | :--- |
+| **UN-CA-001** | The user needs each case to have a designated primary pathologist who is responsible for the final diagnosis and sign-out. | Unambiguous diagnostic responsibility is a patient safety requirement and a regulatory expectation (CAP checklist, CLIA). Without a clear primary, cases may fall through cracks or have conflicting sign-outs. |
+| **UN-CA-002** | The user needs to assign additional people to a case with a designation (primary, secondary, or consulting) that indicates their function on the case, independent of their organizational position. Any system user — pathologist, resident, fellow, or other staff — may be assigned. | Academic and community practices routinely involve residents drafting diagnoses for attending review, fellows performing subspecialty consults, and secondary pathologists providing coverage. The case designation (primary/secondary/consulting) is independent of the person's organizational role (pathologist/resident/fellow), which is already captured in their identity record. |
+| **UN-CA-003** | The user needs the worklist to reflect pathologist assignments from the authoritative case record, ensuring consistency between the case data model and the work list display. | If the worklist maintains its own separate assignment independent of the case record, drift is inevitable — a pathologist may appear assigned on the worklist but not on the case, or vice versa. A single source of truth eliminates this category of error. |
+| **UN-CA-004** | The user needs an audit trail of pathologist assignment changes (who was assigned, by whom, when) for accountability and regulatory compliance. | Assignment changes (e.g., case reassigned from a resident to an attending, or from one pathologist to another due to vacation coverage) must be traceable for quality assurance and accreditation reviews. |
+
+## 3.8 IAM Administration (Admin)
+
+User needs for the institutional administrator managing identities, roles, permissions, IdP mappings, grants, and audit. (Note: the provisioning workflow — user appears in Keycloak → identity syncs to Okapi → admin reviews and assigns roles → user gains access — is addressed by UN-AUTHZ-002, UN-AUTHZ-006, and UN-ADMIN-001/002/003 collectively.)
 
 | ID | User Need Statement | Rationale/Clinical Justification |
 | :--- | :--- | :--- |
@@ -120,6 +132,21 @@ User needs for the institutional administrator managing identities, roles, permi
 | **UN-ADMIN-009** | The administrator needs a dashboard summarizing system state: active user counts, recent authentication activity, active emergency/research grants, and security-relevant events. | Provides situational awareness for system health and security posture; enables proactive identification of anomalies. |
 | **UN-ADMIN-010** | An administrator who manages only user access needs to see only administrative functions; an administrator who also holds a clinical role (e.g., Pathologist) needs seamless access to both clinical and admin views within the same application. | Avoids cognitive overload for admin-only users; eliminates the need for dual-app login for clinician-administrators; supports least-privilege UI presentation. |
 | **UN-ADMIN-011** | The administrator needs all administrative actions (identity changes, role assignments, mapping updates, grant revocations, device revocations) to be recorded in the audit log with actor attribution. | Supports non-repudiation of administrative actions; enables investigation of privilege changes; required for regulatory compliance. |
+
+## 3.9 Orchestrator-Viewer Integration (OVI)
+
+The Orchestrator (SvelteKit web client) manages a separate Digital Viewer browser window for slide examination. The two windows communicate via `postMessage` for same-browser coordination and via a WebSocket-based Session Awareness Service for cross-browser/cross-device awareness. The integration must be reliable enough for clinical use where a broken link between windows could contribute to patient safety errors.
+
+| ID | User Need Statement | Rationale/Clinical Justification |
+| :--- | :--- | :--- |
+| **UN-OVI-001** | The pathologist needs the viewer to open reliably from the worklist without manual intervention (no popup blocker failures, no lost windows). | A failed viewer launch interrupts diagnostic workflow and may force the pathologist to fall back to physical glass, causing delay. |
+| **UN-OVI-002** | The pathologist needs the viewer to display the correct case immediately when launched from the worklist, without ambiguity about which case is loaded. | Case-image mismatch at launch is a patient safety risk (see RISK-001 in Viewer DHF). The orchestrator is the source of truth for case identity at launch time. |
+| **UN-OVI-003** | The pathologist needs case switching from the worklist to propagate to the viewer reliably with explicit confirmation. | Clicking a new case in the worklist while examining another in the viewer is a high-risk moment for mismatch. The transition must be unambiguous. |
+| **UN-OVI-004** | The pathologist needs authentication tokens to be provisioned to the viewer transparently and refreshed without interrupting slide examination. | The viewer cannot access the tile server or case APIs without a valid JWT. Token expiry during sign-out is a workflow disruption that may cause loss of unsaved annotations or force a redundant login. |
+| **UN-OVI-005** | The pathologist needs the viewer to remain fully functional for its current case if the orchestrator connection is temporarily lost (e.g., orchestrator tab closed, browser crash, network glitch). | A rigid dependency where the viewer stops working the moment the orchestrator disconnects would be unacceptable in clinical use. The pathologist must be able to complete the current case examination. |
+| **UN-OVI-006** | The pathologist needs the orchestrator and viewer to resynchronize automatically when communication is restored, without manual intervention. | Requiring the pathologist to close and reopen the viewer or re-navigate to the current case after a momentary disconnection is disruptive and error-prone. |
+| **UN-OVI-007** | The pathologist needs clear visual indication in both windows when the cross-window link is degraded or lost. | Silent communication failures are dangerous — the pathologist may assume the orchestrator and viewer are synchronized when they are not. |
+| **UN-OVI-008** | The pathologist needs the Session Awareness Service (multi-user focus awareness) to be non-critical — its unavailability must not prevent case viewing or signing out. | The session service provides collaborative awareness ("Dr. Smith is also viewing this case"), which is valuable but not essential for individual diagnostic work. Coupling core clinical workflow to a WebSocket service would create an unacceptable single point of failure. |
 
 # 4. Notes
 System requirements are defined in `qms/dhf/02-SRS.md` and verified per `qms/dhf/06-VVP.md`.

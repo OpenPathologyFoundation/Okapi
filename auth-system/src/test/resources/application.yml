@@ -4,22 +4,13 @@ logging:
     com.okapi: DEBUG
     org.springframework.security: DEBUG
     org.springframework.web: DEBUG
-    org.hibernate.SQL: DEBUG
 
 spring:
-  datasource:
-    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;MODE=PostgreSQL
-    username: sa
-    password: sa
-    driver-class-name: org.h2.Driver
-  flyway:
-    enabled: false
-  jpa:
-    database-platform: org.hibernate.dialect.H2Dialect
-    hibernate:
-      ddl-auto: create-drop
   application:
     name: okapi-auth-system-test
+  jpa:
+    hibernate:
+      ddl-auto: validate
   security:
     oauth2:
       client:
@@ -32,11 +23,11 @@ spring:
             redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
         provider:
           okta:
-            # Pointing to a non-existent or ignored URL to bypass discovery if possible,
-            # OR explicitly defining endpoints to avoid discovery.
             authorization-uri: http://localhost:8080/test/authorize
             token-uri: http://localhost:8080/test/token
             user-info-uri: http://localhost:8080/test/userinfo
             jwk-set-uri: http://localhost:8080/test/jwks
-            # issuer-uri must be omitted or commented out to prevent discovery call
-            # issuer-uri: http://localhost:8080/test
+
+okapi:
+  jwt:
+    secret: test-secret-that-is-at-least-256-bits-long-for-hmac-sha256

@@ -1,0 +1,132 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://okapi.local/schemas/seed/xenonym-identities.v1.schema.json",
+  "title": "Okapi seed identities (v1)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "providerId", "identities"],
+  "properties": {
+    "version": {
+      "type": "string",
+      "const": "v1"
+    },
+    "providerId": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Issuer/provider identifier (e.g., Keycloak realm URL)."
+    },
+    "identities": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["subject", "username"],
+        "properties": {
+          "subject": {
+            "type": "string",
+            "minLength": 1,
+            "description": "External subject identifier (e.g., OIDC sub)."
+          },
+          "provider_id": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Issuer/provider identifier for this identity. Defaults to top-level providerId if omitted."
+          },
+          "username": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Keycloak username to create/use for provisioning."
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "display_name": {
+            "type": "string"
+          },
+          "name": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "given_name": { "type": "string" },
+              "family_name": { "type": "string" },
+              "middle_name": { "type": "string" },
+              "middle_initial": { "type": "string" },
+              "nickname": { "type": "string" },
+              "prefix": { "type": "string" },
+              "suffix": { "type": "string" }
+            }
+          },
+          "display": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "full": { "type": "string" },
+              "short": { "type": "string" }
+            }
+          },
+          "idp_groups": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "Keycloak/IdP group names to assign."
+          },
+          "local": {
+            "type": "object",
+            "additionalProperties": true,
+            "description": "Local Okapi-only metadata stored in the Okapi DB (may be mirrored into identities.attributes).",
+            "properties": {
+              "account_type": {
+                "type": "string",
+                "enum": ["PRODUCTION", "TEST", "DEMO", "SERVICE"]
+              },
+              "break_glass_enabled": { "type": "boolean" },
+              "professional_role": {
+                "type": "string",
+                "description": "Clinical role (e.g., pathologist, resident, fellow, histotech, clinical_admin)."
+              },
+              "npi": {
+                "type": "string",
+                "description": "Xenonym NPI identifier (e.g., XNP-000001)."
+              },
+              "seed": {
+                "type": "string",
+                "description": "Xenonym generation seed phrase (e.g., sage-echo-7610)."
+              },
+              "phone": {
+                "type": "string",
+                "description": "Contact phone number."
+              },
+              "address": {
+                "type": "object",
+                "additionalProperties": false,
+                "description": "Xenonym-generated fictional address.",
+                "properties": {
+                  "line": { "type": "string" },
+                  "city": { "type": "string" },
+                  "state": { "type": "string" },
+                  "zip": { "type": "string" },
+                  "country": { "type": "string" }
+                }
+              },
+              "avatar_url": {
+                "type": "string",
+                "format": "uri",
+                "description": "URL to avatar image."
+              },
+              "subspecialties": {
+                "type": "array",
+                "items": { "type": "string" },
+                "description": "Clinical subspecialty areas."
+              },
+              "flags": {
+                "type": "array",
+                "items": { "type": "string" },
+                "description": "Metadata flags (e.g., test_professional, role:pathologist)."
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

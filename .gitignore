@@ -56,3 +56,6 @@ seed/keycloak/out/
 
 # Junie output logs
 .output.txt
+CASE-ASSIGNMENT-API.md
+CHANGELOG-WIP.md
+/web-client/NAVIGATION-ARCHITECTURE.md

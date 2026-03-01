@@ -32,6 +32,7 @@ export type CasePriority = 'STAT' | 'URGENT' | 'ROUTINE';
 export interface WorklistItem {
 	id: number;
 	accessionNumber: string;
+	caseUuid: string | null;
 	patientMrn: string | null;
 	patientDisplay: string | null;
 	service: PathologyService;
@@ -42,7 +43,7 @@ export interface WorklistItem {
 	wsiStatus: string | null;
 	authoringStatus: string | null;
 	priority: CasePriority;
-	assignedToId: number | null;
+	assignedToIdentityId: string | null;
 	assignedToDisplay: string | null;
 	slideCount: number;
 	slidePending: number;

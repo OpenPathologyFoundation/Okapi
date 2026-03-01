@@ -1,5 +1,6 @@
 package com.okapi.auth.service;
 
+import com.okapi.auth.dto.ViewerEventDtos.ViewerEvent;
 import com.okapi.auth.model.Identity;
 import com.okapi.auth.model.db.AuditEventEntity;
 import com.okapi.auth.model.db.IdentityEntity;
@@ -8,6 +9,8 @@ import com.okapi.auth.repository.IdentityRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Service;
 
+import java.time.ZoneOffset;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -173,6 +176,33 @@ public class AuthAuditService {
         event.setTargetEntityType("IDP_GROUP");
         event.setTargetEntityId(mappingId);
         event.setDetails("IdP mapping deleted: " + groupName);
+        auditEventRepository.save(event);
+    }
+
+    public void recordViewerEvent(Identity actor, ViewerEvent viewerEvent, HttpServletRequest request) {
+        AuditEventEntity event = baseEvent(actor, viewerEvent.eventType(), "SUCCESS", request);
+        event.setTargetEntityType("CASE");
+        event.setDetails("Viewer event: " + viewerEvent.eventType());
+
+        // Use the viewer-reported timestamp if provided
+        if (viewerEvent.occurredAt() != null) {
+            event.setOccurredAt(viewerEvent.occurredAt().atOffset(ZoneOffset.UTC));
+        }
+
+        Map<String, Object> meta = new HashMap<>();
+        meta.put("source", "viewer");
+        meta.put("caseId", viewerEvent.caseId());
+        if (viewerEvent.accessionNumber() != null) {
+            meta.put("accessionNumber", viewerEvent.accessionNumber());
+        }
+        if (viewerEvent.slideId() != null) {
+            meta.put("slideId", viewerEvent.slideId());
+        }
+        if (viewerEvent.metadata() != null) {
+            meta.putAll(viewerEvent.metadata());
+        }
+        event.setMetadata(meta);
+
         auditEventRepository.save(event);
     }
 

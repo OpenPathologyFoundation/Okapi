@@ -1,4 +1,5 @@
 import { browser } from '$app/environment';
+import { csrfHeaders } from '$lib/csrf';
 import type {
 	IdentitySummary,
 	IdentityDetail,
@@ -47,7 +48,13 @@ class AdminStore {
 	// ── API Helpers ────────────────────────────────────────────────
 
 	private async fetchJson<T>(url: string, init?: RequestInit): Promise<T> {
-		const res = await fetch(url, { credentials: 'include', ...init });
+		const method = init?.method?.toUpperCase() ?? 'GET';
+		const needsCsrf = method !== 'GET' && method !== 'HEAD' && method !== 'OPTIONS';
+		const headers = {
+			...(needsCsrf ? csrfHeaders() : {}),
+			...(init?.headers as Record<string, string> | undefined),
+		};
+		const res = await fetch(url, { credentials: 'include', ...init, headers });
 		if (!res.ok) {
 			const body = await res.json().catch(() => ({}));
 			throw new Error(body.message || `Request failed: ${res.status}`);

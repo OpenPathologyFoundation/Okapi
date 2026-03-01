@@ -22,6 +22,7 @@ public class AuthzTokenService {
     private final AuthzPermissionService authzPermissionService;
     private final JwtEncoder jwtEncoder;
     private final String issuer;
+    private final String audience;
     private final String authzVersion;
     private final long ttlSeconds;
 
@@ -30,12 +31,14 @@ public class AuthzTokenService {
             AuthzPermissionService authzPermissionService,
             JwtEncoder jwtEncoder,
             @Value("${okapi.jwt.issuer:okapi}") String issuer,
+            @Value("${okapi.jwt.audience:okapi-tile-server}") String audience,
             @Value("${okapi.authz.version:2026.01.26+dev}") String authzVersion,
             @Value("${okapi.jwt.ttl-seconds:600}") long ttlSeconds) {
         this.identityRepository = identityRepository;
         this.authzPermissionService = authzPermissionService;
         this.jwtEncoder = jwtEncoder;
         this.issuer = issuer;
+        this.audience = audience;
         this.authzVersion = authzVersion;
         this.ttlSeconds = ttlSeconds;
     }
@@ -56,6 +59,7 @@ public class AuthzTokenService {
 
         JwtClaimsSet claims = JwtClaimsSet.builder()
                 .issuer(issuer)
+                .audience(List.of(audience))
                 .subject(identity.getExternalSubject())
                 .issuedAt(now)
                 .expiresAt(expiresAt)

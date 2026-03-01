@@ -1,0 +1,47 @@
+{
+  "version": "1.0",
+  "assignments": [
+    {
+      "accession_number": "PS26-00001",
+      "pathologists": [
+        { "username": "hlemsesor", "designation": "PRIMARY", "sequence": 1 },
+        { "username": "gmuklus", "designation": "SECONDARY", "sequence": 1 }
+      ]
+    },
+    {
+      "accession_number": "S26-0001",
+      "pathologists": [
+        { "username": "ltsindi", "designation": "PRIMARY", "sequence": 1 },
+        { "username": "vbezho", "designation": "GROSSING", "sequence": 1 }
+      ]
+    },
+    {
+      "accession_number": "S26-0002",
+      "pathologists": [
+        { "username": "ppiolileibro", "designation": "PRIMARY", "sequence": 1 },
+        { "username": "wnkunhalkevi", "designation": "SECONDARY", "sequence": 1 }
+      ]
+    },
+    {
+      "accession_number": "S26-0003",
+      "pathologists": [
+        { "username": "hlemsesor", "designation": "PRIMARY", "sequence": 1 },
+        { "username": "bmodeswuv", "designation": "SECONDARY", "sequence": 1 },
+        { "username": "gwukdaskornisauv", "designation": "GROSSING", "sequence": 1 }
+      ]
+    },
+    {
+      "accession_number": "S26-0004",
+      "pathologists": [
+        { "username": "bmodeswuv", "designation": "PRIMARY", "sequence": 1 }
+      ]
+    },
+    {
+      "accession_number": "S26-0005",
+      "pathologists": [
+        { "username": "gsneakhan", "designation": "PRIMARY", "sequence": 1 },
+        { "username": "hlemsesor", "designation": "CONSULTING", "sequence": 1 }
+      ]
+    }
+  ]
+}

@@ -21,6 +21,7 @@ public final class WorklistDtos {
     public record WorklistItemResponse(
             Long id,
             String accessionNumber,
+            UUID caseUuid,
             String patientMrn,
             String patientDisplay,
             String service,
@@ -47,6 +48,7 @@ public final class WorklistDtos {
             return new WorklistItemResponse(
                     entity.getId(),
                     entity.getAccessionNumber(),
+                    entity.getCaseUuid(),
                     entity.getPatientMrn(),
                     entity.getPatientDisplay(),
                     entity.getService(),

@@ -1,14 +1,15 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
-	import { onMount } from 'svelte';
-	import { worklistStore, MOCK_PATHOLOGISTS } from '$lib/stores/worklist.svelte';
+	import { onMount, onDestroy } from 'svelte';
+	import { worklistStore } from '$lib/stores/worklist.svelte';
+	import { authStore } from '$lib/stores/auth.svelte';
 
 	let { children } = $props();
 
-	const tabs = [
-		{ href: '/app/worklist', label: 'All Cases', icon: 'list', exact: true },
-		{ href: '/app/worklist/my-cases', label: 'My Cases', icon: 'user' }
-	];
+	const canSeeAllCases = $derived(
+		authStore.hasPermission('CASE_REASSIGN') || authStore.isAdmin
+	);
 
 	function isTabActive(tab: { href: string; exact?: boolean }): boolean {
 		const currentPath = page.url.pathname;
@@ -18,16 +19,19 @@
 		return currentPath.startsWith(tab.href);
 	}
 
-	function handleUserChange(event: Event) {
-		const select = event.target as HTMLSelectElement;
-		const userId = parseInt(select.value, 10);
-		worklistStore.setCurrentUser(userId);
-	}
-
 	onMount(() => {
 		worklistStore.init();
-		// Load mock data for development (replace with API call in production)
-		worklistStore.loadMockData();
+		worklistStore.loadWorklist();
+		worklistStore.startAutoRefresh();
+
+		// If user lacks CASE_REASSIGN and lands on All Cases, redirect to My Cases
+		if (!canSeeAllCases && page.url.pathname === '/app/worklist') {
+			goto('/app/worklist/my-cases');
+		}
+	});
+
+	onDestroy(() => {
+		worklistStore.stopAutoRefresh();
 	});
 </script>
 
@@ -48,45 +52,37 @@
 			</h1>
 
 			<div class="flex gap-1">
-				{#each tabs as tab}
+				{#if canSeeAllCases}
 					<a
-						href={tab.href}
-						class="rounded-md px-4 py-2 text-sm font-medium transition-all {isTabActive(tab)
+						href="/app/worklist"
+						class="rounded-md px-4 py-2 text-sm font-medium transition-all {isTabActive({ href: '/app/worklist', exact: true })
 							? 'bg-clinical-primary/10 text-clinical-primary'
 							: 'text-clinical-muted hover:bg-clinical-hover hover:text-clinical-text'}"
 					>
-						{tab.label}
-						{#if tab.label === 'My Cases' && worklistStore.counts}
-							<span class="ml-1 text-xs opacity-70">({worklistStore.counts.myCases})</span>
-						{/if}
+						All Cases
 					</a>
-				{/each}
-			</div>
-
-			<!-- Dev: User selector for testing -->
-			<div class="flex items-center gap-2 rounded-md border border-dashed border-amber-500/50 bg-amber-500/5 px-3 py-1.5">
-				<span class="text-[10px] font-medium uppercase tracking-wider text-amber-600 dark:text-amber-400">Dev</span>
-				<select
-					value={worklistStore.currentUser.id}
-					onchange={handleUserChange}
-					class="bg-transparent text-xs text-clinical-text focus:outline-none cursor-pointer"
+				{/if}
+				<a
+					href="/app/worklist/my-cases"
+					class="rounded-md px-4 py-2 text-sm font-medium transition-all {isTabActive({ href: '/app/worklist/my-cases' })
+						? 'bg-clinical-primary/10 text-clinical-primary'
+						: 'text-clinical-muted hover:bg-clinical-hover hover:text-clinical-text'}"
 				>
-					{#each MOCK_PATHOLOGISTS as pathologist}
-						<option value={pathologist.id} class="bg-clinical-surface text-clinical-text">
-							{pathologist.display}
-						</option>
-					{/each}
-				</select>
+					My Cases
+					{#if worklistStore.counts}
+						<span class="ml-1 text-xs opacity-70">({worklistStore.counts.myCases})</span>
+					{/if}
+				</a>
 			</div>
 
 			<!-- Stats summary -->
 			{#if worklistStore.counts}
 				<div class="ml-auto flex items-center gap-4 text-sm text-clinical-muted">
 					<span>
-						<span class="font-medium text-worklist-priority-stat">{worklistStore.counts.byPriority.STAT}</span> STAT
+						<span class="font-medium text-worklist-priority-stat">{worklistStore.counts.byPriority.STAT ?? 0}</span> STAT
 					</span>
 					<span>
-						<span class="font-medium text-worklist-priority-urgent">{worklistStore.counts.byPriority.URGENT}</span> Urgent
+						<span class="font-medium text-worklist-priority-urgent">{worklistStore.counts.byPriority.URGENT ?? 0}</span> Urgent
 					</span>
 					<span>
 						<span class="font-medium text-clinical-text">{worklistStore.counts.total}</span> Total
@@ -95,7 +91,7 @@
 					<!-- Refresh timestamp (clickable per spec §12.1) -->
 					<button
 						type="button"
-						onclick={() => worklistStore.loadMockData()}
+						onclick={() => worklistStore.loadWorklist()}
 						class="flex items-center gap-1.5 text-xs hover:text-clinical-primary"
 						title="Click to refresh"
 						disabled={worklistStore.isLoading}

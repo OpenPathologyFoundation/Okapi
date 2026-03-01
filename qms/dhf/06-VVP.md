@@ -2,7 +2,7 @@
 ---
 title: Verification and Validation Plan
 document_id: DHF-06
-version: 1.0
+version: 1.1
 status: DRAFT
 owner: Verification Lead
 created_date: 2026-01-11
@@ -25,7 +25,7 @@ Out of scope (this iteration):
 # 3. Verification Strategy
 ## 3.1 Automated unit tests (fast)
 - Run via `auth-system: ./gradlew test`
-- Use in-memory H2; Flyway disabled; Hibernate `ddl-auto: create-drop`
+- Uses Testcontainers Postgres with Flyway migrations (identical to production schema)
 
 ## 3.2 Automated integration tests (Docker required)
 - Run via `auth-system: ./gradlew integrationTest`
@@ -103,6 +103,86 @@ HAT verification will be implemented incrementally as the module is built. At mi
 | `SYS-ADMIN-007` | Role-conditional navigation rendering | E2E / Manual | Admin-only user screenshot vs clinician-admin user screenshot |
 | `SYS-ADMIN-008` | Centralized auth context for frontend | Unit test | `/auth/me` returns full identity with roles and permissions list |
 | `SYS-ADMIN-009` | Server-side enforcement is authoritative (UI advisory) | Integration test | Call admin API without ADMIN role → verify 403 regardless of UI state |
+
+## 4.4 Requirements Verification Matrix (OVI — Orchestrator-Viewer Integration subset)
+
+### 4.4.1 Window Lifecycle (SYS-OVI-001 to SYS-OVI-004)
+
+| SRS ID | Requirement (summary) | Verification method | Evidence/artifact |
+|--------|------------------------|---------------------|------------------|
+| `SYS-OVI-001` | Orchestrator opens viewer via `window.open()` with named window | Integration test | E2E test: verify `window.open()` call with correct URL and window name |
+| `SYS-OVI-002` | Popup blocker detection within 3 seconds; user-actionable message | Integration test | E2E test: simulate popup blocker (null from window.open); verify error banner within 3s |
+| `SYS-OVI-003` | Orchestrator polls viewer window liveness (checks `window.closed`) | Unit test | `ViewerBridge` test: verify polling interval and closed-state detection |
+| `SYS-OVI-004` | Orchestrator displays indicator when viewer window is closed | UI test (E2E) | Screenshot: verify "Viewer closed" indicator in orchestrator after viewer window close |
+
+### 4.4.2 Bridge Protocol (SYS-OVI-005 to SYS-OVI-008)
+
+| SRS ID | Requirement (summary) | Verification method | Evidence/artifact |
+|--------|------------------------|---------------------|------------------|
+| `SYS-OVI-005` | Typed message envelope: `{type, seq, payload}` | Unit test | `ViewerBridge` test: verify all outbound messages conform to typed envelope schema |
+| `SYS-OVI-006` | Origin validation on every received postMessage | Unit test | `ViewerBridge` test: send message from wrong origin → verify silently dropped |
+| `SYS-OVI-007` | Heartbeat protocol: 15s interval, configurable miss threshold | Unit test | `ViewerBridge` test: verify heartbeat every 15s; 3 misses → DEGRADED state |
+| `SYS-OVI-008` | Message types: VIEWER_OPEN, VIEWER_READY, CASE_SWITCH, JWT_REFRESH, HEARTBEAT, etc. | Inspection | Code review: verify all 14 message types defined in bridge protocol |
+
+### 4.4.3 Case Switching (SYS-OVI-009 to SYS-OVI-011)
+
+| SRS ID | Requirement (summary) | Verification method | Evidence/artifact |
+|--------|------------------------|---------------------|------------------|
+| `SYS-OVI-009` | Case switch requires user confirmation dialog when viewer is open | Integration test | E2E test: click different case in worklist → verify confirmation prompt |
+| `SYS-OVI-010` | Case switch uses ACK protocol: orchestrator waits for CASE_SWITCH_ACK | Unit test | `ViewerBridge` test: send CASE_SWITCH → verify wait for ACK/REJECT/timeout |
+| `SYS-OVI-011` | ACK timeout (configurable) triggers orchestrator warning | Unit test | `ViewerBridge` test: simulate ACK timeout → verify warning state |
+
+### 4.4.4 JWT Provisioning (SYS-OVI-012 to SYS-OVI-015)
+
+| SRS ID | Requirement (summary) | Verification method | Evidence/artifact |
+|--------|------------------------|---------------------|------------------|
+| `SYS-OVI-012` | JWT minimum lifetime of 30 minutes | Analysis + Test | Token claim inspection: verify `exp - iat >= 1800` seconds |
+| `SYS-OVI-013` | Proactive JWT refresh at 75% of lifetime when bridge connected | Unit test | `ViewerBridge` test: verify refresh message sent at 22.5 min for 30-min token |
+| `SYS-OVI-014` | JWT stored in memory only — no localStorage/sessionStorage | Inspection + Test | Code review: no storage API calls for JWT; runtime inspection |
+| `SYS-OVI-015` | JWT provisioned via VIEWER_OPEN and subsequent JWT_REFRESH messages | Unit test | `ViewerBridge` test: verify JWT in VIEWER_OPEN payload; verify JWT_REFRESH flow |
+
+### 4.4.5 Degradation and Recovery (SYS-OVI-016 to SYS-OVI-020)
+
+| SRS ID | Requirement (summary) | Verification method | Evidence/artifact |
+|--------|------------------------|---------------------|------------------|
+| `SYS-OVI-016` | Amber degradation indicator on heartbeat miss | UI test (E2E) | Screenshot: verify amber indicator after simulated heartbeat timeout |
+| `SYS-OVI-017` | Viewer continues full functionality in standalone mode | Integration test | Close orchestrator → verify viewer tiles, annotations, measurements work |
+| `SYS-OVI-018` | Reconnect handshake: orchestrator sends BRIDGE_RECONNECT with case context | Unit test | `ViewerBridge` test: simulate reload → verify reconnect handshake message |
+| `SYS-OVI-019` | Context mismatch on reconnect prompts user confirmation | Integration test | Reload orchestrator with different case → verify mismatch prompt in viewer |
+| `SYS-OVI-020` | Viewer falls back to standalone mode if reconnection fails | Unit test | (Planned) `OrchestratorBridge` test: reconnect failure → standalone mode |
+
+### 4.4.6 Session Awareness Service (SYS-OVI-021 to SYS-OVI-024)
+
+| SRS ID | Requirement (summary) | Verification method | Evidence/artifact |
+|--------|------------------------|---------------------|------------------|
+| `SYS-OVI-021` | Session Awareness Service is optional Layer 2; unavailability does not block viewing | Integration test | Disable session service → verify viewer opens and operates normally |
+| `SYS-OVI-022` | WebSocket reconnection uses exponential backoff | Unit test | Session service client test: verify backoff intervals (1s, 2s, 4s, 8s...) |
+| `SYS-OVI-023` | WebSocket heartbeat interval is 30s (proxy-compatible) | Unit test + Analysis | Verify heartbeat config; network analysis for proxy compatibility |
+| `SYS-OVI-024` | Session service features degrade gracefully when unavailable | Integration test | Disable session service → multi-case warning absent but no error/crash |
+
+## 4.5 Requirements Verification Matrix (Case Assignment subset)
+
+### 4.5.1 Assignment Data Model (SYS-CA-001 to SYS-CA-008)
+
+| SRS ID | Requirement (summary) | Verification method | Evidence/artifact |
+|--------|------------------------|---------------------|------------------|
+| `SYS-CA-001` | `wsi.case_pathologists` table with `designation` column (PRIMARY, SECONDARY, CONSULTING, GROSSING); person's organizational position resolved from `iam.identity_roles` at query time | Inspection + Integration test | Flyway migration; integration test inserting assignments with each designation and verifying position resolved from identity |
+| `SYS-CA-002` | At most one PRIMARY designation per case (partial unique index) | Integration test | Test: insert two PRIMARY assignments for same case → verify constraint violation; verify one PRIMARY + one SECONDARY succeeds |
+| `SYS-CA-003` | No duplicate (case_id, identity_id) assignments | Integration test | Test: insert same identity twice on same case → verify unique constraint violation |
+| `SYS-CA-004` | ON DELETE RESTRICT prevents identity deletion with active assignments | Integration test | Test: attempt to delete identity with case assignment → verify FK violation; verify deletion succeeds after unassigning |
+| `SYS-CA-005` | ON DELETE CASCADE removes assignments when case is deleted | Integration test | Test: delete case → verify corresponding `case_pathologists` rows are removed |
+| `SYS-CA-006` | `assigned_by` and `assigned_at` recorded on each assignment | Inspection | Flyway migration: verify columns exist with correct types and defaults |
+| `SYS-CA-007` | Sequence field controls display ordering within designation group | Unit test | Test: insert multiple SECONDARY assignments with sequence values → verify query returns in sequence order |
+| `SYS-CA-008` | Worklist `assigned_to_identity_id` syncs from PRIMARY in `case_pathologists` | Integration test | Test: assign PRIMARY → verify worklist row reflects assignment; change PRIMARY → verify worklist updates |
+
+### 4.5.2 Assignment Pathways (SYS-CA-009 to SYS-CA-012)
+
+| SRS ID | Requirement (summary) | Verification method | Evidence/artifact |
+|--------|------------------------|---------------------|------------------|
+| `SYS-CA-009` | Single assignment API endpoint used by all pathways | Integration test | API test: POST assignment with case_id, identity_id, designation → verify row created; verify same endpoint works for all three pathway scenarios |
+| `SYS-CA-010` | LIS-driven assignment via ingestion pipeline | Analysis + Integration test | Integration test: simulate HL7 message with assigned pathologist → verify identity resolved and case_pathologists row created |
+| `SYS-CA-011` | Algorithmic assignment via Qupanda integration | Analysis + Integration test | (Planned) Integration test with Qupanda service mock → verify proportional assignment and case_pathologists row created |
+| `SYS-CA-012` | Manual assignment via application interface | Integration test | E2E test: admin assigns case to pathologist through UI → verify case_pathologists row created with correct assigned_by |
 
 # 5. Validation Notes
 Clinical workflow validation (usability, human factors, and operational monitoring) will be defined in later V&V activities once clinical workflows are implemented beyond IAM.

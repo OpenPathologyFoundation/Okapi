@@ -2,7 +2,7 @@
 ---
 title: Cybersecurity Threat Model and Security Requirements (STRIDE)
 document_id: DHF-03
-version: 1.0
+version: 1.1
 status: DRAFT
 owner: Security Officer
 created_date: 2026-01-11
@@ -88,6 +88,22 @@ Additional IAM-specific threats to track:
 - **Privilege escalation by mapping drift:** unauthorized changes to group→role mappings can elevate access; mitigated by change control + audit evidence.
 - **Token leakage within TTL:** a leaked access token remains valid until expiry; mitigated by short TTL, audit logging, and incident response controls (disable login, suspend services, revoke roles).
 
+## 3.4 Orchestrator-Viewer Integration (OVI) threat highlights
+
+| STRIDE | OVI Threat (example) | Impact | Primary mitigations |
+|--------|-----------------------|--------|---------------------|
+| **S** Spoofing | Malicious script in a co-resident tab sends forged `postMessage` events to the viewer, injecting a false case context or triggering an unauthorized case switch | Case-image mismatch; wrong diagnosis | `SYS-OVI-006`: Origin validation on every postMessage; `SYS-OVI-005`: Typed message protocol with sequence numbers |
+| **T** Tampering | Attacker intercepts and modifies bridge messages in transit (e.g., altering `CASE_SWITCH` payload to point to a different case) | Viewer loads wrong case; PHI exposure | `SYS-OVI-006`: Origin validation; `SYS-OVI-010`: ACK-based case switch with orchestrator confirmation |
+| **R** Repudiation | Orchestrator claims it sent a case switch but viewer never received it; no evidence of bridge state at the time | Investigation difficulty; unclear which context was active | `SYS-OVI-007`: Heartbeat protocol with timestamps; bridge state transitions logged as session-scoped data |
+| **I** Information disclosure | JWT provisioned via `postMessage` is intercepted by a browser extension or XSS payload in the orchestrator page | Unauthorized tile/API access using stolen token | `SYS-OVI-014`: JWT stored in memory only; `SYS-OVI-006`: Origin-validated message channel |
+| **D** Denial of service | Popup blocker prevents viewer window from opening; or bridge heartbeat failure causes continuous reconnection storm | Pathologist cannot view slides; excessive resource consumption | `SYS-OVI-002`: Popup blocker detection within 3 seconds; `SYS-OVI-007`: Heartbeat with 15s interval and configurable miss threshold |
+| **E** Elevation of privilege | Attacker sends forged `JWT_REFRESH` message with an escalated-privilege token to the viewer | Viewer operates with elevated permissions | `SYS-OVI-006`: Only messages from validated orchestrator origin accepted; JWT validation on every API call (server-side) |
+
+Additional OVI-specific threats to track:
+- **Bridge degradation during active diagnosis:** if the orchestrator reloads or navigates away, the viewer must continue operating standalone without data loss. Mitigated by `SYS-OVI-016` through `SYS-OVI-020` (degradation indicators, standalone capability, reconnect handshake).
+- **JWT expiry during extended bridge outage:** token lifetime must be sufficient for typical case examination (30+ minutes). Mitigated by `SYS-OVI-012` (minimum 30-minute lifetime), `SYS-OVI-013` (proactive refresh at 75% lifetime).
+- **Named window reconnection ambiguity:** after orchestrator reload, `window.open('', windowName)` may acquire reference to wrong window if window names collide. Mitigated by `SYS-OVI-018` (reconnect handshake with case context validation).
+
 # 4. Security Requirements (traceable)
 The following security requirements are defined in `qms/dhf/02-SRS.md` and verified in `qms/dhf/06-VVP.md`:
 - `SYS-AUTHN-001`/`SYS-AUTHN-002`: External IdP federation (OIDC/SAML)
@@ -106,6 +122,14 @@ Admin UI security-relevant requirements:
 - `SYS-ADMIN-003`: All admin actions audited with actor attribution
 - `SYS-ADMIN-009`: UI authorization checks are advisory; server-side enforcement is authoritative
 - `SYS-AUTHZ-011`: Server-side authorization on every protected API (applies to admin APIs)
+
+OVI (Orchestrator-Viewer Integration) security-relevant requirements:
+- `SYS-OVI-005`/`SYS-OVI-006`: Typed message protocol with origin validation on every postMessage
+- `SYS-OVI-007`: Heartbeat protocol (15s interval) with configurable miss threshold
+- `SYS-OVI-012`/`SYS-OVI-013`: JWT minimum 30-minute lifetime with proactive refresh at 75%
+- `SYS-OVI-014`: JWT stored in memory only — no localStorage/sessionStorage persistence
+- `SYS-OVI-016`/`SYS-OVI-017`: Degradation indicators and standalone viewer capability
+- `SYS-OVI-018`/`SYS-OVI-019`: Reconnect handshake with case context validation; mismatch requires user confirmation
 
 HAT security-relevant requirements:
 - `SYS-HAT-005`/`SYS-HAT-006`: Append-only history and non-destructive corrections

@@ -55,6 +55,19 @@ public class KeycloakAdminClient {
                 .body(KeycloakUser.class);
     }
 
+    public KeycloakUser getUserByUsername(String realm, String username) {
+        String token = getAccessToken();
+        KeycloakUser[] users = restClient.get()
+                .uri(baseUrl + "/admin/realms/{realm}/users?username={username}&exact=true", realm, username)
+                .headers(h -> h.setBearerAuth(token))
+                .retrieve()
+                .body(KeycloakUser[].class);
+        if (users == null || users.length == 0) {
+            return null;
+        }
+        return users[0];
+    }
+
     public List<KeycloakGroup> getUserGroups(String realm, String userId) {
         String token = getAccessToken();
         KeycloakGroup[] groups = restClient.get()

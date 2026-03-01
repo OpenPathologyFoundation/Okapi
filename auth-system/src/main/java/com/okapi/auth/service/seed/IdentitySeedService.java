@@ -14,13 +14,16 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
+import java.util.logging.Logger;
 
 @Service
 public class IdentitySeedService {
+
+    private static final Logger log = Logger.getLogger(IdentitySeedService.class.getName());
 
     private final ObjectMapper objectMapper;
     private final KeycloakAdminClient keycloakAdminClient;
@@ -35,7 +38,7 @@ public class IdentitySeedService {
             IdentityRepository identityRepository,
             AuditEventRepository auditEventRepository,
             @Value("${okapi.keycloak.realm:okapi}") String keycloakRealm,
-            @Value("${okapi.seed.identities.path:../seed/identities/demo-identities.v1.json}") String seedFilePath
+            @Value("${okapi.seed.identities.path:../seed/identities/xenonym-identities.v1.json}") String seedFilePath
     ) {
         this.objectMapper = objectMapper;
         this.keycloakAdminClient = keycloakAdminClient;
@@ -79,10 +82,15 @@ public class IdentitySeedService {
         int skipped = 0;
         int failed = 0;
 
-        SeedIdentitiesFile file = readSeedFile();
-        List<SeedIdentity> identities = file.identities() == null ? List.of() : file.identities();
+        ArrayList<SeedIdentityResult> results = new ArrayList<>();
 
-        java.util.ArrayList<SeedIdentityResult> results = new java.util.ArrayList<>();
+        if (!Files.exists(seedFilePath)) {
+            throw new IllegalStateException("Seed file not found: " + seedFilePath.toAbsolutePath());
+        }
+
+        SeedIdentitiesFile file = readSeedFile(seedFilePath);
+        List<SeedIdentity> identities = file.identities() == null ? List.of() : file.identities();
+        int totalIdentities = identities.size();
 
         for (SeedIdentity seed : identities) {
             String username = seed.username();
@@ -101,14 +109,14 @@ public class IdentitySeedService {
             }
 
             try {
-                // Validate existence in Keycloak (source of truth for accounts)
-                KeycloakAdminClient.KeycloakUser kcUser = keycloakAdminClient.getUserById(keycloakRealm, subject);
+                // Validate existence in Keycloak (source of truth for accounts).
+                // Look up by username since Keycloak auto-generates user IDs.
+                KeycloakAdminClient.KeycloakUser kcUser = keycloakAdminClient.getUserByUsername(keycloakRealm, username);
                 if (kcUser == null || kcUser.id() == null || kcUser.id().isBlank()) {
-                    throw new IllegalStateException("Keycloak user not found for subject: " + subject);
+                    throw new IllegalStateException("Keycloak user not found for username: " + username);
                 }
-                if (kcUser.username() != null && !kcUser.username().isBlank() && !Objects.equals(kcUser.username(), username)) {
-                    throw new IllegalStateException("Keycloak username mismatch for subject. Expected '" + username + "' but got '" + kcUser.username() + "'.");
-                }
+                // Use the actual Keycloak user ID as the external subject (OIDC sub claim)
+                subject = kcUser.id();
 
                 IdentityEntity entity = identityRepository
                         .findByProviderIdAndExternalSubject(providerId, subject)
@@ -183,7 +191,7 @@ public class IdentitySeedService {
 
         long durationMs = System.currentTimeMillis() - startedAt;
         Map<String, Object> metadata = Map.of(
-                "total", identities.size(),
+                "total", totalIdentities,
                 "created", created,
                 "updated", updated,
                 "skipped", skipped,
@@ -199,10 +207,10 @@ public class IdentitySeedService {
                 .metadata(metadata)
                 .build());
 
-        return new SeedRunResult(identities.size(), created, updated, skipped, failed, results);
+        return new SeedRunResult(totalIdentities, created, updated, skipped, failed, results);
     }
 
-    private SeedIdentitiesFile readSeedFile() {
+    private SeedIdentitiesFile readSeedFile(Path seedFilePath) {
         try {
             if (!Files.exists(seedFilePath)) {
                 throw new IllegalStateException("Seed file not found: " + seedFilePath.toAbsolutePath());

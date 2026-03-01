@@ -42,6 +42,7 @@ okapi:
     end-session-uri: ${OIDC_END_SESSION_URI:${OIDC_ISSUER_URI}/protocol/openid-connect/logout}
   jwt:
     issuer: ${OKAPI_JWT_ISSUER:okapi}
+    audience: ${OKAPI_JWT_AUDIENCE:okapi-tile-server}
     secret: ${OKAPI_JWT_SECRET:dev-secret-change-dev-secret-change}
     ttl-seconds: ${OKAPI_JWT_TTL_SECONDS:600}
   authz:
@@ -54,6 +55,11 @@ okapi:
   research:
     grant:
       ttl-days: ${OKAPI_RESEARCH_GRANT_TTL_DAYS:90}
+  viewer:
+    # Comma-separated list of allowed origins for the viewer window.
+    # Only needed when viewer is NOT behind the nginx reverse proxy.
+    # Example: http://viewer.okapi.local,http://localhost:5174
+    allowed-origins: ${OKAPI_VIEWER_ALLOWED_ORIGINS:}
 #      saml2:
 #        relying-party:
 #          registration:
@@ -63,3 +69,7 @@ okapi:
 
 server:
   port: ${SERVER_PORT:8080}
+  # Trust X-Forwarded-* headers from the nginx reverse proxy so that
+  # OIDC redirect URIs use the proxy's host:port (e.g. localhost:8443)
+  # instead of the backend's host:port (localhost:8080).
+  forward-headers-strategy: framework

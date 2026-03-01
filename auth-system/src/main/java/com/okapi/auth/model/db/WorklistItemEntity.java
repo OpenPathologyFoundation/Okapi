@@ -113,6 +113,10 @@ public class WorklistItemEntity {
     @Builder.Default
     private Map<String, Object> metadata = Map.of();
 
+    // Link to wsi.cases
+    @Column(name = "case_uuid")
+    private UUID caseUuid;
+
     // Audit
     @Column(name = "created_at", nullable = false)
     @Builder.Default

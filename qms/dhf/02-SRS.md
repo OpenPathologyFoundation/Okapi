@@ -121,6 +121,7 @@ HAT requirements are written to enforce the separation between:
 | **SYS-WL-007** | The system shall support a "Break-Glass" workflow demanding: explicit action, reason selection, and generation of a specific audit event (`break_glass_invoked`). | UN-WL-006 | Test |
 | **SYS-WL-008** | The system shall support "Smart Filters" including: "Sign-out ready" (all prerequisites met) and "Needs attention" (old/urgent/alerted). | UN-WL-004 | Test |
 | **SYS-WL-009** | The work list shall emit workflow events (`case_open_requested`, `viewer_launch_requested`) but shall NOT emit or retain fine-grained telemetry (mouse coords, dwell time). | UN-WL-003 | Inspection |
+| **SYS-WL-010** | The system shall provide a global search input that queries `GET /api/worklist?search=<term>&pageSize=8` with 300ms debounce and 2-character minimum, displaying results in a dropdown with accession number, patient name, service, and status. Selecting a result navigates to the case. A "View all" action navigates to the worklist with the search pre-applied. | UN-WL-008 | Test |
 
 ## 1.10 IAM Administration Requirements
 
@@ -135,6 +136,90 @@ HAT requirements are written to enforce the separation between:
 | **SYS-ADMIN-007** | The system shall render the admin UI within the main web application with role-conditional navigation: users with only `ROLE_ADMIN` see admin routes only; users with additional clinical roles see both clinical and admin sections. | UN-ADMIN-010 | E2E / Manual |
 | **SYS-ADMIN-008** | The system shall provide a centralized auth context (current user identity, roles, permissions) to the web client on session load for role-based UI rendering. | UN-ADMIN-010, UN-AUTHN-007 | Unit Test |
 | **SYS-ADMIN-009** | Admin UI authorization checks shall be advisory only; the server-side enforcement defined in `SYS-AUTHZ-011` remains the authoritative access control mechanism for all admin API endpoints. | UN-ADMIN-010 | Integration Test |
+
+## 1.11 Orchestrator-Viewer Integration (OVI) Requirements
+
+Requirements for the cross-window communication bridge between the Okapi web client (orchestrator) and the Digital Viewer. The orchestrator owns the lifecycle of the viewer window and is the authority for case context, authentication tokens, and case-switching decisions.
+
+### 1.11.1 Viewer Window Lifecycle
+
+| ID | System Requirement | Trace to User Need | Verification Method |
+| :--- | :--- | :--- | :--- |
+| **SYS-OVI-001** | The orchestrator shall open the viewer via `window.open()` with a well-known URL and immediately transmit case context (case ID, patient identifier, JWT) via `postMessage` on the `VIEWER_OPEN` channel. | UN-OVI-001, UN-OVI-002 | Test |
+| **SYS-OVI-002** | The orchestrator shall detect popup blocker interference within 3 seconds of the `window.open()` call and display a user-actionable message with instructions to allow popups for the application origin. | UN-OVI-001 | Test |
+| **SYS-OVI-003** | The orchestrator shall track the viewer window reference and detect window closure via periodic liveness checks (polling `window.closed` at ≤1s intervals). | UN-OVI-007 | Test |
+| **SYS-OVI-004** | When the viewer window is closed by the user (or by the OS), the orchestrator shall update its internal state to reflect no active viewer and display a "Viewer closed" indicator with the option to reopen. | UN-OVI-007 | Test |
+
+### 1.11.2 postMessage Bridge Protocol
+
+| ID | System Requirement | Trace to User Need | Verification Method |
+| :--- | :--- | :--- | :--- |
+| **SYS-OVI-005** | All cross-window messages shall be typed (discriminated union on `type` field), validated against a shared schema, and carry a monotonically increasing sequence number for ordering and duplicate detection. | UN-OVI-002 | Inspection/Test |
+| **SYS-OVI-006** | The orchestrator shall validate the `origin` of all incoming `postMessage` events against the expected viewer origin and silently discard messages from unexpected origins. | N/A (Security) | Test |
+| **SYS-OVI-007** | The bridge shall implement a heartbeat protocol: the orchestrator sends `HEARTBEAT` messages at a configurable interval (default 15s), and the viewer responds with `HEARTBEAT_ACK`. Three consecutive missed ACKs shall trigger the bridge-degraded state. | UN-OVI-007 | Test |
+| **SYS-OVI-008** | The bridge protocol shall define the following message types at minimum: `VIEWER_OPEN`, `VIEWER_READY`, `CASE_SWITCH`, `CASE_SWITCH_ACK`, `JWT_REFRESH`, `HEARTBEAT`, `HEARTBEAT_ACK`, `VIEWER_CLOSE`, `BRIDGE_RECONNECT`. | UN-OVI-002, UN-OVI-003, UN-OVI-004, UN-OVI-006 | Inspection |
+
+### 1.11.3 Case Switching
+
+| ID | System Requirement | Trace to User Need | Verification Method |
+| :--- | :--- | :--- | :--- |
+| **SYS-OVI-009** | When the user selects a different case in the worklist while the viewer is open, the orchestrator shall display a confirmation dialog before sending `CASE_SWITCH` to the viewer. | UN-OVI-003 | Test |
+| **SYS-OVI-010** | The `CASE_SWITCH` message shall carry the new case ID, patient identifier, and a fresh JWT scoped to the new case. The viewer shall acknowledge receipt with `CASE_SWITCH_ACK`. | UN-OVI-003, UN-OVI-004 | Test |
+| **SYS-OVI-011** | If the viewer does not acknowledge `CASE_SWITCH` within 5 seconds, the orchestrator shall retry once and, on second failure, display a warning that the viewer may be out of sync. | UN-OVI-007 | Test |
+
+### 1.11.4 JWT Provisioning and Refresh
+
+| ID | System Requirement | Trace to User Need | Verification Method |
+| :--- | :--- | :--- | :--- |
+| **SYS-OVI-012** | The orchestrator shall provision a case-scoped JWT to the viewer via `postMessage` at launch and on every case switch. The JWT shall have a lifetime sufficient for the viewer to complete a case examination without bridge-mediated refresh (minimum 30 minutes, configurable). | UN-OVI-004, UN-OVI-005 | Analysis/Test |
+| **SYS-OVI-013** | The orchestrator shall proactively send `JWT_REFRESH` messages before the current token expires (at 75% of token lifetime). | UN-OVI-004 | Test |
+| **SYS-OVI-014** | The viewer shall hold the JWT in memory only (not `localStorage`, not cookies). On bridge disconnection, the viewer shall continue operating with the last-received token until it expires. | UN-OVI-004, UN-OVI-005 | Inspection/Test |
+| **SYS-OVI-015** | When the viewer's JWT expires and the bridge is disconnected, the viewer shall display a non-blocking banner indicating that the session will expire and provide the option to reconnect or re-authenticate. The viewer shall NOT abruptly close or navigate away. | UN-OVI-005 | Test |
+
+### 1.11.5 Bridge Degradation and Recovery
+
+| ID | System Requirement | Trace to User Need | Verification Method |
+| :--- | :--- | :--- | :--- |
+| **SYS-OVI-016** | When the bridge enters degraded state (heartbeat timeout), both windows shall display a visual indicator (e.g., amber status bar) distinguishable from the normal state. The indicator shall be non-intrusive and shall not obscure diagnostic content. | UN-OVI-007 | Test |
+| **SYS-OVI-017** | In bridge-degraded state, the viewer shall continue to serve tiles, accept annotations, and support measurement — all functions that do not require orchestrator coordination. | UN-OVI-005 | Test |
+| **SYS-OVI-018** | When the bridge recovers (heartbeat resumes), the orchestrator shall send a `BRIDGE_RECONNECT` handshake containing the current case ID, patient identifier, and a fresh JWT. The viewer shall validate that the case context matches and resynchronize silently. | UN-OVI-006 | Test |
+| **SYS-OVI-019** | If the `BRIDGE_RECONNECT` handshake reveals a case context mismatch (orchestrator switched cases during disconnection), the viewer shall display a confirmation prompt before accepting the new case. | UN-OVI-003, UN-OVI-006 | Test |
+| **SYS-OVI-020** | The viewer shall be capable of operating in standalone mode (launched directly, without an orchestrator) for scenarios where the orchestrator is unavailable or not used (education, demo, testing). | UN-OVI-005 | Test |
+
+### 1.11.6 Session Awareness Service Integration
+
+| ID | System Requirement | Trace to User Need | Verification Method |
+| :--- | :--- | :--- | :--- |
+| **SYS-OVI-021** | The Session Awareness Service shall be an optional Layer 2 dependency. Its unavailability shall not prevent the orchestrator from launching the viewer, switching cases, or provisioning JWTs. | UN-OVI-008 | Test |
+| **SYS-OVI-022** | The WebSocket connection to the Session Awareness Service shall implement automatic reconnection with exponential backoff (initial 1s, max 30s, jitter ±20%). | UN-OVI-008 | Test |
+| **SYS-OVI-023** | The orchestrator shall implement a WebSocket heartbeat (ping/pong at 30s intervals) independent of the `postMessage` bridge heartbeat, and shall tolerate hospital network proxies that terminate idle connections after 60-120 seconds. | UN-OVI-008 | Analysis/Test |
+| **SYS-OVI-024** | When the Session Awareness Service is unavailable, the multi-case warning feature (SYS-SES-004 in Viewer SRS) shall be gracefully disabled. All other clinical functions shall continue unaffected. | UN-OVI-008 | Test |
+
+## 1.12 Case Assignment (CA) Requirements
+
+Case assignment tracks which people are responsible for which cases. The `wsi.case_pathologists` table is the authoritative source of truth; the worklist read model (`pathology_worklist.assigned_to_identity_id`) is a denormalized projection of the PRIMARY assignment from this table. The assigned person's organizational position (Pathologist, Resident, Fellow, etc.) is resolved from their `iam.identity` role assignments — it is not stored redundantly in the case assignment table.
+
+### 1.12.1 Assignment Data Model
+
+| ID | System Requirement | Trace to User Need | Verification Method |
+| :--- | :--- | :--- | :--- |
+| **SYS-CA-001** | The system shall maintain a `wsi.case_pathologists` table relating cases to identities with a `designation` column indicating the person's function on the case: `PRIMARY`, `SECONDARY`, `CONSULTING`, or `GROSSING`. The person's organizational position (Pathologist, Resident, Fellow, etc.) is not stored in this table — it is resolved from `iam.identity_roles` at query time. | UN-CA-001, UN-CA-002 | Inspection/Test |
+| **SYS-CA-002** | The system shall enforce at most one `PRIMARY` designation per case via a partial unique index (`UNIQUE (case_id) WHERE designation = 'PRIMARY'`). A case may have zero or more SECONDARY and CONSULTING assignments. | UN-CA-001 | Test |
+| **SYS-CA-003** | The system shall prevent duplicate assignments of the same identity to the same case via a unique constraint on `(case_id, identity_id)`. | UN-CA-002 | Test |
+| **SYS-CA-004** | The system shall prevent deletion of an identity record (`iam.identity`) that has active case assignments (`ON DELETE RESTRICT` on `identity_id` FK). The identity must first be unassigned from all cases or deactivated. | UN-CA-001 | Test |
+| **SYS-CA-005** | The system shall cascade-delete case assignments when a case is deleted (`ON DELETE CASCADE` on `case_id` FK), so that removing a case does not leave orphaned assignment records. | N/A (Data integrity) | Test |
+| **SYS-CA-006** | The system shall record the identity of the user or service account that made the assignment (`assigned_by`) and the timestamp of the assignment (`assigned_at`) for audit purposes. | UN-CA-004 | Inspection |
+| **SYS-CA-007** | The system shall support a `sequence` field for controlling display ordering of people within a given designation group on a case (e.g., ordering multiple SECONDARY assignments). | UN-CA-002 | Test |
+| **SYS-CA-008** | The worklist read model (`pathology_worklist.assigned_to_identity_id` and `assigned_to_display`) shall be synchronized from the `wsi.case_pathologists` table, reflecting the PRIMARY designation. The case_pathologists table is the source of truth; the worklist is a projection. | UN-CA-003 | Analysis/Test |
+
+### 1.12.2 Assignment Pathways
+
+| ID | System Requirement | Trace to User Need | Verification Method |
+| :--- | :--- | :--- | :--- |
+| **SYS-CA-009** | The system shall provide a single assignment API endpoint that accepts a case identifier, an identity identifier, a designation (`PRIMARY`, `SECONDARY`, `CONSULTING`, `GROSSING`), and an optional `assigned_by` identity. All assignment pathways (LIS-driven, algorithmic, manual) shall converge on this API. | UN-CA-001, UN-CA-002 | Test |
+| **SYS-CA-010** | The system shall support LIS-driven assignment: when a case is ingested with pathologist metadata from the LIS (e.g., via HL7 ORM/OBR), the ingestion pipeline shall resolve the pathologist identity against `iam.identity` and create a case assignment via the assignment API. | UN-CA-001 | Analysis/Test |
+| **SYS-CA-011** | The system shall support algorithmic assignment via integration with an external scheduling service (Qupanda): the system queries for the optimal pathologist based on specimen type, service line, and current availability, then writes the assignment via the assignment API. | UN-CA-001 | Analysis/Test |
+| **SYS-CA-012** | The system shall support manual assignment: an authorized user (administrator or supervising pathologist) assigns or reassigns a case to a person directly through the application interface, using the same assignment API. | UN-CA-001, UN-CA-002 | Test |
 
 # 2. Interface Requirements
 

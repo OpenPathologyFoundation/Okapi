@@ -1,0 +1,46 @@
+{
+  "seed": "jade-fern-8057",
+  "professional": {
+    "provider_id": "xenonym",
+    "external_subject": "XNP-000001",
+    "username": "gsneakhan",
+    "email": "ghovru.sneakhan@xenonym.test",
+    "display_name": "Dr. Ghovru Sneakhan, DO",
+    "display_short": "Dr. G. Sneakhan, DO",
+    "given_name": "Ghovru",
+    "family_name": "Sneakhan",
+    "middle_name": null,
+    "prefix": "Dr.",
+    "suffix": null,
+    "is_active": true,
+    "attributes": {
+      "role": "pathologist",
+      "npi": "XNP-000001",
+      "phone": "555-757-4116",
+      "address": {
+        "line": "8639 Nairmajaishel Lane",
+        "city": "Quevuldur",
+        "state": "KT",
+        "zip": "90185",
+        "country": "Xenonymia"
+      },
+      "avatar_url": "https://xenonym.test/avatars/pathologist/XNP-000001.jpg",
+      "subspecialties": [
+        "Cytopathology",
+        "Molecular Pathology",
+        "Neuropathology"
+      ],
+      "emergency_contacts": [
+        {
+          "name": "Glamgathorum Tsaubemdel",
+          "phone": "555-330-5356",
+          "relationship": "partner"
+        }
+      ]
+    },
+    "flags": [
+      "test_professional",
+      "role:pathologist"
+    ]
+  }
+}

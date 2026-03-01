@@ -1,0 +1,46 @@
+{
+  "seed": "lush-pine-8652",
+  "professional": {
+    "provider_id": "xenonym",
+    "external_subject": "XNP-000001",
+    "username": "tsnausfo",
+    "email": "tholgan.snausfo@xenonym.test",
+    "display_name": "Tholgan Snausfo",
+    "display_short": "T. Snausfo",
+    "given_name": "Tholgan",
+    "family_name": "Snausfo",
+    "middle_name": null,
+    "prefix": null,
+    "suffix": null,
+    "is_active": true,
+    "attributes": {
+      "role": "clinical_admin",
+      "npi": "XNP-000001",
+      "phone": "555-875-7869",
+      "address": {
+        "line": "4025 Zaivaukul Court",
+        "city": "Zasjamowrum",
+        "state": "TL",
+        "zip": "90302",
+        "country": "Xenonymia"
+      },
+      "avatar_url": "https://xenonym.test/avatars/clinical_admin/XNP-000001.jpg",
+      "emergency_contacts": [
+        {
+          "name": "Taklealu Tirurnuvuv",
+          "phone": "555-288-5774",
+          "relationship": "spouse"
+        },
+        {
+          "name": "Thusbernimi Fambiam",
+          "phone": "555-723-9009",
+          "relationship": "parent"
+        }
+      ]
+    },
+    "flags": [
+      "test_professional",
+      "role:clinical_admin"
+    ]
+  }
+}

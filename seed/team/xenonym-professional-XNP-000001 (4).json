@@ -1,0 +1,50 @@
+{
+  "seed": "frost-haven-4631",
+  "professional": {
+    "provider_id": "xenonym",
+    "external_subject": "XNP-000001",
+    "username": "bmodeswuv",
+    "email": "broulanmun.modeswuv@xenonym.test",
+    "display_name": "Dr. Broulanmun Modeswuv, MD",
+    "display_short": "Dr. B. Modeswuv, MD",
+    "given_name": "Broulanmun",
+    "family_name": "Modeswuv",
+    "middle_name": null,
+    "prefix": "Dr.",
+    "suffix": null,
+    "is_active": true,
+    "attributes": {
+      "role": "pathologist",
+      "npi": "XNP-000001",
+      "phone": "555-458-1415",
+      "address": {
+        "line": "6443 Wriplil Boulevard",
+        "city": "Vrordilhom",
+        "state": "JR",
+        "zip": "90159",
+        "country": "Xenonymia"
+      },
+      "avatar_url": "https://xenonym.test/avatars/pathologist/XNP-000001.jpg",
+      "subspecialties": [
+        "Pulmonary Pathology",
+        "Cytopathology"
+      ],
+      "emergency_contacts": [
+        {
+          "name": "Bumal Thuwhaur",
+          "phone": "555-473-7634",
+          "relationship": "sibling"
+        },
+        {
+          "name": "Jeilkatiwra Bandeknor",
+          "phone": "555-574-5917",
+          "relationship": "spouse"
+        }
+      ]
+    },
+    "flags": [
+      "test_professional",
+      "role:pathologist"
+    ]
+  }
+}

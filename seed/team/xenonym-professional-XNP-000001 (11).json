@@ -1,0 +1,45 @@
+{
+  "seed": "crisp-shard-1709",
+  "professional": {
+    "provider_id": "xenonym",
+    "external_subject": "XNP-000001",
+    "username": "gzobirvofain",
+    "email": "glothefakpuv.zobirvofain@xenonym.test",
+    "display_name": "Glothefakpuv Zobirvofain, HT(ASCP)",
+    "display_short": "G. Zobirvofain, HT(ASCP)",
+    "given_name": "Glothefakpuv",
+    "family_name": "Zobirvofain",
+    "middle_name": null,
+    "prefix": null,
+    "suffix": null,
+    "is_active": true,
+    "attributes": {
+      "role": "histotech",
+      "npi": "XNP-000001",
+      "phone": "555-800-9308",
+      "address": {
+        "line": "7257 Chiosai Boulevard",
+        "city": "Whamkajon",
+        "state": "BX",
+        "zip": "90371",
+        "country": "Xenonymia"
+      },
+      "avatar_url": "https://xenonym.test/avatars/histotech/XNP-000001.jpg",
+      "subspecialties": [
+        "Cardiovascular Pathology",
+        "Gynecologic Pathology"
+      ],
+      "emergency_contacts": [
+        {
+          "name": "Bavwel Quusneithujem",
+          "phone": "555-596-7585",
+          "relationship": "partner"
+        }
+      ]
+    },
+    "flags": [
+      "test_professional",
+      "role:histotech"
+    ]
+  }
+}

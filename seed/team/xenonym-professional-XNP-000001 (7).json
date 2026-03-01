@@ -1,0 +1,49 @@
+{
+  "seed": "dusty-prism-6667",
+  "professional": {
+    "provider_id": "xenonym",
+    "external_subject": "XNP-000001",
+    "username": "gmuklus",
+    "email": "gluber.muklus@xenonym.test",
+    "display_name": "Dr. Gluber Muklus, MD",
+    "display_short": "Dr. G. Muklus, MD",
+    "given_name": "Gluber",
+    "family_name": "Muklus",
+    "middle_name": null,
+    "prefix": "Dr.",
+    "suffix": null,
+    "is_active": true,
+    "attributes": {
+      "role": "resident",
+      "npi": "XNP-000001",
+      "phone": "555-604-8747",
+      "address": {
+        "line": "1937 Mearveheith Terrace",
+        "city": "Jiavulowriv",
+        "state": "PL",
+        "zip": "90690",
+        "country": "Xenonymia"
+      },
+      "avatar_url": "https://xenonym.test/avatars/resident/XNP-000001.jpg",
+      "subspecialties": [
+        "Head and Neck Pathology"
+      ],
+      "emergency_contacts": [
+        {
+          "name": "Kojindowur Taikwa",
+          "phone": "555-805-2029",
+          "relationship": "parent"
+        },
+        {
+          "name": "Giojormin Bite",
+          "phone": "555-163-2633",
+          "relationship": "parent"
+        }
+      ]
+    },
+    "flags": [
+      "test_professional",
+      "role:resident"
+    ]
+  }
+}

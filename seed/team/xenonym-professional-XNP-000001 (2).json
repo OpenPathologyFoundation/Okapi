@@ -1,0 +1,46 @@
+{
+  "seed": "frost-shard-2428",
+  "professional": {
+    "provider_id": "xenonym",
+    "external_subject": "XNP-000001",
+    "username": "ltsindi",
+    "email": "lukbavrul.tsindi@xenonym.test",
+    "display_name": "Dr. Lukbavrul Tsindi, DO",
+    "display_short": "Dr. L. Tsindi, DO",
+    "given_name": "Lukbavrul",
+    "family_name": "Tsindi",
+    "middle_name": null,
+    "prefix": "Dr.",
+    "suffix": null,
+    "is_active": true,
+    "attributes": {
+      "role": "pathologist",
+      "npi": "XNP-000001",
+      "phone": "555-385-1819",
+      "address": {
+        "line": "4404 Saiszis Lane",
+        "city": "Spegrausnaiv",
+        "state": "BX",
+        "zip": "90465",
+        "country": "Xenonymia"
+      },
+      "avatar_url": "https://xenonym.test/avatars/pathologist/XNP-000001.jpg",
+      "subspecialties": [
+        "Cardiovascular Pathology",
+        "Molecular Pathology",
+        "Bone and Soft Tissue Pathology"
+      ],
+      "emergency_contacts": [
+        {
+          "name": "Vovi Kaunsi",
+          "phone": "555-451-9930",
+          "relationship": "parent"
+        }
+      ]
+    },
+    "flags": [
+      "test_professional",
+      "role:pathologist"
+    ]
+  }
+}

@@ -1,181 +1,306 @@
--- Okapi AuthN/AuthZ schema (managed by Flyway)
--- Based on the proposed `console_2.sql` schema.
+-- Okapi IAM schema (managed by Flyway)
 
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
+CREATE SCHEMA IF NOT EXISTS iam;
 
--- -----------------------------
--- Roles
--- -----------------------------
-CREATE TABLE IF NOT EXISTS roles (
-    id          BIGSERIAL PRIMARY KEY,
-    name        VARCHAR(50)  NOT NULL UNIQUE,
-    description VARCHAR(255),
+-- ---------------------------------------------------------------------------
+-- Identity: issuer-scoped subject, normalized claims
+-- ---------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS iam.identity (
+    identity_id              uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    provider_id              text NOT NULL,
+    external_subject         text NOT NULL,
 
-    is_system   BOOLEAN      NOT NULL DEFAULT TRUE,
-    metadata    JSONB        NOT NULL DEFAULT '{}'::jsonb,
+    username                 text NULL,
+    email                    text NULL,
+    display_name             text NULL,
+    display_short            text NULL,
+    given_name               text NULL,
+    family_name              text NULL,
+    middle_name              text NULL,
+    prefix                   text NULL,
+    suffix                   text NULL,
 
-    created_at  TIMESTAMPTZ  NOT NULL DEFAULT now(),
-    updated_at  TIMESTAMPTZ
+    is_active                boolean NOT NULL DEFAULT true,
+    last_seen_at             timestamptz NULL,
+
+    attributes               jsonb NOT NULL DEFAULT '{}'::jsonb,
+
+    created_at               timestamptz NOT NULL DEFAULT now(),
+    created_by_identity_id   uuid NULL,
+    updated_at               timestamptz NOT NULL DEFAULT now(),
+    updated_by_identity_id   uuid NULL,
+
+    CONSTRAINT uq_iam_identity_provider_subject
+        UNIQUE (provider_id, external_subject)
 );
 
-CREATE INDEX IF NOT EXISTS idx_roles_name ON roles (name);
+CREATE INDEX IF NOT EXISTS ix_iam_identity_email
+    ON iam.identity (email);
 
--- -----------------------------
--- Identities
--- -----------------------------
--- external_subject should be unique per provider/issuer, not globally.
-CREATE TABLE IF NOT EXISTS identities (
-    id               BIGSERIAL PRIMARY KEY,
+CREATE INDEX IF NOT EXISTS ix_iam_identity_username
+    ON iam.identity (username);
 
-    -- stable internal identifier safe to expose in URLs/logs
-    euid             UUID         NOT NULL DEFAULT gen_random_uuid() UNIQUE,
+-- ---------------------------------------------------------------------------
+-- RBAC primitives
+-- ---------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS iam.role (
+    role_id                  uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    name                     text NOT NULL,
+    description              text NULL,
+    is_system                boolean NOT NULL DEFAULT false,
 
-    -- external identity reference (e.g., Keycloak token "sub")
-    external_subject VARCHAR(255) NOT NULL,
+    created_at               timestamptz NOT NULL DEFAULT now(),
+    created_by_identity_id   uuid NULL,
+    updated_at               timestamptz NOT NULL DEFAULT now(),
+    updated_by_identity_id   uuid NULL,
 
-    -- issuer / realm / provider identifier (e.g., Keycloak realm URL)
-    provider_id      VARCHAR(255) NOT NULL,
-
-    -- human-facing fields
-    display_name     VARCHAR(100),
-    given_name       VARCHAR(60),
-    family_name      VARCHAR(60),
-
-    -- email is often missing for service accounts; keep unique when present
-    email            VARCHAR(100) UNIQUE,
-
-    -- account lifecycle / environment
-    account_type     VARCHAR(20)  NOT NULL DEFAULT 'PRODUCTION'
-        CHECK (account_type IN ('PRODUCTION', 'TEST', 'DEMO', 'SERVICE')),
-    status           VARCHAR(20)  NOT NULL DEFAULT 'ACTIVE'
-        CHECK (status IN ('ACTIVE', 'DISABLED', 'LOCKED', 'PENDING')),
-
-    -- operational flags
-    is_test_user        BOOLEAN     NOT NULL DEFAULT FALSE,
-    is_demo_user        BOOLEAN     NOT NULL DEFAULT FALSE,
-    break_glass_enabled BOOLEAN     NOT NULL DEFAULT FALSE,
-
-    -- future-proof attributes without schema churn
-    attributes       JSONB        NOT NULL DEFAULT '{}'::jsonb,
-
-    created_at       TIMESTAMPTZ  NOT NULL DEFAULT now(),
-    updated_at       TIMESTAMPTZ,
-    last_login_at    TIMESTAMPTZ,
-    last_seen_at     TIMESTAMPTZ,
-    disabled_at      TIMESTAMPTZ,
-
-    CONSTRAINT uq_identities_provider_subject UNIQUE (provider_id, external_subject)
+    CONSTRAINT uq_iam_role_name UNIQUE (name)
 );
 
-CREATE INDEX IF NOT EXISTS idx_identities_provider_subject ON identities (provider_id, external_subject);
-CREATE INDEX IF NOT EXISTS idx_identities_email ON identities (email);
-CREATE INDEX IF NOT EXISTS idx_identities_account_type ON identities (account_type);
-CREATE INDEX IF NOT EXISTS idx_identities_status ON identities (status);
+CREATE TABLE IF NOT EXISTS iam.permission (
+    permission_id            uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    name                     text NOT NULL,
+    description              text NULL,
 
--- -----------------------------
--- Identity ↔ Roles (many-to-many)
--- -----------------------------
-CREATE TABLE IF NOT EXISTS identity_roles (
-    identity_id BIGINT NOT NULL REFERENCES identities ON DELETE CASCADE,
-    role_id     BIGINT NOT NULL REFERENCES roles ON DELETE CASCADE,
+    created_at               timestamptz NOT NULL DEFAULT now(),
+    created_by_identity_id   uuid NULL,
+    updated_at               timestamptz NOT NULL DEFAULT now(),
+    updated_by_identity_id   uuid NULL,
 
-    assigned_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-
-    assignment_source VARCHAR(20) NOT NULL DEFAULT 'MANUAL'
-        CHECK (assignment_source IN ('MANUAL', 'IDP_GROUP', 'IMPORT', 'SYSTEM')),
-    assigned_by_identity_id BIGINT REFERENCES identities ON DELETE SET NULL,
-
-    effective_from TIMESTAMPTZ NOT NULL DEFAULT now(),
-    effective_to   TIMESTAMPTZ,
-
-    is_primary  BOOLEAN NOT NULL DEFAULT FALSE,
-
-    PRIMARY KEY (identity_id, role_id)
+    CONSTRAINT uq_iam_permission_name UNIQUE (name)
 );
 
-CREATE INDEX IF NOT EXISTS idx_identity_roles_role_id ON identity_roles (role_id);
-CREATE INDEX IF NOT EXISTS idx_identity_roles_identity_id ON identity_roles (identity_id);
-CREATE INDEX IF NOT EXISTS idx_identity_roles_effective ON identity_roles (effective_from, effective_to);
+CREATE TABLE IF NOT EXISTS iam.role_permission (
+    role_id                  uuid NOT NULL,
+    permission_id            uuid NOT NULL,
 
--- -----------------------------
--- Permission groups
--- -----------------------------
-CREATE TABLE IF NOT EXISTS permission_groups (
-    id          BIGSERIAL PRIMARY KEY,
-    name        VARCHAR(100) NOT NULL UNIQUE,
-    description VARCHAR(255),
+    created_at               timestamptz NOT NULL DEFAULT now(),
+    created_by_identity_id   uuid NULL,
 
-    group_type  VARCHAR(30) NOT NULL DEFAULT 'SERVICE_LINE'
-        CHECK (group_type IN ('SERVICE_LINE', 'SITE', 'TEAM', 'CUSTOM')),
+    PRIMARY KEY (role_id, permission_id),
 
-    metadata    JSONB        NOT NULL DEFAULT '{}'::jsonb,
-
-    created_at  TIMESTAMPTZ  NOT NULL DEFAULT now(),
-    updated_at  TIMESTAMPTZ
+    CONSTRAINT fk_iam_role_permission_role
+        FOREIGN KEY (role_id) REFERENCES iam.role(role_id) ON DELETE CASCADE,
+    CONSTRAINT fk_iam_role_permission_permission
+        FOREIGN KEY (permission_id) REFERENCES iam.permission(permission_id) ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS identity_permission_groups (
-    identity_id BIGINT NOT NULL REFERENCES identities ON DELETE CASCADE,
-    group_id    BIGINT NOT NULL REFERENCES permission_groups ON DELETE CASCADE,
+-- ---------------------------------------------------------------------------
+-- Identity ↔ Role assignment (local + IdP-derived + time-bounded)
+-- ---------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS iam.identity_role (
+    identity_role_id         uuid PRIMARY KEY DEFAULT gen_random_uuid(),
 
-    assigned_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    identity_id              uuid NOT NULL,
+    role_id                  uuid NOT NULL,
 
-    assignment_source VARCHAR(20) NOT NULL DEFAULT 'MANUAL'
-        CHECK (assignment_source IN ('MANUAL', 'IDP_GROUP', 'IMPORT', 'SYSTEM')),
-    assigned_by_identity_id BIGINT REFERENCES identities ON DELETE SET NULL,
+    assignment_source        text NOT NULL DEFAULT 'LOCAL_ADMIN',
+    source_ref               text NULL,
 
-    PRIMARY KEY (identity_id, group_id)
+    effective_from           timestamptz NOT NULL DEFAULT now(),
+    effective_to             timestamptz NULL,
+
+    created_at               timestamptz NOT NULL DEFAULT now(),
+    created_by_identity_id   uuid NULL,
+    updated_at               timestamptz NOT NULL DEFAULT now(),
+    updated_by_identity_id   uuid NULL,
+
+    CONSTRAINT fk_iam_identity_role_identity
+        FOREIGN KEY (identity_id) REFERENCES iam.identity(identity_id) ON DELETE CASCADE,
+    CONSTRAINT fk_iam_identity_role_role
+        FOREIGN KEY (role_id) REFERENCES iam.role(role_id) ON DELETE CASCADE,
+
+    CONSTRAINT ck_iam_identity_role_assignment_source
+        CHECK (assignment_source IN ('IDP_GROUP', 'LOCAL_ADMIN', 'BREAK_GLASS', 'SYSTEM')),
+
+    CONSTRAINT ck_iam_identity_role_effective_window
+        CHECK (effective_to IS NULL OR effective_to > effective_from)
 );
 
-CREATE INDEX IF NOT EXISTS idx_identity_permission_groups_group_id ON identity_permission_groups (group_id);
+CREATE UNIQUE INDEX IF NOT EXISTS uq_iam_identity_role_active
+    ON iam.identity_role (identity_id, role_id)
+    WHERE effective_to IS NULL;
 
--- -----------------------------
--- IdP group mappings
--- -----------------------------
-CREATE TABLE IF NOT EXISTS idp_group_mappings (
-    id             BIGSERIAL PRIMARY KEY,
-    provider_id    VARCHAR(255) NOT NULL,
-    idp_group_name VARCHAR(100) NOT NULL,
+CREATE INDEX IF NOT EXISTS ix_iam_identity_role_identity
+    ON iam.identity_role (identity_id);
 
-    metadata       JSONB        NOT NULL DEFAULT '{}'::jsonb,
+CREATE INDEX IF NOT EXISTS ix_iam_identity_role_role
+    ON iam.identity_role (role_id);
 
-    CONSTRAINT uq_idp_group_provider_name UNIQUE (provider_id, idp_group_name)
+-- ---------------------------------------------------------------------------
+-- IdP group mappings (issuer-scoped)
+-- ---------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS iam.idp_group (
+    idp_group_id             uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    provider_id              text NOT NULL,
+    group_name               text NOT NULL,
+    description              text NULL,
+
+    created_at               timestamptz NOT NULL DEFAULT now(),
+    created_by_identity_id   uuid NULL,
+    updated_at               timestamptz NOT NULL DEFAULT now(),
+    updated_by_identity_id   uuid NULL,
+
+    CONSTRAINT uq_iam_idp_group_provider_name
+        UNIQUE (provider_id, group_name)
 );
 
-CREATE TABLE IF NOT EXISTS idp_group_role_mappings (
-    idp_group_mapping_id BIGINT NOT NULL REFERENCES idp_group_mappings ON DELETE CASCADE,
-    role_id              BIGINT NOT NULL REFERENCES roles ON DELETE CASCADE,
-    PRIMARY KEY (idp_group_mapping_id, role_id)
+CREATE TABLE IF NOT EXISTS iam.idp_group_role (
+    idp_group_id             uuid NOT NULL,
+    role_id                  uuid NOT NULL,
+
+    created_at               timestamptz NOT NULL DEFAULT now(),
+    created_by_identity_id   uuid NULL,
+
+    PRIMARY KEY (idp_group_id, role_id),
+
+    CONSTRAINT fk_iam_idp_group_role_group
+        FOREIGN KEY (idp_group_id) REFERENCES iam.idp_group(idp_group_id) ON DELETE CASCADE,
+    CONSTRAINT fk_iam_idp_group_role_role
+        FOREIGN KEY (role_id) REFERENCES iam.role(role_id) ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS idp_group_permission_group_mappings (
-    idp_group_mapping_id BIGINT NOT NULL REFERENCES idp_group_mappings ON DELETE CASCADE,
-    group_id             BIGINT NOT NULL REFERENCES permission_groups ON DELETE CASCADE,
-    PRIMARY KEY (idp_group_mapping_id, group_id)
+-- ---------------------------------------------------------------------------
+-- Trusted devices (remember this device)
+-- ---------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS iam.session_device (
+    device_id                uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    identity_id              uuid NOT NULL,
+
+    device_fingerprint_hash  text NOT NULL,
+
+    first_seen_at            timestamptz NOT NULL DEFAULT now(),
+    last_seen_at             timestamptz NULL,
+
+    trusted_until            timestamptz NULL,
+    revoked_at               timestamptz NULL,
+    revoked_by_identity_id   uuid NULL,
+
+    metadata                 jsonb NOT NULL DEFAULT '{}'::jsonb,
+
+    created_at               timestamptz NOT NULL DEFAULT now(),
+    created_by_identity_id   uuid NULL,
+    updated_at               timestamptz NOT NULL DEFAULT now(),
+    updated_by_identity_id   uuid NULL,
+
+    CONSTRAINT fk_iam_session_device_identity
+        FOREIGN KEY (identity_id) REFERENCES iam.identity(identity_id) ON DELETE CASCADE
 );
 
--- -----------------------------
+CREATE UNIQUE INDEX IF NOT EXISTS uq_iam_session_device_identity_fingerprint
+    ON iam.session_device (identity_id, device_fingerprint_hash);
+
+CREATE INDEX IF NOT EXISTS ix_iam_session_device_identity
+    ON iam.session_device (identity_id);
+
+-- ---------------------------------------------------------------------------
+-- Break-glass grants
+-- ---------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS iam.break_glass_grant (
+    grant_id                 uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    identity_id              uuid NOT NULL REFERENCES iam.identity,
+
+    scope_entity_type        text NOT NULL,
+    scope_entity_id          uuid NOT NULL,
+
+    reason_code              text NOT NULL,
+    justification            text NULL,
+
+    granted_at               timestamptz NOT NULL DEFAULT now(),
+    expires_at               timestamptz NOT NULL,
+
+    revoked_at               timestamptz NULL,
+    revoked_by_identity_id   uuid NULL,
+
+    metadata                 jsonb NOT NULL DEFAULT '{}'::jsonb,
+
+    created_at               timestamptz NOT NULL DEFAULT now(),
+    created_by_identity_id   uuid NULL,
+    updated_at               timestamptz NOT NULL DEFAULT now(),
+    updated_by_identity_id   uuid NULL,
+
+    CONSTRAINT ck_iam_break_glass_expiry CHECK (expires_at > granted_at)
+);
+
+CREATE INDEX IF NOT EXISTS ix_iam_break_glass_identity
+    ON iam.break_glass_grant (identity_id, expires_at);
+
+-- ---------------------------------------------------------------------------
+-- Research access grants
+-- ---------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS iam.research_access_grant (
+    grant_id                 uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    identity_id              uuid NOT NULL REFERENCES iam.identity,
+
+    scope_type               text NOT NULL,
+    scope_entity_id          uuid NULL,
+    scope_filter             jsonb NULL,
+
+    protocol_id              text NULL,
+    reason                   text NOT NULL,
+    approved_by_identity_id  uuid NULL REFERENCES iam.identity,
+
+    phi_access_level         text NOT NULL CHECK (phi_access_level IN
+                             ('NONE', 'MASKED', 'LIMITED', 'FULL')),
+
+    granted_at               timestamptz NOT NULL DEFAULT now(),
+    expires_at               timestamptz NOT NULL,
+
+    revoked_at               timestamptz NULL,
+    revoked_by_identity_id   uuid NULL,
+    revocation_reason        text NULL,
+
+    created_at               timestamptz NOT NULL DEFAULT now(),
+    created_by_identity_id   uuid NULL,
+    updated_at               timestamptz NOT NULL DEFAULT now(),
+    updated_by_identity_id   uuid NULL
+);
+
+CREATE INDEX IF NOT EXISTS ix_iam_research_grant_identity
+    ON iam.research_access_grant (identity_id, expires_at);
+
+CREATE INDEX IF NOT EXISTS ix_iam_research_grant_protocol
+    ON iam.research_access_grant (protocol_id);
+
+-- ---------------------------------------------------------------------------
 -- Audit events
--- -----------------------------
-CREATE TABLE IF NOT EXISTS audit_events (
-    id          BIGSERIAL PRIMARY KEY,
-    event_id    UUID        NOT NULL DEFAULT gen_random_uuid() UNIQUE,
-    occurred_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-    event_type  VARCHAR(50) NOT NULL,
+-- ---------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS iam.audit_event (
+    event_id                 uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    occurred_at              timestamptz NOT NULL DEFAULT now(),
+    event_type               text NOT NULL,
 
-    actor_identity_id BIGINT REFERENCES identities ON DELETE SET NULL,
-    target_identity_id BIGINT REFERENCES identities ON DELETE SET NULL,
+    actor_identity_id        uuid NULL REFERENCES iam.identity,
+    actor_provider_id        text NULL,
+    actor_external_subject   text NULL,
 
-    outcome     VARCHAR(50),
-    request_id  UUID,
-    ip          INET,
-    user_agent  TEXT,
-    details     TEXT,
-    metadata    JSONB       NOT NULL DEFAULT '{}'::jsonb
+    target_entity_type       text NULL,
+    target_entity_id         uuid NULL,
+    target_identity_id       uuid NULL REFERENCES iam.identity,
+
+    outcome                  text NULL,
+    outcome_reason           text NULL,
+
+    request_id               uuid NULL,
+    session_id               uuid NULL,
+    ip_address               inet NULL,
+    user_agent               text NULL,
+    details                  text NULL,
+    metadata                 jsonb NOT NULL DEFAULT '{}'::jsonb
 );
 
-CREATE INDEX IF NOT EXISTS idx_audit_events_occurred_at ON audit_events (occurred_at DESC);
-CREATE INDEX IF NOT EXISTS idx_audit_events_event_type ON audit_events (event_type);
-CREATE INDEX IF NOT EXISTS idx_audit_events_actor ON audit_events (actor_identity_id);
-CREATE INDEX IF NOT EXISTS idx_audit_events_target ON audit_events (target_identity_id);
-CREATE INDEX IF NOT EXISTS idx_audit_events_request_id ON audit_events (request_id);
+CREATE INDEX IF NOT EXISTS ix_iam_audit_event_occurred
+    ON iam.audit_event (occurred_at);
+
+CREATE INDEX IF NOT EXISTS ix_iam_audit_event_type
+    ON iam.audit_event (event_type);
+
+CREATE INDEX IF NOT EXISTS ix_iam_audit_event_actor
+    ON iam.audit_event (actor_identity_id);
+
+CREATE INDEX IF NOT EXISTS ix_iam_audit_event_target
+    ON iam.audit_event (target_entity_type, target_entity_id);
+
+CREATE INDEX IF NOT EXISTS ix_iam_audit_event_request
+    ON iam.audit_event (request_id);

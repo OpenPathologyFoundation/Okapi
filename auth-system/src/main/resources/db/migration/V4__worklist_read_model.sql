@@ -39,8 +39,8 @@ CREATE TABLE IF NOT EXISTS pathology_worklist (
     priority             VARCHAR(20)  NOT NULL DEFAULT 'ROUTINE'
         CHECK (priority IN ('STAT', 'URGENT', 'ROUTINE')),
 
-    -- Assignment (denormalized for read performance)
-    assigned_to_id       BIGINT REFERENCES identities ON DELETE SET NULL,
+    -- Assignment (no cross-schema foreign keys)
+    assigned_to_identity_id uuid,
     assigned_to_display  VARCHAR(100),
 
     -- Slide counts
@@ -65,7 +65,7 @@ CREATE TABLE IF NOT EXISTS pathology_worklist (
 
 -- Indexes for common query patterns
 CREATE INDEX IF NOT EXISTS idx_worklist_accession ON pathology_worklist (accession_number);
-CREATE INDEX IF NOT EXISTS idx_worklist_assigned_to ON pathology_worklist (assigned_to_id);
+CREATE INDEX IF NOT EXISTS idx_worklist_assigned_to ON pathology_worklist (assigned_to_identity_id);
 CREATE INDEX IF NOT EXISTS idx_worklist_service ON pathology_worklist (service);
 CREATE INDEX IF NOT EXISTS idx_worklist_status ON pathology_worklist (status);
 CREATE INDEX IF NOT EXISTS idx_worklist_priority ON pathology_worklist (priority);
@@ -73,7 +73,7 @@ CREATE INDEX IF NOT EXISTS idx_worklist_case_date ON pathology_worklist (case_da
 
 -- Composite index for "my cases" query (assigned + not signed out)
 CREATE INDEX IF NOT EXISTS idx_worklist_my_cases
-    ON pathology_worklist (assigned_to_id, status)
+    ON pathology_worklist (assigned_to_identity_id, status)
     WHERE status NOT IN ('SIGNED_OUT', 'AMENDED');
 
 -- Composite index for service queue

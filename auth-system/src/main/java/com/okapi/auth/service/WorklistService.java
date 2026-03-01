@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -26,7 +27,7 @@ public class WorklistService {
     }
 
     @Transactional(readOnly = true)
-    public WorklistPageResponse getWorklist(WorklistFilterRequest filter, Long currentUserId) {
+    public WorklistPageResponse getWorklist(WorklistFilterRequest filter, UUID currentUserId) {
         Specification<WorklistItemEntity> spec = buildSpecification(filter, currentUserId);
 
         Sort sort = buildSort(filter);
@@ -59,21 +60,21 @@ public class WorklistService {
                 .orElse(null);
     }
 
-    private Specification<WorklistItemEntity> buildSpecification(WorklistFilterRequest filter, Long currentUserId) {
+    private Specification<WorklistItemEntity> buildSpecification(WorklistFilterRequest filter, UUID currentUserId) {
         return (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
 
             // My cases filter
             if (Boolean.TRUE.equals(filter.myCasesOnly()) && currentUserId != null) {
-                predicates.add(cb.equal(root.get("assignedToId"), currentUserId));
+                predicates.add(cb.equal(root.get("assignedToIdentityId"), currentUserId));
                 // Exclude completed cases for "my cases"
                 predicates.add(cb.notEqual(root.get("status"), "SIGNED_OUT"));
                 predicates.add(cb.notEqual(root.get("status"), "AMENDED"));
             }
 
             // Specific assignee filter (if not using my cases)
-            if (!Boolean.TRUE.equals(filter.myCasesOnly()) && filter.assignedToId() != null) {
-                predicates.add(cb.equal(root.get("assignedToId"), filter.assignedToId()));
+            if (!Boolean.TRUE.equals(filter.myCasesOnly()) && filter.assignedToIdentityId() != null) {
+                predicates.add(cb.equal(root.get("assignedToIdentityId"), filter.assignedToIdentityId()));
             }
 
             // Service filter
@@ -136,12 +137,12 @@ public class WorklistService {
         };
     }
 
-    private WorklistCounts buildCounts(Long currentUserId) {
+    private WorklistCounts buildCounts(UUID currentUserId) {
         long total = worklistRepository.count();
 
         long myCases = 0;
         if (currentUserId != null) {
-            myCases = worklistRepository.findByAssignedToIdAndStatusNotIn(
+            myCases = worklistRepository.findByAssignedToIdentityIdAndStatusNotIn(
                     currentUserId,
                     List.of("SIGNED_OUT", "AMENDED")).size();
         }

@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * DTOs for parsing `seed/identities/demo-identities.v1.json`.
+ * DTOs for parsing `seed/identities/xenonym-identities.v1.json`.
  *
  * Keep these models tolerant to forward-compatible additions in the seed file.
  */

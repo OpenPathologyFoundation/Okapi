@@ -248,6 +248,8 @@
         on:click={toggleEcho}
     ></div>
 
+    <!-- svelte-ignore a11y_click_events_have_key_events -->
+    <!-- svelte-ignore a11y_no_static_element_interactions -->
     <div
         transition:fly={{ y: 20, duration: 300 }}
         class="fixed bottom-20 left-20 z-[101] w-[480px] bg-gray-900/95 backdrop-blur-xl border border-gray-700/50 rounded-2xl shadow-2xl overflow-hidden ring-1 ring-white/10"

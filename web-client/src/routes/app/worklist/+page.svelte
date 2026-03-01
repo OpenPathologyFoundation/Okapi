@@ -36,9 +36,8 @@
 
 	<!-- Main content -->
 	<main class="flex-1 overflow-hidden bg-clinical-bg">
-		<!-- Toolbar -->
-		<div class="flex items-center gap-4 border-b border-clinical-border bg-clinical-surface px-4 py-3">
-			{#if !showFilters}
+		{#if !showFilters}
+			<div class="border-b border-clinical-border bg-clinical-surface px-4 py-2">
 				<button
 					type="button"
 					onclick={() => (showFilters = true)}
@@ -54,36 +53,11 @@
 					</svg>
 					Filters
 				</button>
-			{/if}
-
-			<div class="flex-1"></div>
-
-			<!-- Refresh button -->
-			<button
-				type="button"
-				onclick={() => worklistStore.loadMockData()}
-				class="flex items-center gap-2 rounded-md border border-clinical-border px-3 py-1.5 text-sm text-clinical-text hover:bg-clinical-hover"
-				disabled={worklistStore.isLoading}
-			>
-				<svg
-					class="h-4 w-4 {worklistStore.isLoading ? 'animate-spin' : ''}"
-					fill="none"
-					viewBox="0 0 24 24"
-					stroke="currentColor"
-				>
-					<path
-						stroke-linecap="round"
-						stroke-linejoin="round"
-						stroke-width="2"
-						d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-					/>
-				</svg>
-				Refresh
-			</button>
-		</div>
+			</div>
+		{/if}
 
 		<!-- Table -->
-		<div class="h-[calc(100%-57px)] overflow-auto p-4">
+		<div class="h-full overflow-auto p-4">
 			{#if worklistStore.error}
 				<div class="rounded-lg border border-red-500/30 bg-red-500/10 p-4 text-red-600 dark:text-red-400">
 					<p class="font-medium">Error loading worklist</p>

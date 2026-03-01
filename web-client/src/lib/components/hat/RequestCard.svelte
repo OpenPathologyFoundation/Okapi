@@ -60,6 +60,7 @@
 	const overdue = $derived(isOverdue());
 </script>
 
+<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
 <div
 	class="bg-clinical-surface border border-clinical-border rounded-lg p-4 transition-colors {onClick
 		? 'hover:bg-clinical-hover cursor-pointer'
@@ -67,7 +68,7 @@
 	onclick={onClick}
 	onkeydown={(e) => e.key === 'Enter' && onClick?.()}
 	role={onClick ? 'button' : undefined}
-	tabindex={onClick ? 0 : undefined}
+	tabindex={onClick ? 0 : -1}
 >
 	<div class="flex items-start justify-between gap-4">
 		<div class="flex-1 min-w-0">

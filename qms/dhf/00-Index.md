@@ -43,10 +43,22 @@ Each controlled DHF document SHALL include, at minimum:
 
 ## 4. Naming Conventions and IDs
 ### 4.1 Requirement / risk / test identifiers
-- User needs: UN-###
-- System/software requirements: SR-###
+- User needs (Authentication): UN-AUTHN-###
+- User needs (Authorization): UN-AUTHZ-###
+- User needs (Profile): UN-PROF-###
+- User needs (Research): UN-RES-###
+- User needs (HAT): UN-HAT-###
+- User needs (Worklist): UN-WL-###
+- User needs (Administration): UN-ADMIN-###
+- System requirements (Authentication): SYS-AUTHN-###
+- System requirements (Authorization): SYS-AUTHZ-###
+- System requirements (Profile): SYS-PROF-###
+- System requirements (Research): SYS-RES-###
+- System requirements (HAT): SYS-HAT-###
+- System requirements (Worklist): SYS-WL-###
+- System requirements (Administration): SYS-ADMIN-###
 - Interface requirements: IR-###
-- Risks/hazards: RISK-###
+- Risks/hazards: RISK-### (module-specific: RISK-HAT-###, RISK-WL-###, RISK-ADMIN-###)
 - Risk controls: RC-###
 - Test cases: TEST-###
 - Design elements/modules: MOD-### (optional but recommended)
@@ -79,8 +91,11 @@ The following artifacts constitute the DHF for this system.
 | 03 | Cybersecurity | Threat Model & Security Controls | qms/dhf/03-Cybersecurity.md | Draft/Active |
 | 04 | SDS | Software Design Spec (folder) | qms/dhf/04-SDS/ | Draft/Active |
 | 04-00 | SDS Overview | High-level architecture, component boundaries | qms/dhf/04-SDS/00-SDS-Overview.md | Draft/Active |
-| 04-01 | Auth Architecture | Detailed AuthN/AuthZ design, data model | qms/dhf/04-SDS/01-Auth-Architecture.md | Draft/Active |
+| 04-01 | AuthN Architecture | Authentication: Identity federation, sessions, device trust | qms/dhf/04-SDS/01-AuthN-Architecture.md | Draft/Active |
+| 04-02 | AuthZ Architecture | Authorization: RBAC, permissions, break-glass, research grants | qms/dhf/04-SDS/02-AuthZ-Architecture.md | Draft/Active |
+| 04-03 | IAM Schema | IAM database schema specification | qms/dhf/04-SDS/03-IAM-Schema.md | Draft/Active |
 | 04-04 | HAT Architecture | Histology Asset Tracking architecture, data concepts, and controls | qms/dhf/04-SDS/04-HAT-Architecture.md | Draft/Active |
+| 04-05 | Worklist Architecture | Work List module design | qms/dhf/04-SDS/05-Worklist-Architecture.md | Draft/Active |
 
 ### 5.4 RISK & QUALITY (The "Safety")
 | ID | Artifact | Purpose | Path | Status |
@@ -99,19 +114,28 @@ These artifacts are generated automatically and stored in the `/artifacts` direc
 | SBOM.json | Generated from package.json |
 
 ## 7. SOP Index (Procedures referenced by DHF)
+
+### 7.1 Core SOPs (Reusable across projects)
 | SOP ID | Title | Path | Status |
 |---|---|---|---|
-| SOP-DC | Document & Record Control | qms/sops/SOP-DocControl.md | Active |
-| SOP-CC | Change Control & Config Mgmt | qms/sops/SOP-ChangeControl.md | Active |
-| SOP-SDLC | Software Development Lifecycle | qms/sops/SOP-SDLC.md | Active |
-| SOP-RISK | Risk Management | qms/sops/SOP-RiskMgmt.md | Active |
-| SOP-VULN | Vulnerability Mgmt + Incident Response | qms/sops/SOP-VulnMgmt-IncidentResponse.md | Active |
-| SOP-CAPA | Problem Resolution / CAPA-lite | qms/sops/SOP-CAPA-Lite.md | Active |
+| SOP-DHF-001 | Design History File Management | sops/SOP-DHF-Management.md | Active |
 
-## 7. Objective Evidence and CI/CD Records
+### 7.2 Project-Specific SOPs
+Project-specific SOPs live in the top-level `/sops` folder for easy discovery and versioned approvals in this repo.
+
+| SOP ID | Title | Path | Status |
+|---|---|---|---|
+| SOP-DC | Document & Record Control | sops/SOP-DocControl.md | Active |
+| SOP-CC | Change Control & Config Mgmt | sops/SOP-ChangeControl.md | Active |
+| SOP-SDLC | Software Development Lifecycle | sops/SOP-SDLC.md | Active |
+| SOP-RISK | Risk Management | sops/SOP-RiskMgmt.md | Active |
+| SOP-VULN | Vulnerability Mgmt + Incident Response | sops/SOP-VulnMgmt.md | Active |
+| SOP-CAPA | Problem Resolution / CAPA-lite | sops/SOP-CAPA-Lite.md | Active |
+
+## 8. Objective Evidence and CI/CD Records
 Certain DHF records are generated or collected by CI/CD (GitHub Actions) and stored as build artifacts and/or in releases.
 
-### 7.1 Evidence types (minimum)
+### 8.1 Evidence types (minimum)
 - Build provenance: commit SHA, build ID, container image digests
 - Unit/integration test reports
 - SAST results
@@ -122,28 +146,27 @@ Certain DHF records are generated or collected by CI/CD (GitHub Actions) and sto
 - Release notes
 - Interface conformance tests (HL7/FHIR/CSV golden tests)
 
-### 7.2 Evidence locations
+### 8.2 Evidence locations
 - CI artifacts: GitHub Actions artifacts for workflow runs
 - Release attachments: GitHub Releases (optional, recommended for formal baselines)
 - Optional repository snapshots: qms/records/<release>/ (only if you must keep evidence in-repo)
 
-### 7.3 Evidence-to-release linkage
+### 8.3 Evidence-to-release linkage
 Each RELREC-<release>.md SHALL reference:
 - the Git tag / commit SHA
 - CI workflow run identifiers
 - stored artifact locations for SBOM, test reports, scans, and deployment manifests
 
-## 8. Baselines and Current Status
-### 8.1 Current baseline
+## 9. Baselines and Current Status
+### 9.1 Current baseline
 - Baseline name: <TBD>
 - Baseline date: <TBD>
 - Git tag: <TBD>
 - Release record: qms/dhf/records/RELREC-<release>.md
 
-### 8.2 Open items
+### 9.2 Open items
 - List high-level DHF gaps or pending approvals (if any)
 
-## 9. Revision History (Index)
+## 10. Revision History (Index)
 - v0.1: Initial DHF index created (YYYY-MM-DD)
 - v0.2: <TBD>
-

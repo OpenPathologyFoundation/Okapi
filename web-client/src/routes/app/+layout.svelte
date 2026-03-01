@@ -1,18 +1,41 @@
 <script lang="ts">
+    import type { Snippet } from "svelte";
     import { page } from "$app/state";
-    import { onMount } from "svelte";
+    import { onMount, onDestroy } from "svelte";
+    import { goto } from "$app/navigation";
+    import { browser } from "$app/environment";
     import { themeStore } from "$lib/stores/theme.svelte";
+    import { authStore } from "$lib/stores/auth.svelte";
+    import { idleStore } from "$lib/stores/idle.svelte";
+    import { viewerStore } from "$lib/stores/viewer.svelte";
+    import IdleWarningModal from "$lib/components/IdleWarningModal.svelte";
+
+    // Redirect to /logged-out when auth fails (covers back-button after sign-out)
+    $effect(() => {
+        if (browser && !authStore.isLoading && !authStore.user) {
+            goto("/logged-out");
+        }
+    });
+
+    // Viewer focus management — toggles active/blurred based on current page.
+    // Never closes the viewer; the viewer only closes when the user closes the popup
+    // window directly or the bridge detects the popup is gone.
+    $effect(() => {
+        if (viewerStore.isOpen && viewerStore.currentCase) {
+            const isOnActiveCase = page.url.pathname === `/app/case/${viewerStore.currentCase}`;
+            viewerStore.setViewerFocus(isOnActiveCase);
+        }
+    });
+
+    let { children }: { children: Snippet } = $props();
     // src/routes/app/+layout.svelte
     // Application Shell: Top Bar + Left Nav Rail
 
     import Echo from "$lib/components/Echo.svelte"; // Import Echo
+    import OmniSearch from "$lib/components/OmniSearch.svelte";
 
-    // Mock User State
-    const user = {
-        initials: "EL",
-        role: "Pathologist",
-        color: "bg-blue-600",
-    };
+    // Derive user display from auth store
+    const userColor = "bg-blue-600";
 
     // Navigation active state helper
     function isActive(path: string): boolean {
@@ -21,8 +44,34 @@
         return currentPath.startsWith(path);
     }
 
-    onMount(() => {
+    function getInitials(user: typeof authStore.user): string {
+        if (!user) return "??";
+        if (user.displayShort) return user.displayShort.slice(0, 2).toUpperCase();
+        const g = user.givenName?.[0] ?? "";
+        const f = user.familyName?.[0] ?? "";
+        return (g + f).toUpperCase() || "??";
+    }
+
+    onMount(async () => {
         themeStore.init();
+        authStore.load();
+        try {
+            const res = await fetch("/auth/session-info", {
+                credentials: "include",
+            });
+            if (res.ok) {
+                const data = await res.json();
+                idleStore.init(data.idleTimeoutMinutes ?? 15);
+            } else {
+                idleStore.init(15);
+            }
+        } catch {
+            idleStore.init(15);
+        }
+    });
+
+    onDestroy(() => {
+        idleStore.destroy();
     });
 </script>
 
@@ -47,32 +96,7 @@
         </div>
 
         <!-- Center: Omni-Search -->
-        <div class="flex-1 max-w-2xl">
-            <div class="relative group">
-                <div
-                    class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
-                >
-                    <svg
-                        class="h-4 w-4 text-clinical-muted group-hover:text-clinical-primary transition-colors"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                    >
-                        <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                        />
-                    </svg>
-                </div>
-                <input
-                    type="text"
-                    placeholder="Search Cases, Patients, or Archive..."
-                    class="block w-full rounded-md border-0 bg-clinical-bg py-1.5 pl-10 text-clinical-text ring-1 ring-inset ring-clinical-border placeholder:text-clinical-muted focus:ring-2 focus:ring-inset focus:ring-clinical-primary sm:text-sm sm:leading-6 transition-all"
-                />
-            </div>
-        </div>
+        <OmniSearch />
 
         <!-- Right: User Avatar Badge (Artifact 2) -->
         <div class="w-64 flex justify-end items-center gap-4">
@@ -84,18 +108,18 @@
                         <p
                             class="text-xs font-medium text-clinical-text group-hover:text-clinical-primary transition-colors"
                         >
-                            Dr. Elena Li
+                            {authStore.user?.displayName ?? "Loading..."}
                         </p>
                         <p
                             class="text-[10px] text-clinical-muted uppercase tracking-wider"
                         >
-                            Surgical Path
+                            {authStore.user?.roles?.[0] ?? ""}
                         </p>
                     </div>
                     <div
-                        class={`h-8 w-8 rounded-full ${user.color} flex items-center justify-center text-xs font-bold text-white shadow-lg ring-2 ring-transparent group-hover:ring-clinical-primary/50 transition-all`}
+                        class={`h-8 w-8 rounded-full ${userColor} flex items-center justify-center text-xs font-bold text-white shadow-lg ring-2 ring-transparent group-hover:ring-clinical-primary/50 transition-all`}
                     >
-                        {user.initials}
+                        {getInitials(authStore.user)}
                     </div>
                 </button>
 
@@ -119,7 +143,7 @@
                                     m
                                         ? 'bg-clinical-primary/20 border-clinical-primary text-clinical-primary'
                                         : 'border-transparent text-clinical-muted hover:bg-clinical-hover'}"
-                                    on:click={() =>
+                                    onclick={() =>
                                         themeStore.setMode(
                                             m as "system" | "dark" | "light",
                                         )}
@@ -136,7 +160,7 @@
                             Profile Settings
                         </a>
                         <a
-                            href="/logout"
+                            href="/auth/logout"
                             class="block px-4 py-2 text-sm text-red-500 dark:text-red-400 hover:bg-red-500/10"
                         >
                             Sign Out
@@ -258,6 +282,61 @@
                 >
             </a>
 
+            <a
+                href="/app/atlas"
+                class="p-2 rounded-lg transition-all group relative {isActive('/app/atlas')
+                    ? 'text-clinical-primary bg-clinical-primary/10'
+                    : 'text-clinical-muted hover:text-clinical-text hover:bg-clinical-hover'}"
+                title="Atlas"
+            >
+                <svg
+                    class="w-6 h-6"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    ><path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 20C5 20 4 14 5 11C6 8 6 7.5 5.5 6L3 3C3 3 6 5 8.5 5.5C10 5.8 11 6 12 6C13 6 14 5.8 15.5 5.5C18 5 21 3 21 3L18.5 6C18 7.5 18 8 19 11C20 14 19 20 19 20C17 21.5 14.5 22 12 22C9.5 22 7 21.5 5 20Z"
+                    /><circle cx="8.5" cy="12" r="3" stroke-width="2"
+                    /><circle cx="15.5" cy="12" r="3" stroke-width="2"
+                    /><circle cx="8.5" cy="12.5" r="1.5" fill="currentColor" stroke="none"
+                    /><circle cx="15.5" cy="12.5" r="1.5" fill="currentColor" stroke="none"
+                    /><circle cx="7.8" cy="11.5" r="0.6" class="fill-white dark:fill-gray-800" stroke="none"
+                    /><circle cx="14.8" cy="11.5" r="0.6" class="fill-white dark:fill-gray-800" stroke="none"
+                    /><path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M11 16l1 2 1-2"
+                    /></svg
+                >
+            </a>
+
+            {#if authStore.isAdmin}
+                <a
+                    href="/app/admin"
+                    class="p-2 rounded-lg transition-all group relative {isActive('/app/admin')
+                        ? 'text-clinical-primary bg-clinical-primary/10'
+                        : 'text-clinical-muted hover:text-clinical-text hover:bg-clinical-hover'}"
+                    title="Admin"
+                >
+                    <svg
+                        class="w-6 h-6"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                        ><path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
+                        ></path></svg
+                    >
+                </a>
+            {/if}
+
             <div class="flex-1"></div>
 
             <!-- Echo (Feedback) -->
@@ -292,7 +371,7 @@
 
             <!-- Sign Out -->
             <a
-                href="/logout"
+                href="/auth/logout"
                 class="p-2 rounded-lg text-clinical-muted hover:text-red-500 dark:hover:text-red-400 hover:bg-red-500/10 transition-all mb-2"
                 title="Sign Out"
             >
@@ -313,7 +392,9 @@
 
         <!-- [D] MAIN CONTENT AREA (Canvas) -->
         <main class="flex-1 overflow-auto bg-clinical-bg relative">
-            <slot />
+            {@render children()}
         </main>
     </div>
 </div>
+
+<IdleWarningModal />

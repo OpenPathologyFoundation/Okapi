@@ -1,0 +1,226 @@
+{
+  "version": "1.0",
+  "generated": "2026-01-19",
+  "description": "Test cases for Digital Pathology Viewer development",
+  "namingConvention": {
+    "pattern": "S{YY}-{NNNN}_{Part}{Block}_{Slide}",
+    "example": "S26-0001_A1_S1",
+    "parts": {
+      "S{YY}": "Surgical specimen, year",
+      "NNNN": "Accession number (4 digits)",
+      "Part": "Specimen part (A, B, C...)",
+      "Block": "Block number within part",
+      "Slide": "Slide/level number (S1, S2...)"
+    }
+  },
+  "cases": [
+      {
+        "caseId": "PS26-00001",
+        "patientId": "PT-2026-0006",
+        "patientName": "Homunculus, Olga R",
+        "patientDob": "1965-03-14",
+        "patientSex": "F",
+        "accessionDate": "2026-01-15",
+        "clinicalHistory": "56 y/o female with palpable left breast mass, 2.1 cm on imaging",
+        "specimenType": "Breast, left, lumpectomy",
+        "diagnosis": "Invasive ductal carcinoma, grade 2",
+        "status": "pending_review",
+        "priority": "routine",
+        "slides": [
+          {
+            "slideId": "PS26-00001-01-01-01",
+            "partDescription": "Tumor with margins",
+            "blockDescription": "Representative section of tumor",
+            "stain": "H&E",
+            "filename": "PS26-00001-01-01-01.svs",
+            "originalFile": "PG-SAMPLE.svs",
+            "notes": "Primary tumor section"
+          }
+        ]
+      },
+    {
+      "caseId": "S26-0001",
+      "patientId": "PT-2026-0001",
+      "patientName": "MARTINEZ, ELENA R",
+      "patientDob": "1965-03-14",
+      "patientSex": "F",
+      "accessionDate": "2026-01-15",
+      "clinicalHistory": "56 y/o female with palpable left breast mass, 2.1 cm on imaging",
+      "specimenType": "Breast, left, lumpectomy",
+      "diagnosis": "Invasive ductal carcinoma, grade 2",
+      "status": "pending_review",
+      "priority": "routine",
+      "slides": [
+        {
+          "slideId": "S26-0001_A1_S1",
+          "partDescription": "Tumor with margins",
+          "blockDescription": "Representative section of tumor",
+          "stain": "H&E",
+          "filename": "S26-0001_A1_S1.svs",
+          "originalFile": "TCGA-UW-A7GC-01Z-00-DX1.D2D6FCC6-719A-4C03-A496-E23D18655538.svs",
+          "notes": "Primary tumor section"
+        },
+        {
+          "slideId": "S26-0001_A1_S2",
+          "partDescription": "Tumor with margins",
+          "blockDescription": "Adjacent normal tissue",
+          "stain": "H&E",
+          "filename": "S26-0001_A1_S2.svs",
+          "originalFile": "TCGA-UW-A7GC-11Z-00-DX1.ADAF7B0F-8EDC-4022-A873-3A5EBA4A46C3.svs",
+          "notes": "Normal margin for comparison"
+        }
+      ]
+    },
+    {
+      "caseId": "S26-0002",
+      "patientId": "PT-2026-0002",
+      "patientName": "JOHNSON, MICHAEL T",
+      "patientDob": "1958-07-22",
+      "patientSex": "M",
+      "accessionDate": "2026-01-15",
+      "clinicalHistory": "68 y/o male with rising PSA, Gleason 7 on biopsy",
+      "specimenType": "Prostate, radical prostatectomy",
+      "diagnosis": "Prostatic adenocarcinoma, Gleason 3+4=7",
+      "status": "pending_review",
+      "priority": "routine",
+      "slides": [
+        {
+          "slideId": "S26-0002_A1_S1",
+          "partDescription": "Right lobe",
+          "blockDescription": "Apex section",
+          "stain": "H&E",
+          "filename": "S26-0002_A1_S1.svs",
+          "originalFile": "TCGA-A4-8098-01Z-00-DX1.2ac5ab19-544e-4ba5-8b82-7810dcd45fa4.svs",
+          "notes": ""
+        },
+        {
+          "slideId": "S26-0002_B1_S1",
+          "partDescription": "Left lobe",
+          "blockDescription": "Mid-gland section",
+          "stain": "H&E",
+          "filename": "S26-0002_B1_S1.svs",
+          "originalFile": "TCGA-A4-8518-01Z-00-DX1.D521C865-A3A0-4C23-B36C-D58BB73A3007.svs",
+          "notes": ""
+        }
+      ]
+    },
+    {
+      "caseId": "S26-0003",
+      "patientId": "PT-2026-0003",
+      "patientName": "WILLIAMS, SARAH J",
+      "patientDob": "1972-11-05",
+      "patientSex": "F",
+      "accessionDate": "2026-01-16",
+      "clinicalHistory": "54 y/o female with abnormal cervical cytology, HSIL",
+      "specimenType": "Cervix, LEEP excision",
+      "diagnosis": "High-grade squamous intraepithelial lesion (CIN 3)",
+      "status": "pending_review",
+      "priority": "stat",
+      "slides": [
+        {
+          "slideId": "S26-0003_A1_S1",
+          "partDescription": "LEEP specimen",
+          "blockDescription": "12 o'clock section",
+          "stain": "H&E",
+          "filename": "S26-0003_A1_S1.svs",
+          "originalFile": "TCGA-B9-4115-01Z-00-DX1.39db8eab-aa1c-4a31-9577-f19eebdbba93.svs",
+          "notes": ""
+        }
+      ]
+    },
+    {
+      "caseId": "S26-0004",
+      "patientId": "PT-2026-0004",
+      "patientName": "CHEN, DAVID L",
+      "patientDob": "1980-02-28",
+      "patientSex": "M",
+      "accessionDate": "2026-01-16",
+      "clinicalHistory": "46 y/o male with colon mass, biopsy positive for adenocarcinoma",
+      "specimenType": "Colon, right hemicolectomy",
+      "diagnosis": "Adenocarcinoma, moderately differentiated, pT3N1",
+      "status": "pending_review",
+      "priority": "routine",
+      "slides": [
+        {
+          "slideId": "S26-0004_A1_S1",
+          "partDescription": "Tumor",
+          "blockDescription": "Tumor with deepest invasion",
+          "stain": "H&E",
+          "filename": "S26-0004_A1_S1.svs",
+          "originalFile": "TCGA-AL-3473-01Z-00-DX2.B1F73FC7-01EA-4B25-851F-A51B389DAA4A.svs",
+          "notes": ""
+        },
+        {
+          "slideId": "S26-0004_A2_S1",
+          "partDescription": "Lymph nodes",
+          "blockDescription": "Pericolic lymph nodes",
+          "stain": "H&E",
+          "filename": "S26-0004_A2_S1.svs",
+          "originalFile": "TCGA-AL-7173-01Z-00-DX1.91ba65ea-9eca-4ee0-b31b-95a3a27cfb81.svs",
+          "notes": "Check for metastatic deposits"
+        },
+        {
+          "slideId": "S26-0004_A3_S1",
+          "partDescription": "Lymph nodes",
+          "blockDescription": "Pericolic lymph nodes",
+          "stain": "H&E",
+          "filename": "S26-0004_A3_S1.ome.tiff",
+          "originalFile": "Image8wk RF 2 (20x).ome.tiff",
+          "notes": "Check for metastatic deposits"
+        }
+      ]
+    },
+    {
+      "caseId": "S26-0005",
+      "patientId": "PT-2026-0005",
+      "patientName": "THOMPSON, JENNIFER A",
+      "patientDob": "1955-09-10",
+      "patientSex": "F",
+      "accessionDate": "2026-01-17",
+      "clinicalHistory": "71 y/o female with right breast mass, 3.5 cm, BI-RADS 5",
+      "specimenType": "Breast, right, mastectomy with sentinel nodes",
+      "diagnosis": "Invasive lobular carcinoma, grade 2, ER+/PR+/HER2-",
+      "status": "pending_review",
+      "priority": "routine",
+      "slides": [
+        {
+          "slideId": "S26-0005_A1_S1",
+          "partDescription": "Tumor",
+          "blockDescription": "Representative tumor section",
+          "stain": "H&E",
+          "filename": "S26-0005_A1_S1.svs",
+          "originalFile": "TCGA-E2-A14P-01Z-00-DX1.663B02FF-C64B-41A6-8685-FD61CD76F9C6.svs",
+          "notes": "Large section - full tumor cross-section"
+        },
+        {
+          "slideId": "S26-0005_A1_S2",
+          "partDescription": "Tumor",
+          "blockDescription": "Tumor-normal interface",
+          "stain": "H&E",
+          "filename": "S26-0005_A1_S2.svs",
+          "originalFile": "TCGA-A4-A4ZT-01Z-00-DX1.AC68E09D-FE10-409E-98A5-28A54343C87E.svs",
+          "notes": ""
+        },
+        {
+          "slideId": "S26-0005_B1_S1",
+          "partDescription": "Sentinel lymph node",
+          "blockDescription": "Sentinel node #1",
+          "stain": "H&E",
+          "filename": "S26-0005_B1_S1.svs",
+          "originalFile": "TCGA-HE-A5NH-01Z-00-DX1.EFEFC4C4-CA32-420F-A9BE-43587F15D5BD.svs",
+          "notes": "Evaluate for micrometastases"
+        },
+        {
+          "slideId": "S26-0005_B1_S2",
+          "partDescription": "Sentinel lymph node",
+          "blockDescription": "Sentinel node #1",
+          "stain": "H&E",
+          "filename": "S26-0005_B1_S2.tiff",
+          "originalFile": "d6affded-c469-4727-b2e2-faf9eb62691f",
+          "notes": "Evaluate for micrometastases"
+        }
+
+      ]
+    }
+  ]
+}

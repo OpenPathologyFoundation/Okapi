@@ -6,7 +6,7 @@ set -euo pipefail
 : "${KEYCLOAK_ADMIN_REALM:=master}"
 : "${KEYCLOAK_REALM:=okapi}"
 
-: "${DEMO_IDENTITIES_JSON:=seed/identities/demo-identities.v1.json}"
+: "${SEED_IDENTITY_FILES:=seed/identities/xenonym-identities.v1.json}"
 : "${DEMO_PASSWORD_DEFAULT:=OkapiDev!2026}"           # dev only; set via .env, do not commit secrets
 : "${OUT_DIR:=seed/keycloak/out}"
 
@@ -50,8 +50,16 @@ if ! docker exec -i "${KEYCLOAK_CONTAINER}" sh -lc 'test -n "${KEYCLOAK_ADMIN_PA
   exit 1
 fi
 
-if [[ ! -f "${DEMO_IDENTITIES_JSON}" ]]; then
-  echo "ERROR: identities seed file not found: ${DEMO_IDENTITIES_JSON}" >&2
+FOUND_ANY_FILE=false
+for SEED_FILE in ${SEED_IDENTITY_FILES}; do
+  if [[ -f "${SEED_FILE}" ]]; then
+    FOUND_ANY_FILE=true
+  else
+    echo "WARNING: seed file not found, skipping: ${SEED_FILE}" >&2
+  fi
+done
+if [[ "${FOUND_ANY_FILE}" != "true" ]]; then
+  echo "ERROR: none of the seed identity files were found: ${SEED_IDENTITY_FILES}" >&2
   exit 1
 fi
 
@@ -124,16 +132,19 @@ print("")
 ' "$uname"
 }
 
-# Extract unique groups from JSON
+# Extract unique groups from all seed files
 echo "Ensuring groups exist..."
-python3 - "${DEMO_IDENTITIES_JSON}" <<'PY' | while read -r g; do
+python3 - ${SEED_IDENTITY_FILES} <<'PY' | while read -r g; do
 import json, sys
-path = sys.argv[1]
-data = json.load(open(path))
 groups = set()
-for ident in data.get("identities", []):
-    for g in ident.get("idp_groups", []):
-        groups.add(g)
+for path in sys.argv[1:]:
+    try:
+        data = json.load(open(path))
+    except FileNotFoundError:
+        continue
+    for ident in data.get("identities", []):
+        for g in ident.get("idp_groups", []):
+            groups.add(g)
 for g in sorted(groups):
     print(g)
 PY
@@ -148,13 +159,23 @@ PY
   fi
 done
 
-# Seed users
+# Seed users from all seed files
 echo "Seeding users..."
-python3 - "${DEMO_IDENTITIES_JSON}" <<'PY' | while IFS=$'\t' read -r username email display_full display_short given_name family_name middle_name middle_initial nickname prefix suffix groups_csv; do
+for SEED_FILE in ${SEED_IDENTITY_FILES}; do
+  if [[ ! -f "${SEED_FILE}" ]]; then
+    echo "  Skipping missing file: ${SEED_FILE}"
+    continue
+  fi
+  echo "  Processing: ${SEED_FILE}"
+python3 - "${SEED_FILE}" <<'PY' | while IFS=$'\x1f' read -r subject username email display_full display_short given_name family_name middle_name middle_initial nickname prefix suffix groups_csv; do
 import json, sys
 path = sys.argv[1]
 data = json.load(open(path))
+# Use ASCII Unit Separator (\x1f) instead of tab — bash read collapses
+# consecutive tabs (IFS-whitespace), swallowing empty fields like middle_name.
+# Unit Separator is non-whitespace so bash read preserves every field.
 for ident in data.get("identities", []):
+    subject = ident.get("subject") or ""
     username = ident["username"]
     email = ident.get("email","")
     display = (ident.get("display") or {}).get("full") or ident.get("display_name", "")
@@ -169,6 +190,7 @@ for ident in data.get("identities", []):
     suffix = name.get("suffix") or ""
     groups = ident.get("idp_groups", [])
     print(
+        subject,
         username,
         email,
         display,
@@ -181,7 +203,7 @@ for ident in data.get("identities", []):
         prefix,
         suffix,
         ",".join(groups),
-        sep="\t",
+        sep="\x1f",
     )
 PY
   uid="$(get_user_id "$username")"
@@ -202,8 +224,15 @@ PY
 
   if [[ -z "$uid" ]]; then
     echo "  Creating user: $username"
+    # Pass subject as Keycloak user ID if available, so IdentitySeedService
+    # can find the user by getUserById(realm, subject) on fresh instances.
+    ID_FLAG=""
+    if [[ -n "${subject}" ]]; then
+      ID_FLAG="-s id='${subject}'"
+    fi
     docker exec "${KEYCLOAK_CONTAINER}" sh -lc "
       ${KCADM} create users -r '${KEYCLOAK_REALM}' \
+        ${ID_FLAG} \
         -s username='${username}' \
         -s enabled=true \
         -s email='${email}' \
@@ -248,6 +277,7 @@ PY
 
   echo "  OK: $username -> $uid"
   echo "$username	$uid" >> "${OUT_DIR}/keycloak-user-map.tsv"
+done
 done
 
 echo "Done. Wrote: ${OUT_DIR}/keycloak-user-map.tsv"

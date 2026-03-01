@@ -1,0 +1,214 @@
+/* ─── Okapi Branded Keycloak Login ─── */
+
+/* Background */
+body.login-pf {
+    background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%) !important;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important;
+}
+
+/* Header — inject branding via pseudo-elements */
+#kc-header {
+    text-align: center;
+    padding-top: 40px;
+    padding-bottom: 20px;
+}
+
+#kc-header-wrapper {
+    font-size: 0 !important;
+    color: transparent !important;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+#kc-header-wrapper::before {
+    content: "Okapi";
+    display: block;
+    font-size: 28px;
+    font-weight: 700;
+    color: #f8fafc;
+    letter-spacing: -0.025em;
+}
+
+#kc-header-wrapper::after {
+    content: "Institutional Single Sign-On";
+    display: block;
+    font-size: 13px;
+    font-weight: 400;
+    color: #94a3b8;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+/* Login card */
+#kc-content-wrapper,
+.card-pf,
+#kc-form,
+#kc-login {
+    border-radius: 12px !important;
+}
+
+.login-pf .card-pf {
+    background: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 12px !important;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3), 0 4px 16px rgba(0, 0, 0, 0.15) !important;
+    max-width: 420px;
+    margin: 0 auto;
+    padding: 8px;
+}
+
+/* Content area */
+#kc-content {
+    padding: 0 !important;
+}
+
+/* Form labels */
+.login-pf .control-label,
+.login-pf label {
+    color: #334155 !important;
+    font-weight: 500 !important;
+    font-size: 13px !important;
+}
+
+/* Form inputs */
+.login-pf .form-control,
+.login-pf input[type="text"],
+.login-pf input[type="password"] {
+    background: #f8fafc !important;
+    border: 1px solid #cbd5e1 !important;
+    border-radius: 8px !important;
+    color: #0f172a !important;
+    padding: 10px 12px !important;
+    font-size: 14px !important;
+    transition: border-color 0.2s, box-shadow 0.2s !important;
+    height: auto !important;
+}
+
+.login-pf .form-control:focus,
+.login-pf input[type="text"]:focus,
+.login-pf input[type="password"]:focus {
+    border-color: #3b82f6 !important;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15) !important;
+    outline: none !important;
+}
+
+/* Submit button */
+.login-pf .btn-primary,
+.login-pf input[type="submit"].btn-primary,
+#kc-login {
+    background: #3b82f6 !important;
+    border: none !important;
+    border-radius: 8px !important;
+    color: #ffffff !important;
+    font-weight: 600 !important;
+    font-size: 14px !important;
+    padding: 10px 20px !important;
+    text-transform: none !important;
+    letter-spacing: 0 !important;
+    transition: background 0.2s !important;
+    width: 100%;
+}
+
+.login-pf .btn-primary:hover,
+.login-pf input[type="submit"].btn-primary:hover,
+#kc-login:hover {
+    background: #2563eb !important;
+}
+
+.login-pf .btn-primary:active,
+#kc-login:active {
+    background: #1d4ed8 !important;
+}
+
+/* Links */
+.login-pf a {
+    color: #3b82f6 !important;
+    text-decoration: none !important;
+}
+
+.login-pf a:hover {
+    color: #2563eb !important;
+    text-decoration: underline !important;
+}
+
+/* Alert/error messages */
+.login-pf .alert {
+    border-radius: 8px !important;
+    border: none !important;
+    font-size: 13px !important;
+}
+
+.login-pf .alert-error,
+.login-pf .alert-danger {
+    background: #fef2f2 !important;
+    color: #991b1b !important;
+}
+
+/* Footer — PHI notice */
+#kc-content-wrapper::after {
+    content: "Protected Health Information — Authorized Access Only";
+    display: block;
+    text-align: center;
+    font-size: 11px;
+    color: #64748b;
+    margin-top: 24px;
+    padding-top: 16px;
+    border-top: 1px solid #e2e8f0;
+    letter-spacing: 0.02em;
+}
+
+/* Hide default Keycloak branding noise */
+.login-pf .kc-logo-text,
+#kc-locale {
+    display: none !important;
+}
+
+/* Remember me + forgot password row */
+.login-pf .checkbox label {
+    color: #475569 !important;
+    font-size: 13px !important;
+}
+
+/* Form group spacing */
+.login-pf .form-group {
+    margin-bottom: 16px !important;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    .login-pf .card-pf {
+        background: #1e293b !important;
+        border-color: #334155 !important;
+    }
+
+    .login-pf .control-label,
+    .login-pf label {
+        color: #e2e8f0 !important;
+    }
+
+    .login-pf .form-control,
+    .login-pf input[type="text"],
+    .login-pf input[type="password"] {
+        background: #0f172a !important;
+        border-color: #475569 !important;
+        color: #f1f5f9 !important;
+    }
+
+    .login-pf .checkbox label {
+        color: #94a3b8 !important;
+    }
+
+    #kc-content-wrapper::after {
+        color: #64748b;
+        border-top-color: #334155;
+    }
+
+    .login-pf .alert-error,
+    .login-pf .alert-danger {
+        background: #450a0a !important;
+        color: #fca5a5 !important;
+    }
+}

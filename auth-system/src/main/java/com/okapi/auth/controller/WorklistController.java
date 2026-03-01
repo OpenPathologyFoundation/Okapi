@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/worklist")
@@ -29,7 +30,7 @@ public class WorklistController {
             @RequestParam(required = false) List<String> services,
             @RequestParam(required = false) List<String> statuses,
             @RequestParam(required = false) List<String> priorities,
-            @RequestParam(required = false) Long assignedToId,
+            @RequestParam(required = false) UUID assignedToIdentityId,
             @RequestParam(required = false, defaultValue = "false") Boolean myCasesOnly,
             @RequestParam(required = false) String search,
             @RequestParam(required = false) LocalDate fromDate,
@@ -40,10 +41,10 @@ public class WorklistController {
             @RequestParam(required = false, defaultValue = "50") Integer pageSize,
             @AuthenticationPrincipal Object principal) {
 
-        Long currentUserId = resolveCurrentUserId(principal);
+        UUID currentUserId = resolveCurrentUserId(principal);
 
         WorklistFilterRequest filter = new WorklistFilterRequest(
-                services, statuses, priorities, assignedToId, myCasesOnly,
+                services, statuses, priorities, assignedToIdentityId, myCasesOnly,
                 search, fromDate, toDate, sortBy, sortDir, page, pageSize);
 
         WorklistPageResponse response = worklistService.getWorklist(filter, currentUserId);
@@ -60,11 +61,11 @@ public class WorklistController {
         return ResponseEntity.ok(item);
     }
 
-    private Long resolveCurrentUserId(Object principal) {
+    private UUID resolveCurrentUserId(Object principal) {
         if (principal instanceof Identity identity) {
             return identityRepository
                     .findByProviderIdAndExternalSubject(identity.getProviderId(), identity.getExternalSubject())
-                    .map(IdentityEntity::getId)
+                    .map(IdentityEntity::getIdentityId)
                     .orElse(null);
         }
         return null;

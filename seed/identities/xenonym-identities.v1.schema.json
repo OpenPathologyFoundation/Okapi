@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://okapi.local/schemas/seed/demo-identities.v1.schema.json",
+  "$id": "https://okapi.local/schemas/seed/xenonym-identities.v1.schema.json",
   "title": "Okapi seed identities (v1)",
   "type": "object",
   "additionalProperties": false,
@@ -35,7 +35,7 @@
           "username": {
             "type": "string",
             "minLength": 1,
-            "description": "Keycloak username to create/use for demo provisioning."
+            "description": "Keycloak username to create/use for provisioning."
           },
           "email": {
             "type": "string",
@@ -73,12 +73,55 @@
           "local": {
             "type": "object",
             "additionalProperties": true,
-            "description": "Local Okapi-only metadata to be stored in the Okapi DB (may be mirrored into identities.attributes).",
+            "description": "Local Okapi-only metadata stored in the Okapi DB (may be mirrored into identities.attributes).",
             "properties": {
-              "break_glass_enabled": { "type": "boolean" },
               "account_type": {
                 "type": "string",
                 "enum": ["PRODUCTION", "TEST", "DEMO", "SERVICE"]
+              },
+              "break_glass_enabled": { "type": "boolean" },
+              "professional_role": {
+                "type": "string",
+                "description": "Clinical role (e.g., pathologist, resident, fellow, histotech, clinical_admin)."
+              },
+              "npi": {
+                "type": "string",
+                "description": "Xenonym NPI identifier (e.g., XNP-000001)."
+              },
+              "seed": {
+                "type": "string",
+                "description": "Xenonym generation seed phrase (e.g., sage-echo-7610)."
+              },
+              "phone": {
+                "type": "string",
+                "description": "Contact phone number."
+              },
+              "address": {
+                "type": "object",
+                "additionalProperties": false,
+                "description": "Xenonym-generated fictional address.",
+                "properties": {
+                  "line": { "type": "string" },
+                  "city": { "type": "string" },
+                  "state": { "type": "string" },
+                  "zip": { "type": "string" },
+                  "country": { "type": "string" }
+                }
+              },
+              "avatar_url": {
+                "type": "string",
+                "format": "uri",
+                "description": "URL to avatar image."
+              },
+              "subspecialties": {
+                "type": "array",
+                "items": { "type": "string" },
+                "description": "Clinical subspecialty areas."
+              },
+              "flags": {
+                "type": "array",
+                "items": { "type": "string" },
+                "description": "Metadata flags (e.g., test_professional, role:pathologist)."
               }
             }
           }

@@ -1,9 +1,11 @@
 package com.okapi.auth.config;
 
+import com.okapi.auth.TestcontainersConfiguration;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -13,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@Import(TestcontainersConfiguration.class)
 @Slf4j
 public class SecurityConfigTest {
 
@@ -24,7 +27,7 @@ public class SecurityConfigTest {
         log.info("Testing access to protected resource /some-random-endpoint without authentication...");
         mockMvc.perform(get("/some-random-endpoint"))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("http://localhost/oauth2/authorization/okta"));
+                .andExpect(redirectedUrl("/oauth2/authorization/okta"));
         log.debug("Redirected to login as expected.");
     }
 

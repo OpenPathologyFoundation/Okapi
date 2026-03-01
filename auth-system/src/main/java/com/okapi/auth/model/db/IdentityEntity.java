@@ -1,21 +1,25 @@
 package com.okapi.auth.model.db;
 
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.annotations.SQLJoinTableRestriction;
+import org.hibernate.annotations.UuidGenerator;
 import org.hibernate.type.SqlTypes;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.HashSet;
+import java.util.UUID;
 
 @Entity
 @Table(
-        name = "identities",
+        schema = "iam",
+        name = "identity",
         uniqueConstraints = {
                 @UniqueConstraint(columnNames = { "provider_id", "external_subject" })
         })
@@ -26,14 +30,19 @@ import java.util.HashSet;
 public class IdentityEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue
+    @UuidGenerator
+    @Column(name = "identity_id")
+    private UUID identityId;
 
     @Column(name = "external_subject", nullable = false)
     private String externalSubject;
 
     @Column(name = "provider_id", nullable = false)
     private String providerId;
+
+    @Column(name = "username")
+    private String username;
 
     @Column(name = "display_name")
     private String displayName;
@@ -50,55 +59,53 @@ public class IdentityEntity {
     @Column(name = "middle_name")
     private String middleName;
 
-    @Column(name = "middle_initial")
-    private String middleInitial;
-
-    @Column(name = "nickname")
-    private String nickname;
-
     @Column(name = "prefix")
     private String prefix;
 
     @Column(name = "suffix")
     private String suffix;
 
-    @Column(unique = true)
+    @Column(name = "email")
     private String email;
 
-    @Column(name = "account_type", nullable = false)
+    @Column(name = "is_active", nullable = false)
     @Builder.Default
-    private String accountType = "PRODUCTION";
-
-    @Column(name = "status", nullable = false)
-    @Builder.Default
-    private String status = "ACTIVE";
-
-    @Column(name = "is_test_user", nullable = false)
-    @Builder.Default
-    private boolean isTestUser = false;
-
-    @Column(name = "is_demo_user", nullable = false)
-    @Builder.Default
-    private boolean isDemoUser = false;
-
-    @Column(name = "break_glass_enabled", nullable = false)
-    @Builder.Default
-    private boolean breakGlassEnabled = false;
+    private boolean isActive = true;
 
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "attributes", nullable = false)
     @Builder.Default
     private Map<String, Object> attributes = java.util.Collections.emptyMap();
 
-    @Column(name = "created_at")
+    @Column(name = "created_at", nullable = false)
     @Builder.Default
-    private LocalDateTime createdAt = LocalDateTime.now();
+    private OffsetDateTime createdAt = OffsetDateTime.now();
 
-    @Column(name = "last_login_at")
-    private LocalDateTime lastLoginAt;
+    @Column(name = "created_by_identity_id")
+    private UUID createdByIdentityId;
+
+    @Column(name = "updated_at", nullable = false)
+    @Builder.Default
+    private OffsetDateTime updatedAt = OffsetDateTime.now();
+
+    @Column(name = "updated_by_identity_id")
+    private UUID updatedByIdentityId;
+
+    @Column(name = "last_seen_at")
+    private OffsetDateTime lastSeenAt;
 
     @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "identity_roles", joinColumns = @JoinColumn(name = "identity_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
+    @JoinTable(
+            schema = "iam",
+            name = "identity_role",
+            joinColumns = @JoinColumn(name = "identity_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id"))
+    @SQLJoinTableRestriction("effective_to IS NULL OR effective_to > now()")
     @Builder.Default
     private Set<RoleEntity> roles = new HashSet<>();
+
+    @PreUpdate
+    void onUpdate() {
+        updatedAt = OffsetDateTime.now();
+    }
 }

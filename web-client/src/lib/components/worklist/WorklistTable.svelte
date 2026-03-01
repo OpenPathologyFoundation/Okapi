@@ -1,24 +1,29 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { worklistStore } from '$lib/stores/worklist.svelte';
+	import { authStore } from '$lib/stores/auth.svelte';
 	import { SERVICE_LABELS } from '$lib/types/worklist';
 	import type { WorklistSortField, WorklistItem } from '$lib/types/worklist';
 	import CaseStatusBadge from './CaseStatusBadge.svelte';
 	import PriorityBadge from './PriorityBadge.svelte';
 	import SlideSummary from './SlideSummary.svelte';
 	import CaseAge from './CaseAge.svelte';
+	import AssignPathologist from './AssignPathologist.svelte';
 	import Tooltip from '$lib/components/ui/Tooltip.svelte';
 
 	let { onCaseClick = (_accession: string) => {} }: { onCaseClick?: (accession: string) => void } =
 		$props();
+
+	let assigningCaseUuid = $state<string | null>(null);
+	const canReassign = $derived(authStore.hasPermission('CASE_REASSIGN') || authStore.isAdmin);
 
 	function handleSort(field: WorklistSortField) {
 		worklistStore.setSort(field);
 	}
 
 	function getSortIcon(field: WorklistSortField): string {
-		if (worklistStore.sort.field !== field) return '↕';
-		return worklistStore.sort.direction === 'asc' ? '↑' : '↓';
+		if (worklistStore.sort.field !== field) return '\u2195';
+		return worklistStore.sort.direction === 'asc' ? '\u2191' : '\u2193';
 	}
 
 	function getSortClass(field: WorklistSortField): string {
@@ -32,14 +37,22 @@
 
 	function launchViewer(accession: string, event: MouseEvent) {
 		event.stopPropagation();
-		// TODO: Open viewer in new window or modal
-		console.log('Launch viewer for:', accession);
-		window.open(`/app/viewer/${accession}`, '_blank');
+		goto(`/app/case/${accession}?launch=true`);
 	}
 
 	function handleRowClick(item: WorklistItem) {
 		onCaseClick(item.accessionNumber);
 		goto(`/app/case/${item.accessionNumber}`);
+	}
+
+	function openAssignPopover(caseUuid: string, event: MouseEvent) {
+		event.stopPropagation();
+		assigningCaseUuid = caseUuid;
+	}
+
+	function handleAssigned() {
+		assigningCaseUuid = null;
+		worklistStore.loadWorklist();
 	}
 </script>
 
@@ -130,7 +143,7 @@
 					</td>
 					<td class="px-4 py-3">
 						<div class="flex flex-col">
-							<span class="text-clinical-text">{item.patientDisplay ?? '—'}</span>
+							<span class="text-clinical-text">{item.patientDisplay ?? '\u2014'}</span>
 							{#if item.patientMrn}
 								<span class="text-xs text-clinical-muted">{item.patientMrn}</span>
 							{/if}
@@ -141,7 +154,7 @@
 					</td>
 					<td class="px-4 py-3">
 						<div class="flex flex-col">
-							<span class="text-clinical-text">{item.specimenType ?? '—'}</span>
+							<span class="text-clinical-text">{item.specimenType ?? '\u2014'}</span>
 							{#if item.specimenSite}
 								<span class="text-xs text-clinical-muted">{item.specimenSite}</span>
 							{/if}
@@ -162,7 +175,32 @@
 						/>
 					</td>
 					<td class="px-4 py-3 text-clinical-text">
-						{item.assignedToDisplay ?? '—'}
+						{#if item.assignedToDisplay}
+							{item.assignedToDisplay}
+						{:else}
+							<div class="relative flex items-center gap-1">
+								<span class="text-clinical-muted italic">Unassigned</span>
+								{#if canReassign && item.caseUuid}
+									<button
+										type="button"
+										onclick={(e) => openAssignPopover(item.caseUuid!, e)}
+										class="rounded p-0.5 text-clinical-muted hover:bg-clinical-primary/10 hover:text-clinical-primary"
+										aria-label="Assign pathologist"
+									>
+										<svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+											<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+										</svg>
+									</button>
+									{#if assigningCaseUuid === item.caseUuid}
+										<AssignPathologist
+											caseUuid={item.caseUuid}
+											onAssigned={handleAssigned}
+											onClose={() => (assigningCaseUuid = null)}
+										/>
+									{/if}
+								{/if}
+							</div>
+						{/if}
 					</td>
 					<td class="px-4 py-3">
 						<CaseAge
@@ -180,6 +218,7 @@
 										type="button"
 										onclick={(e) => openCase(item.accessionNumber, e)}
 										class="rounded p-1.5 text-clinical-muted hover:bg-clinical-primary/10 hover:text-clinical-primary"
+										aria-label="Open case"
 									>
 										<svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 											<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -195,6 +234,7 @@
 										onclick={(e) => launchViewer(item.accessionNumber, e)}
 										class="rounded p-1.5 text-clinical-muted hover:bg-clinical-primary/10 hover:text-clinical-primary"
 										disabled={item.slideScanned === 0}
+										aria-label={item.slideScanned === 0 ? 'No slides scanned' : 'Launch viewer'}
 									>
 										<svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 											<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />

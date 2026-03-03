@@ -1,0 +1,122 @@
+[
+  {
+    "accession_number": "EDU26-00001",
+    "file_name": "2026/EDU26-00001/EDU26-00001_01-01-01.svs",
+    "barcode_id": "EDU26-00001 01-01-01",
+    "original_file": "TCGA-06-6390-01Z-00-DX1.b5ab515a-7b50-4e73-a999-f581232b005a.svs",
+    "tcga_case_id": "TCGA-06-6390",
+    "tcga_project": "TCGA-GBM",
+    "primary_site": "Brain",
+    "disease_type": "Glioblastoma Multiforme",
+    "primary_diagnosis": "Glioblastoma",
+    "collection": "edu"
+  },
+  {
+    "accession_number": "EDU26-00002",
+    "file_name": "2026/EDU26-00002/EDU26-00002_01-01-01.svs",
+    "barcode_id": "EDU26-00002 01-01-01",
+    "original_file": "TCGA-86-8074-01Z-00-DX1.0c34b434-8701-4060-a4ea-08a72371ee1e.svs",
+    "tcga_case_id": "TCGA-86-8074",
+    "tcga_project": "TCGA-LUAD",
+    "primary_site": "Bronchus and lung",
+    "disease_type": "Lung Adenocarcinoma",
+    "primary_diagnosis": "Papillary adenocarcinoma, NOS",
+    "collection": "edu"
+  },
+  {
+    "accession_number": "EDU26-00003",
+    "file_name": "2026/EDU26-00003/EDU26-00003_01-01-01.svs",
+    "barcode_id": "EDU26-00003 01-01-01",
+    "original_file": "TCGA-AZ-4313-01Z-00-DX1.5e7ecf69-d1fd-4997-9dcc-ab8e9f10b423.svs",
+    "tcga_case_id": "TCGA-AZ-4313",
+    "tcga_project": "TCGA-COAD",
+    "primary_site": "Colon",
+    "disease_type": "Colon Adenocarcinoma",
+    "primary_diagnosis": "Adenocarcinoma, NOS",
+    "collection": "edu"
+  },
+  {
+    "accession_number": "EDU26-00004",
+    "file_name": "2026/EDU26-00004/EDU26-00004_01-01-01.svs",
+    "barcode_id": "EDU26-00004 01-01-01",
+    "original_file": "TCGA-BP-4977-01Z-00-DX1.b40b5355-757d-42cc-91b2-333871afbb57.svs",
+    "tcga_case_id": "TCGA-BP-4977",
+    "tcga_project": "TCGA-KIRC",
+    "primary_site": "Kidney",
+    "disease_type": "Kidney Renal Clear Cell Carcinoma",
+    "primary_diagnosis": "Clear cell adenocarcinoma, NOS",
+    "collection": "edu"
+  },
+  {
+    "accession_number": "EDU26-00005",
+    "file_name": "2026/EDU26-00005/EDU26-00005_01-01-01.svs",
+    "barcode_id": "EDU26-00005 01-01-01",
+    "original_file": "TCGA-CC-A7IJ-01Z-00-DX1.525F3A40-46CC-4455-9473-F99BFA2D3572.svs",
+    "tcga_case_id": "TCGA-CC-A7IJ",
+    "tcga_project": "TCGA-LIHC",
+    "primary_site": "Liver and intrahepatic bile ducts",
+    "disease_type": "Liver Hepatocellular Carcinoma",
+    "primary_diagnosis": "Hepatocellular carcinoma, NOS",
+    "collection": "edu"
+  },
+  {
+    "accession_number": "EDU26-00006",
+    "file_name": "2026/EDU26-00006/EDU26-00006_01-01-01.svs",
+    "barcode_id": "EDU26-00006 01-01-01",
+    "original_file": "TCGA-DJ-A2Q6-01Z-00-DX1.105881C5-0EB7-4602-AC1A-B061595CDF90.svs",
+    "tcga_case_id": "TCGA-DJ-A2Q6",
+    "tcga_project": "TCGA-THCA",
+    "primary_site": "Thyroid gland",
+    "disease_type": "Thyroid Carcinoma",
+    "primary_diagnosis": "Papillary adenocarcinoma, NOS",
+    "collection": "edu"
+  },
+  {
+    "accession_number": "EDU26-00007",
+    "file_name": "2026/EDU26-00007/EDU26-00007_01-01-01.svs",
+    "barcode_id": "EDU26-00007 01-01-01",
+    "original_file": "TCGA-E2-A14P-01Z-00-DX1.663B02FF-C64B-41A6-8685-FD61CD76F9C6.svs",
+    "tcga_case_id": "TCGA-E2-A14P",
+    "tcga_project": "TCGA-BRCA",
+    "primary_site": "Breast",
+    "disease_type": "Breast Invasive Carcinoma",
+    "primary_diagnosis": "Infiltrating duct carcinoma, NOS",
+    "collection": "edu"
+  },
+  {
+    "accession_number": "EDU26-00008",
+    "file_name": "2026/EDU26-00008/EDU26-00008_01-01-01.svs",
+    "barcode_id": "EDU26-00008 01-01-01",
+    "original_file": "TCGA-EE-A2MR-01Z-00-DX1.F5AB5CC6-0D9A-4438-804D-FA4636D966F2.svs",
+    "tcga_case_id": "TCGA-EE-A2MR",
+    "tcga_project": "TCGA-SKCM",
+    "primary_site": "Lymph nodes",
+    "disease_type": "Skin Cutaneous Melanoma",
+    "primary_diagnosis": "Basal cell carcinoma, NOS",
+    "collection": "edu"
+  },
+  {
+    "accession_number": "EDU26-00009",
+    "file_name": "2026/EDU26-00009/EDU26-00009_01-01-01.svs",
+    "barcode_id": "EDU26-00009 01-01-01",
+    "original_file": "TCGA-EJ-7123-01Z-00-DX1.c61e236b-180e-4508-a41f-502130f3f777.svs",
+    "tcga_case_id": "TCGA-EJ-7123",
+    "tcga_project": "TCGA-PRAD",
+    "primary_site": "Prostate gland",
+    "disease_type": "Prostate Adenocarcinoma",
+    "primary_diagnosis": "Acinar cell carcinoma",
+    "collection": "edu"
+  },
+  {
+    "accession_number": "EDU26-00010",
+    "file_name": "2026/EDU26-00010/EDU26-00010_01-01-01.svs",
+    "barcode_id": "EDU26-00010 01-01-01",
+    "original_file": "TCGA-FB-AAPS-01Z-00-DX1.BD33EF8C-A9ED-486C-A8A7-A91E5CD7FB8C.svs",
+    "tcga_case_id": "TCGA-FB-AAPS",
+    "tcga_project": "TCGA-PAAD",
+    "primary_site": "Pancreas",
+    "disease_type": "Pancreatic Adenocarcinoma",
+    "primary_diagnosis": "Infiltrating duct carcinoma, NOS",
+    "collection": "edu"
+  }
+]

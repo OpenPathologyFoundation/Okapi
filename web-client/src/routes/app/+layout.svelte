@@ -22,7 +22,9 @@
     // window directly or the bridge detects the popup is gone.
     $effect(() => {
         if (viewerStore.isOpen && viewerStore.currentCase) {
-            const isOnActiveCase = page.url.pathname === `/app/case/${viewerStore.currentCase}`;
+            const p = page.url.pathname;
+            const acc = viewerStore.currentCase;
+            const isOnActiveCase = p === `/app/case/${acc}` || p === `/app/edu/case/${acc}`;
             viewerStore.setViewerFocus(isOnActiveCase);
         }
     });
@@ -311,6 +313,37 @@
                         stroke-width="2"
                         d="M11 16l1 2 1-2"
                     /></svg
+                >
+            </a>
+
+            <a
+                href="/app/edu"
+                class="p-2 rounded-lg transition-all group relative {isActive('/app/edu')
+                    ? 'text-clinical-primary bg-clinical-primary/10'
+                    : 'text-clinical-muted hover:text-clinical-text hover:bg-clinical-hover'}"
+                title="Education"
+            >
+                <svg
+                    class="w-6 h-6"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    ><path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M12 14l9-5-9-5-9 5 9 5z"
+                    ></path><path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"
+                    ></path><path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5l4-2.222"
+                    ></path></svg
                 >
             </a>
 

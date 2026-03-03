@@ -14,26 +14,21 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 
-/**
- * Seeds wsi.cases (with parts, blocks, slides) from the JSON seed file.
- * Uses JdbcTemplate for native SQL since there are no JPA entities for
- * parts/blocks/slides.
- */
 @Service
-public class CaseSeedService {
+public class EduCaseSeedService {
 
-    private static final Logger log = LoggerFactory.getLogger(CaseSeedService.class);
+    private static final Logger log = LoggerFactory.getLogger(EduCaseSeedService.class);
 
     private final ObjectMapper objectMapper;
     private final JdbcTemplate jdbcTemplate;
     private final AuditEventRepository auditEventRepository;
     private final Path seedFilePath;
 
-    public CaseSeedService(
+    public EduCaseSeedService(
             ObjectMapper objectMapper,
             JdbcTemplate jdbcTemplate,
             AuditEventRepository auditEventRepository,
-            @Value("${okapi.seed.wsi-cases.path:../seed/wsi/wsi-test-cases.v1.json}") String seedFilePath) {
+            @Value("${okapi.seed.edu-cases.path:../seed/wsi-edu/wsi-edu-cases.v1.json}") String seedFilePath) {
         this.objectMapper = objectMapper;
         this.jdbcTemplate = jdbcTemplate;
         this.auditEventRepository = auditEventRepository;
@@ -93,7 +88,7 @@ public class CaseSeedService {
                 }
             } catch (Exception e) {
                 failed++;
-                log.error("Failed to seed case {}: {}", caseId, e.getMessage(), e);
+                log.error("Failed to seed edu case {}: {}", caseId, e.getMessage(), e);
                 results.add(SeedCaseResult.failed(caseId, e.getMessage()));
             }
         }
@@ -108,9 +103,9 @@ public class CaseSeedService {
                 "seed_file", seedFilePath.toString());
 
         auditEventRepository.save(AuditEventEntity.builder()
-                .eventType("ADMIN_SEED_CASES")
+                .eventType("ADMIN_SEED_EDU_CASES")
                 .outcome(failed == 0 ? "SUCCESS" : "PARTIAL_FAILURE")
-                .details("Seed WSI cases run")
+                .details("Seed educational WSI cases run")
                 .metadata(metadata)
                 .build());
 
@@ -118,155 +113,148 @@ public class CaseSeedService {
     }
 
     @SuppressWarnings("unchecked")
-    private boolean upsertCase(Map<String, Object> seedCase) {
+    private boolean upsertCase(Map<String, Object> seedCase) throws Exception {
         String caseId = (String) seedCase.get("caseId");
         String specimenType = (String) seedCase.get("specimenType");
         String clinicalHistory = (String) seedCase.get("clinicalHistory");
-        String accessionDate = (String) seedCase.get("accessionDate");
-        String status = (String) seedCase.getOrDefault("status", "pending_review");
-        String priority = (String) seedCase.getOrDefault("priority", "routine");
+        String status = (String) seedCase.getOrDefault("status", "active");
+
+        // Source lineage and metadata as JSONB strings
+        Map<String, Object> sourceLineage = (Map<String, Object>) seedCase.get("sourceLineage");
+        Map<String, Object> metadata = (Map<String, Object>) seedCase.get("metadata");
+        String sourceLineageJson = sourceLineage != null ? objectMapper.writeValueAsString(sourceLineage) : "{}";
+        String metadataJson = metadata != null ? objectMapper.writeValueAsString(metadata) : "{}";
 
         // Check if case already exists
         List<Map<String, Object>> existing = jdbcTemplate.queryForList(
-                "SELECT id FROM wsi.cases WHERE collection = 'clinical' AND case_id = ?", caseId);
+                "SELECT id FROM wsi_edu.cases WHERE case_id = ?", caseId);
         boolean existed = !existing.isEmpty();
-
-        // Read patient MRN from seed data (data-driven, no hardcoded mapping)
-        String patientMrn = (String) seedCase.get("patientMrn");
 
         UUID caseUuid;
         if (existed) {
-            // Update existing
             jdbcTemplate.update("""
-                UPDATE wsi.cases SET
+                UPDATE wsi_edu.cases SET
                     specimen_type = ?,
                     clinical_history = ?,
-                    accession_date = ?::date,
                     status = ?,
-                    priority = ?,
-                    patient_id = (SELECT id FROM core.patients WHERE mrn = ?),
-                    metadata = '{}'::jsonb
-                WHERE collection = 'clinical' AND case_id = ?
+                    source_lineage = ?::jsonb,
+                    metadata = ?::jsonb
+                WHERE case_id = ?
                 """,
-                    specimenType, clinicalHistory, accessionDate,
-                    status, priority, patientMrn, caseId);
+                    specimenType, clinicalHistory, status,
+                    sourceLineageJson, metadataJson, caseId);
             caseUuid = (UUID) existing.getFirst().get("id");
         } else {
-            // Insert new
             caseUuid = UUID.randomUUID();
             jdbcTemplate.update("""
-                INSERT INTO wsi.cases (id, case_id, collection, specimen_type, clinical_history,
-                    accession_date, status, priority, patient_id, metadata)
-                VALUES (?::uuid, ?, 'clinical', ?, ?, ?::date, ?, ?,
-                    (SELECT id FROM core.patients WHERE mrn = ?), '{}'::jsonb)
+                INSERT INTO wsi_edu.cases (id, case_id, collection, specimen_type, clinical_history,
+                    status, source_lineage, metadata)
+                VALUES (?::uuid, ?, 'educational', ?, ?, ?, ?::jsonb, ?::jsonb)
                 """,
                     caseUuid.toString(), caseId, specimenType, clinicalHistory,
-                    accessionDate, status, priority, patientMrn);
+                    status, sourceLineageJson, metadataJson);
         }
 
         // Seed slides (parts -> blocks -> slides)
         List<Map<String, Object>> slides = (List<Map<String, Object>>) seedCase.getOrDefault("slides", List.of());
-        seedSlides(caseUuid, caseId, slides);
+        seedSlides(caseUuid, slides);
+
+        // Seed ICD codes
+        List<Map<String, Object>> icdCodes = (List<Map<String, Object>>) seedCase.getOrDefault("icdCodes", List.of());
+        seedIcdCodes(caseUuid, icdCodes);
 
         return existed;
     }
 
-    private void seedSlides(UUID caseUuid, String caseId, List<Map<String, Object>> slides) {
-        // Group slides by part description to create part/block/slide hierarchy
-        // Slide IDs follow pattern: {caseId}_{Part}{Block}_S{N}
-        // e.g. S26-0001_A1_S1 -> Part A, Block 1, Slide S1
+    private void seedSlides(UUID caseUuid, List<Map<String, Object>> slides) {
         for (Map<String, Object> slide : slides) {
             String slideId = (String) slide.get("slideId");
-            String partDesc = (String) slide.get("partDescription");
-            String blockDesc = (String) slide.get("blockDescription");
+            String partLabel = (String) slide.get("partLabel");
+            String partDesignator = (String) slide.get("partDesignator");
+            String provenance = (String) slide.getOrDefault("provenance", "IMPLIED");
+            String anatomicSite = (String) slide.get("anatomicSite");
+            String finalDiagnosis = (String) slide.get("finalDiagnosis");
+            String blockLabel = (String) slide.get("blockLabel");
+            String blockDescription = (String) slide.get("blockDescription");
             String stain = (String) slide.getOrDefault("stain", "H&E");
-            String filename = (String) slide.get("filename");
+            String format = (String) slide.getOrDefault("format", "svs");
+            String relativePath = (String) slide.get("relativePath");
 
-            if (slideId == null || filename == null) continue;
-
-            // Parse part label and block label from slideId
-            // Pattern: {caseId}_{PartLabel}{BlockLabel}_S{N} or {caseId}-{part}-{block}-{slide}
-            String suffix = slideId.substring(caseId.length());
-            String partLabel;
-            String blockLabel;
-            String levelLabel;
-
-            if (suffix.startsWith("_")) {
-                // Format: _A1_S1
-                suffix = suffix.substring(1); // "A1_S1"
-                partLabel = suffix.substring(0, 1); // "A"
-                String rest = suffix.substring(1); // "1_S1"
-                int underscoreIdx = rest.indexOf('_');
-                blockLabel = rest.substring(0, underscoreIdx); // "1"
-                levelLabel = rest.substring(underscoreIdx + 1); // "S1"
-            } else if (suffix.startsWith("-")) {
-                // Format: -01-01-01 (dash-separated parts)
-                String[] parts = suffix.substring(1).split("-");
-                partLabel = parts[0]; // "01"
-                blockLabel = parts[1]; // "01"
-                levelLabel = "S" + parts[2]; // "S01"
-            } else {
-                continue;
-            }
+            if (slideId == null || relativePath == null) continue;
 
             // Ensure part exists
-            UUID partId = ensurePart(caseUuid, partLabel, partDesc);
+            UUID partId = ensurePart(caseUuid, partLabel, partDesignator, provenance, anatomicSite, finalDiagnosis);
 
             // Ensure block exists
-            UUID blockId = ensureBlock(partId, blockLabel, blockDesc);
+            UUID blockId = ensureBlock(partId, blockLabel, blockDescription, provenance);
 
             // Ensure slide exists
-            String format = filename.endsWith(".ome.tiff") ? "ome.tiff"
-                    : filename.substring(filename.lastIndexOf('.') + 1);
-            String relativePath = caseId.substring(caseId.length() - 4, caseId.length() - 3).equals("6")
-                    ? "2026/" + caseId + "/" + filename
-                    : caseId.substring(0, 3) + "/" + caseId + "/" + filename;
-            // Simpler: always use year prefix from accession
-            relativePath = "2026/" + caseId + "/" + filename;
-
             List<Map<String, Object>> existingSlide = jdbcTemplate.queryForList(
-                    "SELECT id FROM wsi.slides WHERE slide_id = ?", slideId);
+                    "SELECT id FROM wsi_edu.slides WHERE slide_id = ?", slideId);
             if (existingSlide.isEmpty()) {
                 jdbcTemplate.update("""
-                    INSERT INTO wsi.slides (id, block_id, slide_id, relative_path, format, stain, level_label)
-                    VALUES (?::uuid, ?::uuid, ?, ?, ?, ?, ?)
+                    INSERT INTO wsi_edu.slides (id, block_id, slide_id, relative_path, format, stain)
+                    VALUES (?::uuid, ?::uuid, ?, ?, ?, ?)
                     """,
                         UUID.randomUUID().toString(), blockId.toString(),
-                        slideId, relativePath, format, stain, levelLabel);
+                        slideId, relativePath, format, stain);
             }
         }
     }
 
-    private UUID ensurePart(UUID caseUuid, String partLabel, String partDesc) {
+    private UUID ensurePart(UUID caseUuid, String partLabel, String partDesignator,
+                            String provenance, String anatomicSite, String finalDiagnosis) {
         List<Map<String, Object>> existing = jdbcTemplate.queryForList(
-                "SELECT id FROM wsi.parts WHERE case_id = ?::uuid AND part_label = ?",
+                "SELECT id FROM wsi_edu.parts WHERE case_id = ?::uuid AND part_label = ?",
                 caseUuid.toString(), partLabel);
         if (!existing.isEmpty()) {
             return (UUID) existing.getFirst().get("id");
         }
         UUID partId = UUID.randomUUID();
         jdbcTemplate.update("""
-            INSERT INTO wsi.parts (id, case_id, part_label, part_designator, metadata)
-            VALUES (?::uuid, ?::uuid, ?, ?, '{}'::jsonb)
+            INSERT INTO wsi_edu.parts (id, case_id, part_label, part_designator, provenance, anatomic_site, final_diagnosis, metadata)
+            VALUES (?::uuid, ?::uuid, ?, ?, ?, ?, ?, '{}'::jsonb)
             """,
-                partId.toString(), caseUuid.toString(), partLabel, partDesc);
+                partId.toString(), caseUuid.toString(), partLabel, partDesignator,
+                provenance, anatomicSite, finalDiagnosis);
         return partId;
     }
 
-    private UUID ensureBlock(UUID partId, String blockLabel, String blockDesc) {
+    private UUID ensureBlock(UUID partId, String blockLabel, String blockDescription, String provenance) {
         List<Map<String, Object>> existing = jdbcTemplate.queryForList(
-                "SELECT id FROM wsi.blocks WHERE part_id = ?::uuid AND block_label = ?",
+                "SELECT id FROM wsi_edu.blocks WHERE part_id = ?::uuid AND block_label = ?",
                 partId.toString(), blockLabel);
         if (!existing.isEmpty()) {
             return (UUID) existing.getFirst().get("id");
         }
         UUID blockId = UUID.randomUUID();
         jdbcTemplate.update("""
-            INSERT INTO wsi.blocks (id, part_id, block_label, block_description)
-            VALUES (?::uuid, ?::uuid, ?, ?)
+            INSERT INTO wsi_edu.blocks (id, part_id, block_label, block_description, provenance)
+            VALUES (?::uuid, ?::uuid, ?, ?, ?)
             """,
-                blockId.toString(), partId.toString(), blockLabel, blockDesc);
+                blockId.toString(), partId.toString(), blockLabel, blockDescription, provenance);
         return blockId;
+    }
+
+    private void seedIcdCodes(UUID caseUuid, List<Map<String, Object>> icdCodes) {
+        for (Map<String, Object> icd : icdCodes) {
+            String icdCode = (String) icd.get("icd_code");
+            String codeSystem = (String) icd.get("code_system");
+            String codeDescription = (String) icd.get("code_description");
+
+            if (icdCode == null || codeSystem == null) continue;
+
+            List<Map<String, Object>> existing = jdbcTemplate.queryForList(
+                    "SELECT 1 FROM wsi_edu.case_icd_codes WHERE case_id = ?::uuid AND icd_code = ? AND code_system = ?",
+                    caseUuid.toString(), icdCode, codeSystem);
+            if (existing.isEmpty()) {
+                jdbcTemplate.update("""
+                    INSERT INTO wsi_edu.case_icd_codes (case_id, icd_code, code_system, code_description)
+                    VALUES (?::uuid, ?, ?, ?)
+                    """,
+                        caseUuid.toString(), icdCode, codeSystem, codeDescription);
+            }
+        }
     }
 
     @SuppressWarnings("unchecked")

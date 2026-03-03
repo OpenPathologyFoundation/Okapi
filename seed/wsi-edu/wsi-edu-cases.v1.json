@@ -1,0 +1,426 @@
+{
+  "version": "1.0",
+  "generated": "2026-03-02",
+  "description": "Educational teaching cases from TCGA public dataset for the wsi_edu schema",
+  "namingConvention": {
+    "pattern": "EDU{YY}-{NNNNN}_{Part}-{Block}-{Slide}",
+    "example": "EDU26-00001_01-01-01",
+    "parts": {
+      "EDU{YY}": "Educational collection, year",
+      "NNNNN": "Accession number (5 digits)",
+      "Part": "Specimen part (01, 02, ...)",
+      "Block": "Block number within part (01, 02, ...)",
+      "Slide": "Slide/level number (01, 02, ...)"
+    }
+  },
+  "cases": [
+    {
+      "caseId": "EDU26-00001",
+      "collection": "educational",
+      "status": "active",
+      "specimenType": "Brain, NOS",
+      "clinicalHistory": "Adult patient with high-grade glial neoplasm. Surgical resection performed.",
+      "sourceLineage": {
+        "type": "public_dataset",
+        "dataset": "TCGA",
+        "project": "TCGA-GBM",
+        "tcga_case_id": "TCGA-06-6390",
+        "gdc_file_ids": ["2820fb9e-7903-4c26-a304-b9756cf14630"],
+        "terms_of_use": "GDC open access"
+      },
+      "metadata": {
+        "teaching_category": "neuropathology",
+        "difficulty_level": "intermediate",
+        "curriculum_tags": ["glioblastoma", "brain tumor", "high-grade glioma", "CNS neoplasm"]
+      },
+      "slides": [
+        {
+          "slideId": "EDU26-00001_01-01-01",
+          "partLabel": "01",
+          "partDesignator": "Tissue section",
+          "provenance": "IMPLIED",
+          "anatomicSite": "Brain",
+          "finalDiagnosis": "Glioblastoma",
+          "blockLabel": "01",
+          "blockDescription": "Representative tumor section",
+          "stain": "H&E",
+          "format": "svs",
+          "filename": "EDU26-00001_01-01-01.svs",
+          "relativePath": "2026/EDU26-00001/EDU26-00001_01-01-01.svs",
+          "originalFile": "TCGA-06-6390-01Z-00-DX1.b5ab515a-7b50-4e73-a999-f581232b005a.svs"
+        }
+      ],
+      "icdCodes": [
+        { "icd_code": "C71.9", "code_system": "ICD-10", "code_description": "Malignant neoplasm of brain, unspecified" },
+        { "icd_code": "9440/3", "code_system": "ICD-O-3", "code_description": "Glioblastoma, NOS" }
+      ]
+    },
+    {
+      "caseId": "EDU26-00002",
+      "collection": "educational",
+      "status": "active",
+      "specimenType": "Lung, lower lobe, resection",
+      "clinicalHistory": "Adult patient with lung mass. Lobectomy performed.",
+      "sourceLineage": {
+        "type": "public_dataset",
+        "dataset": "TCGA",
+        "project": "TCGA-LUAD",
+        "tcga_case_id": "TCGA-86-8074",
+        "gdc_file_ids": ["6a0ea716-a5f2-47f3-880b-537a5cdc2324"],
+        "terms_of_use": "GDC open access"
+      },
+      "metadata": {
+        "teaching_category": "pulmonary_pathology",
+        "difficulty_level": "intermediate",
+        "curriculum_tags": ["lung adenocarcinoma", "papillary adenocarcinoma", "pulmonary neoplasm"]
+      },
+      "slides": [
+        {
+          "slideId": "EDU26-00002_01-01-01",
+          "partLabel": "01",
+          "partDesignator": "Tissue section",
+          "provenance": "IMPLIED",
+          "anatomicSite": "Lung",
+          "finalDiagnosis": "Papillary adenocarcinoma, NOS",
+          "blockLabel": "01",
+          "blockDescription": "Representative tumor section",
+          "stain": "H&E",
+          "format": "svs",
+          "filename": "EDU26-00002_01-01-01.svs",
+          "relativePath": "2026/EDU26-00002/EDU26-00002_01-01-01.svs",
+          "originalFile": "TCGA-86-8074-01Z-00-DX1.0c34b434-8701-4060-a4ea-08a72371ee1e.svs"
+        }
+      ],
+      "icdCodes": [
+        { "icd_code": "C34.3", "code_system": "ICD-10", "code_description": "Malignant neoplasm of lower lobe, bronchus or lung" },
+        { "icd_code": "8260/3", "code_system": "ICD-O-3", "code_description": "Papillary adenocarcinoma, NOS" }
+      ]
+    },
+    {
+      "caseId": "EDU26-00003",
+      "collection": "educational",
+      "status": "active",
+      "specimenType": "Colon, resection",
+      "clinicalHistory": "Adult patient with colonic mass. Resection performed.",
+      "sourceLineage": {
+        "type": "public_dataset",
+        "dataset": "TCGA",
+        "project": "TCGA-COAD",
+        "tcga_case_id": "TCGA-AZ-4313",
+        "gdc_file_ids": ["d65c5d21-6333-4a9e-9a2a-139a122a3c8a"],
+        "terms_of_use": "GDC open access"
+      },
+      "metadata": {
+        "teaching_category": "gi_pathology",
+        "difficulty_level": "beginner",
+        "curriculum_tags": ["colon adenocarcinoma", "colorectal carcinoma", "GI neoplasm"]
+      },
+      "slides": [
+        {
+          "slideId": "EDU26-00003_01-01-01",
+          "partLabel": "01",
+          "partDesignator": "Tissue section",
+          "provenance": "IMPLIED",
+          "anatomicSite": "Colon",
+          "finalDiagnosis": "Adenocarcinoma, NOS",
+          "blockLabel": "01",
+          "blockDescription": "Representative tumor section",
+          "stain": "H&E",
+          "format": "svs",
+          "filename": "EDU26-00003_01-01-01.svs",
+          "relativePath": "2026/EDU26-00003/EDU26-00003_01-01-01.svs",
+          "originalFile": "TCGA-AZ-4313-01Z-00-DX1.5e7ecf69-d1fd-4997-9dcc-ab8e9f10b423.svs"
+        }
+      ],
+      "icdCodes": [
+        { "icd_code": "8140/3", "code_system": "ICD-O-3", "code_description": "Adenocarcinoma, NOS" }
+      ]
+    },
+    {
+      "caseId": "EDU26-00004",
+      "collection": "educational",
+      "status": "active",
+      "specimenType": "Kidney, nephrectomy",
+      "clinicalHistory": "Adult patient with renal mass. Nephrectomy performed.",
+      "sourceLineage": {
+        "type": "public_dataset",
+        "dataset": "TCGA",
+        "project": "TCGA-KIRC",
+        "tcga_case_id": "TCGA-BP-4977",
+        "gdc_file_ids": ["f2524bdf-18a5-45c7-b2be-fb0a535165ea"],
+        "terms_of_use": "GDC open access"
+      },
+      "metadata": {
+        "teaching_category": "genitourinary_pathology",
+        "difficulty_level": "intermediate",
+        "curriculum_tags": ["renal cell carcinoma", "clear cell RCC", "kidney tumor"]
+      },
+      "slides": [
+        {
+          "slideId": "EDU26-00004_01-01-01",
+          "partLabel": "01",
+          "partDesignator": "Tissue section",
+          "provenance": "IMPLIED",
+          "anatomicSite": "Kidney",
+          "finalDiagnosis": "Clear cell adenocarcinoma, NOS",
+          "blockLabel": "01",
+          "blockDescription": "Representative tumor section",
+          "stain": "H&E",
+          "format": "svs",
+          "filename": "EDU26-00004_01-01-01.svs",
+          "relativePath": "2026/EDU26-00004/EDU26-00004_01-01-01.svs",
+          "originalFile": "TCGA-BP-4977-01Z-00-DX1.b40b5355-757d-42cc-91b2-333871afbb57.svs"
+        }
+      ],
+      "icdCodes": [
+        { "icd_code": "C64.9", "code_system": "ICD-10", "code_description": "Malignant neoplasm of kidney, except renal pelvis" },
+        { "icd_code": "8310/3", "code_system": "ICD-O-3", "code_description": "Clear cell adenocarcinoma, NOS" }
+      ]
+    },
+    {
+      "caseId": "EDU26-00005",
+      "collection": "educational",
+      "status": "active",
+      "specimenType": "Liver, resection",
+      "clinicalHistory": "Adult patient with hepatic mass. Partial hepatectomy performed.",
+      "sourceLineage": {
+        "type": "public_dataset",
+        "dataset": "TCGA",
+        "project": "TCGA-LIHC",
+        "tcga_case_id": "TCGA-CC-A7IJ",
+        "gdc_file_ids": ["553f70e1-d83d-4bc8-9cee-dac77068a458"],
+        "terms_of_use": "GDC open access"
+      },
+      "metadata": {
+        "teaching_category": "hepatopathology",
+        "difficulty_level": "intermediate",
+        "curriculum_tags": ["hepatocellular carcinoma", "HCC", "liver tumor"]
+      },
+      "slides": [
+        {
+          "slideId": "EDU26-00005_01-01-01",
+          "partLabel": "01",
+          "partDesignator": "Tissue section",
+          "provenance": "IMPLIED",
+          "anatomicSite": "Liver",
+          "finalDiagnosis": "Hepatocellular carcinoma, NOS",
+          "blockLabel": "01",
+          "blockDescription": "Representative tumor section",
+          "stain": "H&E",
+          "format": "svs",
+          "filename": "EDU26-00005_01-01-01.svs",
+          "relativePath": "2026/EDU26-00005/EDU26-00005_01-01-01.svs",
+          "originalFile": "TCGA-CC-A7IJ-01Z-00-DX1.525F3A40-46CC-4455-9473-F99BFA2D3572.svs"
+        }
+      ],
+      "icdCodes": [
+        { "icd_code": "C22.0", "code_system": "ICD-10", "code_description": "Liver cell carcinoma" },
+        { "icd_code": "8170/3", "code_system": "ICD-O-3", "code_description": "Hepatocellular carcinoma, NOS" }
+      ]
+    },
+    {
+      "caseId": "EDU26-00006",
+      "collection": "educational",
+      "status": "active",
+      "specimenType": "Thyroid gland, thyroidectomy",
+      "clinicalHistory": "Adult patient with thyroid nodule. Thyroidectomy performed.",
+      "sourceLineage": {
+        "type": "public_dataset",
+        "dataset": "TCGA",
+        "project": "TCGA-THCA",
+        "tcga_case_id": "TCGA-DJ-A2Q6",
+        "gdc_file_ids": ["47bd3f9d-bac3-40ca-aa0f-a8a7db127f20"],
+        "terms_of_use": "GDC open access"
+      },
+      "metadata": {
+        "teaching_category": "endocrine_pathology",
+        "difficulty_level": "beginner",
+        "curriculum_tags": ["thyroid carcinoma", "papillary thyroid carcinoma", "endocrine neoplasm"]
+      },
+      "slides": [
+        {
+          "slideId": "EDU26-00006_01-01-01",
+          "partLabel": "01",
+          "partDesignator": "Tissue section",
+          "provenance": "IMPLIED",
+          "anatomicSite": "Thyroid gland",
+          "finalDiagnosis": "Papillary adenocarcinoma, NOS",
+          "blockLabel": "01",
+          "blockDescription": "Representative tumor section",
+          "stain": "H&E",
+          "format": "svs",
+          "filename": "EDU26-00006_01-01-01.svs",
+          "relativePath": "2026/EDU26-00006/EDU26-00006_01-01-01.svs",
+          "originalFile": "TCGA-DJ-A2Q6-01Z-00-DX1.105881C5-0EB7-4602-AC1A-B061595CDF90.svs"
+        }
+      ],
+      "icdCodes": [
+        { "icd_code": "C73", "code_system": "ICD-10", "code_description": "Malignant neoplasm of thyroid gland" },
+        { "icd_code": "8260/3", "code_system": "ICD-O-3", "code_description": "Papillary adenocarcinoma, NOS" }
+      ]
+    },
+    {
+      "caseId": "EDU26-00007",
+      "collection": "educational",
+      "status": "active",
+      "specimenType": "Breast, excision",
+      "clinicalHistory": "Adult patient with breast mass. Excision performed.",
+      "sourceLineage": {
+        "type": "public_dataset",
+        "dataset": "TCGA",
+        "project": "TCGA-BRCA",
+        "tcga_case_id": "TCGA-E2-A14P",
+        "gdc_file_ids": ["4730b23e-aea1-49a2-ba63-2231fd88b592"],
+        "terms_of_use": "GDC open access"
+      },
+      "metadata": {
+        "teaching_category": "breast_pathology",
+        "difficulty_level": "intermediate",
+        "curriculum_tags": ["breast carcinoma", "invasive ductal carcinoma", "IDC"]
+      },
+      "slides": [
+        {
+          "slideId": "EDU26-00007_01-01-01",
+          "partLabel": "01",
+          "partDesignator": "Tissue section",
+          "provenance": "IMPLIED",
+          "anatomicSite": "Breast",
+          "finalDiagnosis": "Infiltrating duct carcinoma, NOS",
+          "blockLabel": "01",
+          "blockDescription": "Representative tumor section",
+          "stain": "H&E",
+          "format": "svs",
+          "filename": "EDU26-00007_01-01-01.svs",
+          "relativePath": "2026/EDU26-00007/EDU26-00007_01-01-01.svs",
+          "originalFile": "TCGA-E2-A14P-01Z-00-DX1.663B02FF-C64B-41A6-8685-FD61CD76F9C6.svs"
+        }
+      ],
+      "icdCodes": [
+        { "icd_code": "C50.9", "code_system": "ICD-10", "code_description": "Malignant neoplasm of breast, unspecified" },
+        { "icd_code": "8500/3", "code_system": "ICD-O-3", "code_description": "Infiltrating duct carcinoma, NOS" }
+      ]
+    },
+    {
+      "caseId": "EDU26-00008",
+      "collection": "educational",
+      "status": "active",
+      "specimenType": "Skin/soft tissue, excision",
+      "clinicalHistory": "Adult patient with cutaneous neoplasm. Excisional biopsy performed.",
+      "sourceLineage": {
+        "type": "public_dataset",
+        "dataset": "TCGA",
+        "project": "TCGA-SKCM",
+        "tcga_case_id": "TCGA-EE-A2MR",
+        "gdc_file_ids": ["1c9e5b03-bec4-40e5-80c1-e74d669d6b2d"],
+        "terms_of_use": "GDC open access"
+      },
+      "metadata": {
+        "teaching_category": "dermatopathology",
+        "difficulty_level": "advanced",
+        "curriculum_tags": ["melanoma", "skin carcinoma", "cutaneous neoplasm"]
+      },
+      "slides": [
+        {
+          "slideId": "EDU26-00008_01-01-01",
+          "partLabel": "01",
+          "partDesignator": "Tissue section",
+          "provenance": "IMPLIED",
+          "anatomicSite": "Skin",
+          "finalDiagnosis": "Basal cell carcinoma, NOS",
+          "blockLabel": "01",
+          "blockDescription": "Representative tumor section",
+          "stain": "H&E",
+          "format": "svs",
+          "filename": "EDU26-00008_01-01-01.svs",
+          "relativePath": "2026/EDU26-00008/EDU26-00008_01-01-01.svs",
+          "originalFile": "TCGA-EE-A2MR-01Z-00-DX1.F5AB5CC6-0D9A-4438-804D-FA4636D966F2.svs"
+        }
+      ],
+      "icdCodes": [
+        { "icd_code": "8090/3", "code_system": "ICD-O-3", "code_description": "Basal cell carcinoma, NOS" }
+      ]
+    },
+    {
+      "caseId": "EDU26-00009",
+      "collection": "educational",
+      "status": "active",
+      "specimenType": "Prostate, prostatectomy",
+      "clinicalHistory": "Adult patient with prostate neoplasm. Radical prostatectomy performed.",
+      "sourceLineage": {
+        "type": "public_dataset",
+        "dataset": "TCGA",
+        "project": "TCGA-PRAD",
+        "tcga_case_id": "TCGA-EJ-7123",
+        "gdc_file_ids": ["6da0d6d5-bf47-43c7-a668-588ba97222b8"],
+        "terms_of_use": "GDC open access"
+      },
+      "metadata": {
+        "teaching_category": "genitourinary_pathology",
+        "difficulty_level": "intermediate",
+        "curriculum_tags": ["prostate carcinoma", "acinar cell carcinoma", "prostatic adenocarcinoma"]
+      },
+      "slides": [
+        {
+          "slideId": "EDU26-00009_01-01-01",
+          "partLabel": "01",
+          "partDesignator": "Tissue section",
+          "provenance": "IMPLIED",
+          "anatomicSite": "Prostate gland",
+          "finalDiagnosis": "Acinar cell carcinoma",
+          "blockLabel": "01",
+          "blockDescription": "Representative tumor section",
+          "stain": "H&E",
+          "format": "svs",
+          "filename": "EDU26-00009_01-01-01.svs",
+          "relativePath": "2026/EDU26-00009/EDU26-00009_01-01-01.svs",
+          "originalFile": "TCGA-EJ-7123-01Z-00-DX1.c61e236b-180e-4508-a41f-502130f3f777.svs"
+        }
+      ],
+      "icdCodes": [
+        { "icd_code": "C61", "code_system": "ICD-10", "code_description": "Malignant neoplasm of prostate" },
+        { "icd_code": "8550/3", "code_system": "ICD-O-3", "code_description": "Acinar cell carcinoma" }
+      ]
+    },
+    {
+      "caseId": "EDU26-00010",
+      "collection": "educational",
+      "status": "active",
+      "specimenType": "Pancreas, Whipple resection",
+      "clinicalHistory": "Adult patient with pancreatic head mass. Pancreaticoduodenectomy performed.",
+      "sourceLineage": {
+        "type": "public_dataset",
+        "dataset": "TCGA",
+        "project": "TCGA-PAAD",
+        "tcga_case_id": "TCGA-FB-AAPS",
+        "gdc_file_ids": ["c673de35-2153-4fd0-916a-8a15e5f34054"],
+        "terms_of_use": "GDC open access"
+      },
+      "metadata": {
+        "teaching_category": "gi_pathology",
+        "difficulty_level": "advanced",
+        "curriculum_tags": ["pancreatic adenocarcinoma", "ductal carcinoma", "pancreatic neoplasm"]
+      },
+      "slides": [
+        {
+          "slideId": "EDU26-00010_01-01-01",
+          "partLabel": "01",
+          "partDesignator": "Tissue section",
+          "provenance": "IMPLIED",
+          "anatomicSite": "Pancreas",
+          "finalDiagnosis": "Infiltrating duct carcinoma, NOS",
+          "blockLabel": "01",
+          "blockDescription": "Representative tumor section",
+          "stain": "H&E",
+          "format": "svs",
+          "filename": "EDU26-00010_01-01-01.svs",
+          "relativePath": "2026/EDU26-00010/EDU26-00010_01-01-01.svs",
+          "originalFile": "TCGA-FB-AAPS-01Z-00-DX1.BD33EF8C-A9ED-486C-A8A7-A91E5CD7FB8C.svs"
+        }
+      ],
+      "icdCodes": [
+        { "icd_code": "C25.0", "code_system": "ICD-10", "code_description": "Malignant neoplasm of head of pancreas" },
+        { "icd_code": "8500/3", "code_system": "ICD-O-3", "code_description": "Infiltrating duct carcinoma, NOS" }
+      ]
+    }
+  ]
+}

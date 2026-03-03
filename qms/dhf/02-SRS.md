@@ -221,6 +221,64 @@ Case assignment tracks which people are responsible for which cases. The `wsi.ca
 | **SYS-CA-011** | The system shall support algorithmic assignment via integration with an external scheduling service (Qupanda): the system queries for the optimal pathologist based on specimen type, service line, and current availability, then writes the assignment via the assignment API. | UN-CA-001 | Analysis/Test |
 | **SYS-CA-012** | The system shall support manual assignment: an authorized user (administrator or supervising pathologist) assigns or reassigns a case to a person directly through the application interface, using the same assignment API. | UN-CA-001, UN-CA-002 | Test |
 
+## 1.13 Educational WSI Collections (EDU) Requirements
+
+Educational slide collections share the clinical WSI data model (case → part → block → slide with HMAC integrity) but operate in an isolated `wsi_edu` schema with curator-based governance instead of clinical pathologist assignments. The educational schema mirrors the clinical `wsi` schema tables with one structural substitution: `case_curators` replaces `case_pathologists`.
+
+### 1.13.1 Educational Schema and Data Model
+
+| ID | System Requirement | Trace to User Need | Verification Method |
+| :--- | :--- | :--- | :--- |
+| **SYS-EDU-001** | The system shall maintain a `wsi_edu` schema containing the following tables mirroring the clinical `wsi` schema: `cases`, `parts`, `blocks`, `slides`, `case_icd_codes`, and `case_curators`. Column definitions for `cases`, `parts`, `blocks`, `slides`, and `case_icd_codes` shall be structurally identical to their `wsi` counterparts. | UN-EDU-001 | Inspection |
+| **SYS-EDU-002** | The `wsi_edu.cases` table shall enforce `collection = 'educational'` and shall have `patient_id` permanently set to `NULL` (no foreign key to `core.patients`). | UN-EDU-001, UN-EDU-015 | Inspection/Test |
+| **SYS-EDU-003** | The system shall assign educational accession numbers in the format `EDU{YY}-{NNNNN}` (e.g., `EDU26-00001`) where `YY` is the two-digit ingestion year and `NNNNN` is a zero-padded sequential number within that year, auto-incremented on case creation. | UN-EDU-003 | Test |
+| **SYS-EDU-004** | The `wsi_edu.parts` table shall include a `provenance` column with values `ACCESSIONED` (inherited from clinical case), `IMPLIED` (system-generated defaults), or `CURATED` (verified/corrected by a curator). The `provenance` column shall also appear on `wsi_edu.blocks`. | UN-EDU-004 | Inspection/Test |
+| **SYS-EDU-005** | The `wsi_edu.cases` table shall include a `source_lineage` JSONB column recording the origin of the case: `{"type": "clinical_transfer", "source_case_id": "XS26-00003"}`, `{"type": "external_upload", "source_description": "TCGA-BRCA"}`, or `{"type": "public_dataset", "dataset": "TCGA", "file_id": "..."}`. | UN-EDU-019 | Inspection/Test |
+
+### 1.13.2 Curator Assignment
+
+| ID | System Requirement | Trace to User Need | Verification Method |
+| :--- | :--- | :--- | :--- |
+| **SYS-EDU-006** | The system shall maintain a `wsi_edu.case_curators` linking table relating educational cases to identities, with columns: `id` (UUID PK), `case_id` (FK to `wsi_edu.cases`), `identity_id` (FK to `iam.identity`), `role` (`PRIMARY_CURATOR`, `CURATOR`, `CONTRIBUTOR`), `assigned_at`, `assigned_by`. | UN-EDU-007, UN-EDU-008 | Inspection |
+| **SYS-EDU-007** | The system shall enforce at most one `PRIMARY_CURATOR` per educational case via a partial unique index. A case may have zero or more `CURATOR` and `CONTRIBUTOR` assignments. | UN-EDU-007 | Test |
+| **SYS-EDU-008** | The `case_curators.identity_id` shall reference `iam.identity` without restriction on the identity's organizational role — any active identity (pathologist, resident, fellow, PA, educator, research staff) may be assigned as a curator. | UN-EDU-008 | Test |
+| **SYS-EDU-009** | The system shall record all curator assignment and case metadata changes in an audit trail with actor, timestamp, previous value, and new value. | UN-EDU-009 | Test |
+
+### 1.13.3 Clinical-to-Educational Transfer
+
+| ID | System Requirement | Trace to User Need | Verification Method |
+| :--- | :--- | :--- | :--- |
+| **SYS-EDU-010** | The system shall provide a "Send to Education" operation that, given a clinical case ID and an optional set of slide IDs (defaults to all slides), creates a new educational case with: (a) a new EDU accession number, (b) the full part/block/slide hierarchy copied with `provenance = 'ACCESSIONED'`, (c) `patient_id = NULL`, (d) `source_lineage` recording the original clinical case ID, (e) the requesting user as `PRIMARY_CURATOR`. | UN-EDU-002 | Integration Test |
+| **SYS-EDU-011** | The "Send to Education" operation shall strip patient-identifying metadata from copied slide file headers per the metadata stripping rules defined in SDS-STR-001 §7.3 (patient name, accession number, scan dates, institution name, barcode images). The educational slide file shall be a new copy; the clinical original is unmodified. | UN-EDU-015 | Integration Test |
+| **SYS-EDU-012** | The "Send to Education" operation shall compute a new HMAC-SHA256 for the de-identified slide file and store it in `wsi_edu.slides.hmac`. The clinical slide's HMAC in `wsi.slides` shall remain unchanged. | UN-EDU-014 | Test |
+
+### 1.13.4 External Upload and Cold Ingestion
+
+| ID | System Requirement | Trace to User Need | Verification Method |
+| :--- | :--- | :--- | :--- |
+| **SYS-EDU-013** | The system shall support direct upload of slide files into the educational collection, creating a new educational case with implied hierarchy: one implied part (`Part A`, `provenance = 'IMPLIED'`), one implied block (`Block 1`, `provenance = 'IMPLIED'`), and the uploaded slide. | UN-EDU-005 | Test |
+| **SYS-EDU-014** | The system shall attempt to extract specimen metadata (scanner, magnification, mpp, dimensions) from uploaded file headers via `large_image` and populate the `wsi_edu.slides` record automatically. | UN-EDU-005 | Test |
+| **SYS-EDU-015** | The system shall apply HMAC-SHA256 integrity verification to externally uploaded educational slides using the same key and algorithm as clinical slides (`LARGE_IMAGE_HMAC_KEY`). | UN-EDU-014 | Test |
+
+### 1.13.5 Teaching Annotations
+
+| ID | System Requirement | Trace to User Need | Verification Method |
+| :--- | :--- | :--- | :--- |
+| **SYS-EDU-016** | The system shall maintain a `wsi_edu.annotations` table storing spatial annotations on educational slides with columns: `id` (UUID PK), `slide_id` (FK to `wsi_edu.slides`), `author_id` (FK to `iam.identity`), `annotation_type` (`REGION`, `POINT`, `FREEHAND`, `MEASUREMENT`, `TEXT_LABEL`, `ARROW`), `geometry` (PostGIS geometry in level-0 pixel coordinates), `label` (VARCHAR), `description` (TEXT), `visibility` (`PERSONAL`, `SHARED`, `TEACHING`, `PUBLIC`), `created_at`, `updated_at`. | UN-EDU-010, UN-EDU-012 | Inspection/Test |
+| **SYS-EDU-017** | The system shall enforce annotation visibility: `PERSONAL` annotations are visible only to their author; `SHARED` annotations are visible to all curators of the case; `TEACHING` annotations are visible when explicitly enabled by an instructor during a session; `PUBLIC` annotations are visible to all users with access to the educational case. | UN-EDU-010, UN-EDU-013 | Test |
+| **SYS-EDU-018** | The system shall record the `author_id` on every annotation as provenance, independently of the case's curator assignments. The annotation author need not be a curator of the case. | UN-EDU-011 | Inspection/Test |
+| **SYS-EDU-019** | The annotation geometry shall use the same coordinate system (full-resolution level-0 pixel space) and GeoJSON format as the clinical annotation system (SDS-ANN-001), enabling shared rendering in the viewer. | UN-EDU-012 | Inspection |
+| **SYS-EDU-020** | The system shall support an API parameter or session flag to control teaching annotation visibility, enabling an instructor to toggle teaching annotations on/off for a given slide during a teaching session without modifying the annotation records. | UN-EDU-013 | Test |
+
+### 1.13.6 Access Control and Discovery
+
+| ID | System Requirement | Trace to User Need | Verification Method |
+| :--- | :--- | :--- | :--- |
+| **SYS-EDU-021** | The system shall enforce access to the educational collection via a dedicated permission (`VIEW_EDU_COLLECTION`) that is independent of clinical case permissions. Users with `VIEW_EDU_COLLECTION` may browse and view educational cases without any clinical access. | UN-EDU-016 | Test |
+| **SYS-EDU-022** | The system shall support named collections (e.g., "Breast Pathology Board Review 2026") as a grouping entity that references a set of educational cases. A case may belong to multiple named collections. Collections have an owner (identity_id), a name, a description, and a visibility (`PRIVATE`, `DEPARTMENT`, `INSTITUTION`). | UN-EDU-017 | Test |
+| **SYS-EDU-023** | The system shall support search across the educational collection by: ICD code, anatomic site, specimen type, stain type, diagnosis text (full-text), annotation label text (full-text), and curator name. | UN-EDU-018 | Test |
+| **SYS-EDU-024** | The system shall store structured diagnostic metadata (ICD codes, specimen type, clinical history) on educational cases using the same `case_icd_codes` table structure and `metadata` JSONB conventions as clinical cases. | UN-EDU-006 | Inspection |
+
 # 2. Interface Requirements
 
 | ID | Interface Requirement                                                                                          | Trace | Verification |

@@ -229,6 +229,7 @@ export class ViewerBridge {
 			sessionServiceUrl: this.config.sessionServiceUrl,
 			userId: this.config.userId,
 			orchestratorOrigin: window.location.origin,
+			mode: this.config.mode,
 		};
 
 		this.sendToViewer({ type: 'orchestrator:init', payload: initPayload });

@@ -9,6 +9,9 @@
 
 // ============ Orchestrator → Viewer Messages ============
 
+/** Viewer mode — determines DX features, case source, and visual context */
+export type ViewerMode = 'clinical' | 'educational';
+
 /** Initialization payload sent after viewer signals ready */
 export interface InitPayload {
 	/** JWT access token for tile server authentication */
@@ -25,6 +28,8 @@ export interface InitPayload {
 	userId: string;
 	/** Orchestrator's origin for reply validation */
 	orchestratorOrigin: string;
+	/** Viewer mode — clinical enables DX mode, educational disables it */
+	mode?: ViewerMode;
 }
 
 /** Audit event reported by the viewer */
@@ -96,4 +101,6 @@ export interface ViewerLaunchConfig {
 	viewerUrl: string;
 	/** Allowed origin of the viewer (for postMessage validation) */
 	viewerOrigin: string;
+	/** Viewer mode — clinical (default) or educational */
+	mode?: ViewerMode;
 }

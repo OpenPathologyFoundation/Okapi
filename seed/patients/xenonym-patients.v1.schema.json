@@ -1,0 +1,78 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://okapi.local/schemas/seed/xenonym-patients.v1.schema.json",
+  "title": "Okapi seed xenonym patients (v1)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["seed", "count", "patients"],
+  "properties": {
+    "seed": {
+      "type": "string",
+      "description": "Xenonym generation seed phrase (e.g., azure-vale-9728)."
+    },
+    "count": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Number of patients in this dataset."
+    },
+    "patients": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["mrn", "name", "dob", "sex"],
+        "properties": {
+          "mrn": {
+            "type": "string",
+            "pattern": "^XN-\\d{6}$",
+            "description": "Xenonym medical record number (e.g., XN-000001)."
+          },
+          "name": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["given", "family", "display"],
+            "properties": {
+              "given": { "type": "string" },
+              "family": { "type": "string" },
+              "display": {
+                "type": "string",
+                "description": "Pre-formatted display name."
+              }
+            }
+          },
+          "dob": {
+            "type": "string",
+            "format": "date",
+            "description": "Date of birth (ISO 8601)."
+          },
+          "sex": {
+            "type": "string",
+            "enum": ["M", "F", "O", "U"],
+            "description": "Administrative sex."
+          },
+          "address": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "line": { "type": "string" },
+              "city": { "type": "string" },
+              "state": { "type": "string" },
+              "zip": { "type": "string" },
+              "country": { "type": "string" }
+            }
+          },
+          "phone": { "type": "string" },
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "flags": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "Metadata flags (e.g., test_patient, edge_case)."
+          }
+        }
+      }
+    }
+  }
+}

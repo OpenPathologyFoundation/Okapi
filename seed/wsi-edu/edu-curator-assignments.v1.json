@@ -1,0 +1,78 @@
+{
+  "version": "1.0",
+  "description": "Curator assignments for educational WSI cases (wsi_edu.case_curators). Uses PRIMARY_CURATOR / CURATOR / CONTRIBUTOR roles per SDS-EDU-001 §4.6.",
+  "assignments": [
+    {
+      "accession_number": "EDU26-00001",
+      "curators": [
+        { "username": "hlemsesor", "role": "PRIMARY_CURATOR" },
+        { "username": "gmuklus", "role": "CONTRIBUTOR" }
+      ]
+    },
+    {
+      "accession_number": "EDU26-00002",
+      "curators": [
+        { "username": "bmodeswuv", "role": "PRIMARY_CURATOR" },
+        { "username": "vbezho", "role": "CONTRIBUTOR" }
+      ]
+    },
+    {
+      "accession_number": "EDU26-00003",
+      "curators": [
+        { "username": "ltsindi", "role": "PRIMARY_CURATOR" },
+        { "username": "gwukdaskornisauv", "role": "CONTRIBUTOR" }
+      ]
+    },
+    {
+      "accession_number": "EDU26-00004",
+      "curators": [
+        { "username": "gsneakhan", "role": "PRIMARY_CURATOR" },
+        { "username": "wnkunhalkevi", "role": "CURATOR" }
+      ]
+    },
+    {
+      "accession_number": "EDU26-00005",
+      "curators": [
+        { "username": "ppiolileibro", "role": "PRIMARY_CURATOR" },
+        { "username": "gmuklus", "role": "CONTRIBUTOR" }
+      ]
+    },
+    {
+      "accession_number": "EDU26-00006",
+      "curators": [
+        { "username": "hlemsesor", "role": "PRIMARY_CURATOR" },
+        { "username": "vbezho", "role": "CONTRIBUTOR" }
+      ]
+    },
+    {
+      "accession_number": "EDU26-00007",
+      "curators": [
+        { "username": "gsneakhan", "role": "PRIMARY_CURATOR" },
+        { "username": "wnkunhalkevi", "role": "CURATOR" },
+        { "username": "gwukdaskornisauv", "role": "CONTRIBUTOR" }
+      ]
+    },
+    {
+      "accession_number": "EDU26-00008",
+      "curators": [
+        { "username": "ppiolileibro", "role": "PRIMARY_CURATOR" },
+        { "username": "gmuklus", "role": "CONTRIBUTOR" }
+      ]
+    },
+    {
+      "accession_number": "EDU26-00009",
+      "curators": [
+        { "username": "bmodeswuv", "role": "PRIMARY_CURATOR" },
+        { "username": "ltsindi", "role": "CURATOR" }
+      ]
+    },
+    {
+      "accession_number": "EDU26-00010",
+      "curators": [
+        { "username": "ltsindi", "role": "PRIMARY_CURATOR" },
+        { "username": "ppiolileibro", "role": "CURATOR" },
+        { "username": "vbezho", "role": "CONTRIBUTOR" }
+      ]
+    }
+  ]
+}

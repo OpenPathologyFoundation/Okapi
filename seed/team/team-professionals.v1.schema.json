@@ -1,0 +1,96 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://okapi.local/schemas/seed/team-professionals.v1.schema.json",
+  "title": "Okapi seed team professionals (v1)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "professionals"],
+  "properties": {
+    "version": {
+      "type": "string",
+      "const": "v1"
+    },
+    "professionals": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["username", "email", "display_name"],
+        "properties": {
+          "seed": {
+            "type": "string",
+            "description": "Xenonym generation seed phrase (e.g., sage-echo-7610)."
+          },
+          "username": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Keycloak username matching the identity record."
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "display_name": {
+            "type": "string",
+            "description": "Full display name including credentials (e.g., Dr. Jane Doe, MD)."
+          },
+          "display_short": {
+            "type": "string",
+            "description": "Abbreviated display name (e.g., Dr. J. Doe, MD)."
+          },
+          "given_name": { "type": "string" },
+          "family_name": { "type": "string" },
+          "middle_name": { "type": ["string", "null"] },
+          "prefix": { "type": ["string", "null"] },
+          "suffix": { "type": ["string", "null"] },
+          "is_active": {
+            "type": "boolean",
+            "description": "Whether the professional is currently active."
+          },
+          "attributes": {
+            "type": "object",
+            "additionalProperties": true,
+            "properties": {
+              "role": {
+                "type": "string",
+                "enum": ["pathologist", "resident", "fellow", "histotech", "clinical_admin"],
+                "description": "Clinical role."
+              },
+              "npi": {
+                "type": "string",
+                "description": "Xenonym NPI identifier (e.g., XNP-000001)."
+              },
+              "phone": { "type": "string" },
+              "address": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "line": { "type": "string" },
+                  "city": { "type": "string" },
+                  "state": { "type": "string" },
+                  "zip": { "type": "string" },
+                  "country": { "type": "string" }
+                }
+              },
+              "avatar_url": {
+                "type": "string",
+                "format": "uri",
+                "description": "URL to avatar image."
+              },
+              "subspecialties": {
+                "type": "array",
+                "items": { "type": "string" },
+                "description": "Clinical subspecialty areas."
+              }
+            }
+          },
+          "flags": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "Metadata flags (e.g., test_professional, role:pathologist)."
+          }
+        }
+      }
+    }
+  }
+}

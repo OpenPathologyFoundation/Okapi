@@ -108,6 +108,7 @@ public class SecurityConfig {
         source.registerCorsConfiguration("/auth/token", config);
         source.registerCorsConfiguration("/api/viewer-events", config);
         source.registerCorsConfiguration("/api/cases/**", config);
+        source.registerCorsConfiguration("/api/edu/**", config);
         return source;
     }
 

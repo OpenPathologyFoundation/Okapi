@@ -3,6 +3,8 @@ package com.okapi.auth.config;
 import com.okapi.auth.service.AuthAuditService;
 import com.okapi.auth.service.CustomOidcUserService;
 import com.okapi.auth.model.Identity;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,7 +20,9 @@ import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.util.UriComponentsBuilder;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -32,6 +36,9 @@ public class SecurityConfig {
 
     @Value("${okapi.viewer.allowed-origins:}")
     private String viewerAllowedOrigins;
+
+    @Value("${okapi.oidc.end-session-uri}")
+    private String endSessionUri;
 
     public SecurityConfig(CustomOidcUserService customOidcUserService, AuthAuditService authAuditService,
                           SessionTimeoutFilter sessionTimeoutFilter) {
@@ -58,7 +65,7 @@ public class SecurityConfig {
                         .csrfTokenRequestHandler(csrfHandler))
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/login", "/error", "/webjars/**").permitAll()
+                        .requestMatchers("/login", "/logged-out", "/error", "/webjars/**").permitAll()
                         .anyRequest().authenticated())
                 .oauth2Login(oauth2 -> oauth2
                         .defaultSuccessUrl("/app", true)
@@ -112,13 +119,50 @@ public class SecurityConfig {
         return source;
     }
 
+    /**
+     * OIDC-aware logout: records the audit event, then redirects to Keycloak's
+     * end-session endpoint so the IdP session is also terminated.  Keycloak will
+     * redirect back to {@code /logged-out} (registered as a post-logout URI on
+     * the client).
+     */
     @Bean
     public LogoutSuccessHandler logoutSuccessHandler() {
-        return (request, response, authentication) -> {
+        return (HttpServletRequest request, HttpServletResponse response, Authentication authentication) -> {
             if (authentication != null && authentication.getPrincipal() instanceof Identity identity) {
                 authAuditService.recordLogout(identity, request);
             }
-            response.sendRedirect("/login");
+
+            // Build the Keycloak end-session URL with a post_logout_redirect_uri
+            // so the user lands back on our app after Keycloak clears its session.
+            String postLogoutRedirect = UriComponentsBuilder
+                    .fromHttpUrl(getBaseUrl(request))
+                    .path("/logged-out")
+                    .toUriString();
+
+            String logoutUrl = UriComponentsBuilder
+                    .fromHttpUrl(endSessionUri)
+                    .queryParam("client_id", "okapi-client")
+                    .queryParam("post_logout_redirect_uri", postLogoutRedirect)
+                    .toUriString();
+
+            response.sendRedirect(logoutUrl);
         };
+    }
+
+    /**
+     * Reconstruct the public-facing base URL from forwarded headers (set by
+     * Caddy/nginx) so that the post-logout redirect URI matches what Keycloak
+     * expects (e.g. https://okapi.openpathology.tech).
+     */
+    private String getBaseUrl(HttpServletRequest request) {
+        String proto = request.getHeader("X-Forwarded-Proto");
+        String host  = request.getHeader("X-Forwarded-Host");
+        if (proto != null && host != null) {
+            return proto + "://" + host;
+        }
+        // Fallback: use the request's own URL
+        return request.getScheme() + "://" + request.getServerName()
+                + (request.getServerPort() == 80 || request.getServerPort() == 443
+                   ? "" : ":" + request.getServerPort());
     }
 }

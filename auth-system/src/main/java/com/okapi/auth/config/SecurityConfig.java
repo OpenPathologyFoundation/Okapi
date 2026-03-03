@@ -135,12 +135,12 @@ public class SecurityConfig {
             // Build the Keycloak end-session URL with a post_logout_redirect_uri
             // so the user lands back on our app after Keycloak clears its session.
             String postLogoutRedirect = UriComponentsBuilder
-                    .fromHttpUrl(getBaseUrl(request))
+                    .fromUriString(getBaseUrl(request))
                     .path("/logged-out")
                     .toUriString();
 
             String logoutUrl = UriComponentsBuilder
-                    .fromHttpUrl(endSessionUri)
+                    .fromUriString(endSessionUri)
                     .queryParam("client_id", "okapi-client")
                     .queryParam("post_logout_redirect_uri", postLogoutRedirect)
                     .toUriString();

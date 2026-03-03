@@ -150,6 +150,16 @@ body {
   --color-hat-request-done: var(--hat-request-done);
   --color-hat-request-cancelled: var(--hat-request-cancelled);
 
+  /* Educational Status Color Utilities */
+  --color-edu-status-active: var(--edu-status-active);
+  --color-edu-status-archived: var(--edu-status-archived);
+  --color-edu-status-draft: var(--edu-status-draft);
+
+  /* Educational Difficulty Color Utilities */
+  --color-edu-difficulty-beginner: var(--edu-difficulty-beginner);
+  --color-edu-difficulty-intermediate: var(--edu-difficulty-intermediate);
+  --color-edu-difficulty-advanced: var(--edu-difficulty-advanced);
+
   /* Worklist Case Status Color Utilities */
   --color-worklist-status-accessioned: var(--worklist-status-accessioned);
   --color-worklist-status-grossing: var(--worklist-status-grossing);
@@ -170,6 +180,34 @@ body {
   --color-worklist-service-cytology: var(--worklist-service-cytology);
   --color-worklist-service-hematology: var(--worklist-service-hematology);
   --color-worklist-service-autopsy: var(--worklist-service-autopsy);
+}
+
+/* ============================================
+   Educational Collection Colors
+   Trace: qms/dhf/04-SDS/SDS-EDU-001
+   ============================================ */
+:root {
+  /* Edu Status Colors - Light Mode */
+  --edu-status-active: #059669;
+  --edu-status-archived: #6B7280;
+  --edu-status-draft: #D97706;
+
+  /* Edu Difficulty Colors - Light Mode */
+  --edu-difficulty-beginner: #059669;
+  --edu-difficulty-intermediate: #2563EB;
+  --edu-difficulty-advanced: #DC2626;
+}
+
+:root.dark {
+  /* Edu Status Colors - Dark Mode */
+  --edu-status-active: #34D399;
+  --edu-status-archived: #9CA3AF;
+  --edu-status-draft: #FBBF24;
+
+  /* Edu Difficulty Colors - Dark Mode */
+  --edu-difficulty-beginner: #34D399;
+  --edu-difficulty-intermediate: #60A5FA;
+  --edu-difficulty-advanced: #F87171;
 }
 
 /* ============================================

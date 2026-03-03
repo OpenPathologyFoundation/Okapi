@@ -184,5 +184,63 @@ HAT verification will be implemented incrementally as the module is built. At mi
 | `SYS-CA-011` | Algorithmic assignment via Qupanda integration | Analysis + Integration test | (Planned) Integration test with Qupanda service mock → verify proportional assignment and case_pathologists row created |
 | `SYS-CA-012` | Manual assignment via application interface | Integration test | E2E test: admin assigns case to pathologist through UI → verify case_pathologists row created with correct assigned_by |
 
+## 4.6 Requirements Verification Matrix (Educational WSI Collections subset)
+
+### 4.6.1 Educational Schema and Data Model (SYS-EDU-001 to SYS-EDU-005)
+
+| SRS ID | Requirement (summary) | Verification method | Evidence/artifact |
+|--------|------------------------|---------------------|------------------|
+| `SYS-EDU-001` | `wsi_edu` schema mirrors clinical `wsi` tables (cases, parts, blocks, slides, case_icd_codes, case_curators) | Inspection | Flyway migration: verify all tables exist with correct column definitions matching `wsi` counterparts |
+| `SYS-EDU-002` | `wsi_edu.cases.collection` enforced as `'educational'`; no `patient_id` column | Inspection + Test | Migration inspection: verify CHECK constraint and column absence; test: attempt INSERT with `collection = 'clinical'` → verify constraint violation |
+| `SYS-EDU-003` | Educational accession format `EDU{YY}-{NNNNN}` with auto-increment | Test | Integration test: create 3 cases → verify accession numbers `EDU26-00001`, `EDU26-00002`, `EDU26-00003` with correct year and zero-padding |
+| `SYS-EDU-004` | Parts and blocks have `provenance` column (ACCESSIONED, IMPLIED, CURATED) | Inspection + Test | Migration: verify column exists with CHECK constraint; test: insert parts with each provenance value → verify acceptance; insert invalid value → verify rejection |
+| `SYS-EDU-005` | `source_lineage` JSONB column on cases with structured origin types | Inspection + Test | Migration: verify column exists; test: insert cases with each lineage type (clinical_transfer, external_upload, public_dataset) → verify JSONB queryability |
+
+### 4.6.2 Curator Assignment (SYS-EDU-006 to SYS-EDU-009)
+
+| SRS ID | Requirement (summary) | Verification method | Evidence/artifact |
+|--------|------------------------|---------------------|------------------|
+| `SYS-EDU-006` | `wsi_edu.case_curators` table with role column (PRIMARY_CURATOR, CURATOR, CONTRIBUTOR) | Inspection | Flyway migration: verify table definition, columns, FK relationships |
+| `SYS-EDU-007` | At most one PRIMARY_CURATOR per case (partial unique index) | Integration test | Test: insert two PRIMARY_CURATOR assignments for same case → verify constraint violation; verify one PRIMARY_CURATOR + one CURATOR succeeds |
+| `SYS-EDU-008` | Any active identity can be assigned as curator regardless of organizational role | Integration test | Test: assign identities with roles PATHOLOGIST, RESIDENT, PA, ADMIN as curators → verify all succeed |
+| `SYS-EDU-009` | Curator and metadata changes recorded in audit trail | Integration test | Test: change curator assignment → verify audit event with actor, timestamp, old/new values; change case metadata → verify audit event |
+
+### 4.6.3 Clinical-to-Educational Transfer (SYS-EDU-010 to SYS-EDU-012)
+
+| SRS ID | Requirement (summary) | Verification method | Evidence/artifact |
+|--------|------------------------|---------------------|------------------|
+| `SYS-EDU-010` | "Send to Education" creates educational case with full hierarchy, provenance=ACCESSIONED, source_lineage, primary curator | Integration test | Test: execute transfer for clinical case with 2 parts, 3 blocks, 5 slides → verify educational case created with correct hierarchy, all provenance=ACCESSIONED, source_lineage contains clinical case ID, requesting user is PRIMARY_CURATOR |
+| `SYS-EDU-011` | Transferred slides have patient-identifying metadata stripped from file headers | Integration test | Test: transfer a slide with known patient name in SVS ImageDescription → verify educational copy does not contain the patient name; verify label associated image removed or replaced |
+| `SYS-EDU-012` | Transferred slides have new HMAC computed; clinical HMAC unchanged | Integration test | Test: transfer slide → verify `wsi_edu.slides.hmac` differs from `wsi.slides.hmac` (different file content after stripping); verify clinical `wsi.slides.hmac` unchanged |
+
+### 4.6.4 External Upload and Cold Ingestion (SYS-EDU-013 to SYS-EDU-015)
+
+| SRS ID | Requirement (summary) | Verification method | Evidence/artifact |
+|--------|------------------------|---------------------|------------------|
+| `SYS-EDU-013` | Direct upload creates case with implied hierarchy (1 part, 1 block, provenance=IMPLIED) | Integration test | Test: upload a single SVS file → verify educational case created with Part A (IMPLIED), Block 1 (IMPLIED), 1 slide |
+| `SYS-EDU-014` | Scanner metadata extracted from uploaded file headers automatically | Integration test | Test: upload SVS with known magnification/dimensions → verify `wsi_edu.slides` populated with correct magnification, width_px, height_px, mpp values |
+| `SYS-EDU-015` | Uploaded educational slides have HMAC-SHA256 computed with same key as clinical | Test | Test: compute HMAC externally with known key → verify `wsi_edu.slides.hmac` matches |
+
+### 4.6.5 Teaching Annotations (SYS-EDU-016 to SYS-EDU-020)
+
+| SRS ID | Requirement (summary) | Verification method | Evidence/artifact |
+|--------|------------------------|---------------------|------------------|
+| `SYS-EDU-016` | `wsi_edu.annotations` table with required columns (type, geometry, visibility, author_id) | Inspection + Test | Migration: verify table definition; test: create annotations of each type with each visibility level → verify persistence |
+| `SYS-EDU-017` | Visibility enforcement: PERSONAL → author only; SHARED → curators; TEACHING → instructor-controlled; PUBLIC → all | Integration test | Test: create annotations at each visibility level; query as author → see all own; query as non-author curator → see SHARED + PUBLIC; query as non-curator with VIEW_EDU → see PUBLIC only; query with teaching flag → see TEACHING |
+| `SYS-EDU-018` | Annotation author_id recorded independently of case curator assignments | Inspection + Test | Test: identity NOT in case_curators creates annotation → verify author_id recorded; verify annotation queryable by author |
+| `SYS-EDU-019` | Annotation geometry uses level-0 pixel coordinates (GeoJSON format) | Inspection | Code review: verify geometry stored in same coordinate system as SDS-ANN-001; verify PostGIS GIST index on geometry column |
+| `SYS-EDU-020` | Teaching annotation toggle: session parameter controls TEACHING visibility without modifying records | Test | Test: create TEACHING annotation → query without flag → not returned; query with `show_teaching=true` → returned; verify annotation record unchanged |
+
+### 4.6.6 Access Control and Discovery (SYS-EDU-021 to SYS-EDU-024)
+
+| SRS ID | Requirement (summary) | Verification method | Evidence/artifact |
+|--------|------------------------|---------------------|------------------|
+| `SYS-EDU-021` | `VIEW_EDU_COLLECTION` permission independent of clinical permissions | Integration test | Test: user with VIEW_EDU but no clinical permissions → can browse educational cases; user with clinical permissions but no VIEW_EDU → cannot access educational collection |
+| `SYS-EDU-022` | Named collections (name, owner, visibility) with many-to-many case membership | Integration test | Test: create named collection → add 3 cases → verify membership; add same case to 2 collections → verify dual membership; query cases by collection → verify correct set returned |
+| `SYS-EDU-023` | Search by ICD code, anatomic site, stain, diagnosis text, annotation text, curator name | Integration test | Test: populate 10 educational cases with varied metadata → search by each dimension → verify correct result sets; full-text search across diagnosis and annotation labels |
+| `SYS-EDU-024` | Educational cases carry ICD codes and metadata in same structure as clinical | Inspection + Test | Test: insert educational case with ICD codes → query by ICD code → verify returned; query metadata JSONB fields → verify GIN index used |
+
 # 5. Validation Notes
 Clinical workflow validation (usability, human factors, and operational monitoring) will be defined in later V&V activities once clinical workflows are implemented beyond IAM.
+
+Educational workflow validation (teaching session usability, annotation discovery, curriculum management) will be defined once the educational module UI is implemented.

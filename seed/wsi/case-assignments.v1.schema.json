@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://okapi.local/schemas/seed/case-assignments.v1.schema.json",
+  "title": "Okapi seed case assignments (v1)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "assignments"],
+  "properties": {
+    "version": {
+      "type": "string",
+      "description": "Schema version (e.g., 1.0)."
+    },
+    "assignments": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["accession_number", "pathologists"],
+        "properties": {
+          "accession_number": {
+            "type": "string",
+            "pattern": "^S\\d{2}-\\d{4}$",
+            "description": "Case accession number (e.g., S26-0001)."
+          },
+          "pathologists": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["username", "designation", "sequence"],
+              "properties": {
+                "username": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "Keycloak username of the assigned pathologist."
+                },
+                "designation": {
+                  "type": "string",
+                  "enum": ["PRIMARY", "SECONDARY", "GROSSING", "CONSULTING"],
+                  "description": "Role on the case."
+                },
+                "sequence": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "description": "Order within designation (for multiple assignees of the same type)."
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

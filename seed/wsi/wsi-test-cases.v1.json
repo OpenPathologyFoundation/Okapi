@@ -14,38 +14,11 @@
     }
   },
   "cases": [
-      {
-        "caseId": "PS26-00001",
-        "patientId": "PT-2026-0006",
-        "patientName": "Homunculus, Olga R",
-        "patientDob": "1965-03-14",
-        "patientSex": "F",
-        "accessionDate": "2026-01-15",
-        "clinicalHistory": "56 y/o female with palpable left breast mass, 2.1 cm on imaging",
-        "specimenType": "Breast, left, lumpectomy",
-        "diagnosis": "Invasive ductal carcinoma, grade 2",
-        "status": "pending_review",
-        "priority": "routine",
-        "slides": [
-          {
-            "slideId": "PS26-00001-01-01-01",
-            "partDescription": "Tumor with margins",
-            "blockDescription": "Representative section of tumor",
-            "stain": "H&E",
-            "filename": "PS26-00001-01-01-01.svs",
-            "originalFile": "PG-SAMPLE.svs",
-            "notes": "Primary tumor section"
-          }
-        ]
-      },
     {
       "caseId": "S26-0001",
-      "patientId": "PT-2026-0001",
-      "patientName": "MARTINEZ, ELENA R",
-      "patientDob": "1965-03-14",
-      "patientSex": "F",
+      "patientMrn": "XN-000024",
       "accessionDate": "2026-01-15",
-      "clinicalHistory": "56 y/o female with palpable left breast mass, 2.1 cm on imaging",
+      "clinicalHistory": "58 y/o female with palpable left breast mass, 2.1 cm on imaging",
       "specimenType": "Breast, left, lumpectomy",
       "diagnosis": "Invasive ductal carcinoma, grade 2",
       "status": "pending_review",
@@ -73,10 +46,7 @@
     },
     {
       "caseId": "S26-0002",
-      "patientId": "PT-2026-0002",
-      "patientName": "JOHNSON, MICHAEL T",
-      "patientDob": "1958-07-22",
-      "patientSex": "M",
+      "patientMrn": "XN-000030",
       "accessionDate": "2026-01-15",
       "clinicalHistory": "68 y/o male with rising PSA, Gleason 7 on biopsy",
       "specimenType": "Prostate, radical prostatectomy",
@@ -106,12 +76,9 @@
     },
     {
       "caseId": "S26-0003",
-      "patientId": "PT-2026-0003",
-      "patientName": "WILLIAMS, SARAH J",
-      "patientDob": "1972-11-05",
-      "patientSex": "F",
+      "patientMrn": "XN-000037",
       "accessionDate": "2026-01-16",
-      "clinicalHistory": "54 y/o female with abnormal cervical cytology, HSIL",
+      "clinicalHistory": "51 y/o female with abnormal cervical cytology, HSIL",
       "specimenType": "Cervix, LEEP excision",
       "diagnosis": "High-grade squamous intraepithelial lesion (CIN 3)",
       "status": "pending_review",
@@ -130,10 +97,7 @@
     },
     {
       "caseId": "S26-0004",
-      "patientId": "PT-2026-0004",
-      "patientName": "CHEN, DAVID L",
-      "patientDob": "1980-02-28",
-      "patientSex": "M",
+      "patientMrn": "XN-000018",
       "accessionDate": "2026-01-16",
       "clinicalHistory": "46 y/o male with colon mass, biopsy positive for adenocarcinoma",
       "specimenType": "Colon, right hemicolectomy",
@@ -172,10 +136,7 @@
     },
     {
       "caseId": "S26-0005",
-      "patientId": "PT-2026-0005",
-      "patientName": "THOMPSON, JENNIFER A",
-      "patientDob": "1955-09-10",
-      "patientSex": "F",
+      "patientMrn": "XN-000001",
       "accessionDate": "2026-01-17",
       "clinicalHistory": "71 y/o female with right breast mass, 3.5 cm, BI-RADS 5",
       "specimenType": "Breast, right, mastectomy with sentinel nodes",
@@ -219,7 +180,225 @@
           "originalFile": "d6affded-c469-4727-b2e2-faf9eb62691f",
           "notes": "Evaluate for micrometastases"
         }
-
+      ]
+    },
+    {
+      "caseId": "S26-0006",
+      "patientMrn": "XN-000003",
+      "accessionDate": "2026-01-20",
+      "clinicalHistory": "62 y/o female with breast mass, infiltrating duct carcinoma on biopsy",
+      "specimenType": "Breast, excisional biopsy",
+      "diagnosis": "Infiltrating duct carcinoma, NOS",
+      "status": "pending_review",
+      "priority": "routine",
+      "slides": [
+        {
+          "slideId": "S26-0006_A1_S1",
+          "partDescription": "Tumor",
+          "blockDescription": "Representative section, TCGA-A2-A1FW",
+          "stain": "H&E",
+          "filename": "S26-0006_A1_S1.svs",
+          "originalFile": "TCGA-A2-A1FW-01Z-00-DX1.DC2BC5D7-E57B-444E-833F-9A1B6E11DE6D.svs",
+          "notes": ""
+        },
+        {
+          "slideId": "S26-0006_A1_S2",
+          "partDescription": "Tumor",
+          "blockDescription": "Representative section, TCGA-AC-A2BM",
+          "stain": "H&E",
+          "filename": "S26-0006_A1_S2.svs",
+          "originalFile": "TCGA-AC-A2BM-01Z-00-DX1.162A9FA9-6E61-48BF-B0A5-C6C7640ABD9B.svs",
+          "notes": ""
+        },
+        {
+          "slideId": "S26-0006_A1_S3",
+          "partDescription": "Tumor",
+          "blockDescription": "Representative section, TCGA-BH-A0BQ",
+          "stain": "H&E",
+          "filename": "S26-0006_A1_S3.svs",
+          "originalFile": "TCGA-BH-A0BQ-01Z-00-DX1.F5C6386B-BB2C-49DF-B3B8-6C4B80D060D4.svs",
+          "notes": ""
+        }
+      ]
+    },
+    {
+      "caseId": "S26-0007",
+      "patientMrn": "XN-000006",
+      "accessionDate": "2026-01-20",
+      "clinicalHistory": "Female with metastatic mucinous adenocarcinoma of the breast",
+      "specimenType": "Breast, metastatic site biopsy",
+      "diagnosis": "Mucinous adenocarcinoma",
+      "status": "pending_review",
+      "priority": "routine",
+      "slides": [
+        {
+          "slideId": "S26-0007_A1_S1",
+          "partDescription": "Metastatic tumor",
+          "blockDescription": "Representative section, TCGA-D8-A1XC",
+          "stain": "H&E",
+          "filename": "S26-0007_A1_S1.svs",
+          "originalFile": "TCGA-D8-A1XC-01Z-00-DX2.10BA8536-D6AF-460E-9796-EB77FFE3EF5B.svs",
+          "notes": "Classification: metastasis"
+        }
+      ]
+    },
+    {
+      "caseId": "S26-0008",
+      "patientMrn": "XN-000011",
+      "accessionDate": "2026-01-20",
+      "clinicalHistory": "54 y/o female with cervical squamous cell carcinoma",
+      "specimenType": "Cervix, excisional biopsy",
+      "diagnosis": "Squamous cell carcinoma, NOS",
+      "status": "pending_review",
+      "priority": "routine",
+      "slides": [
+        {
+          "slideId": "S26-0008_A1_S1",
+          "partDescription": "Cervical biopsy",
+          "blockDescription": "Representative section, TCGA-VS-A9UB",
+          "stain": "H&E",
+          "filename": "S26-0008_A1_S1.svs",
+          "originalFile": "TCGA-VS-A9UB-01Z-00-DX1.4BC3DADC-AFDA-4F7B-A518-83C4DC6A2669.svs",
+          "notes": ""
+        },
+        {
+          "slideId": "S26-0008_A1_S2",
+          "partDescription": "Cervical biopsy",
+          "blockDescription": "Representative section, TCGA-HM-A3JK",
+          "stain": "H&E",
+          "filename": "S26-0008_A1_S2.svs",
+          "originalFile": "TCGA-HM-A3JK-01Z-00-DX1.D7DFD54D-DF9F-4279-A0FD-760290759C24.svs",
+          "notes": ""
+        },
+        {
+          "slideId": "S26-0008_A2_S1",
+          "partDescription": "Cervical biopsy",
+          "blockDescription": "Additional section, TCGA-C5-A1BJ",
+          "stain": "H&E",
+          "filename": "S26-0008_A2_S1.svs",
+          "originalFile": "TCGA-C5-A1BJ-01Z-00-DX1.178689C8-25A8-4BE9-B5CF-0D04CCD65CDF.svs",
+          "notes": ""
+        }
+      ]
+    },
+    {
+      "caseId": "S26-0009",
+      "patientMrn": "XN-000013",
+      "accessionDate": "2026-01-20",
+      "clinicalHistory": "60 y/o male with prostatic adenocarcinoma",
+      "specimenType": "Prostate, radical prostatectomy",
+      "diagnosis": "Adenocarcinoma, NOS",
+      "status": "pending_review",
+      "priority": "routine",
+      "slides": [
+        {
+          "slideId": "S26-0009_A1_S1",
+          "partDescription": "Prostate, section 1",
+          "blockDescription": "Representative section, TCGA-SU-A7E7",
+          "stain": "H&E",
+          "filename": "S26-0009_A1_S1.svs",
+          "originalFile": "TCGA-SU-A7E7-01Z-00-DX1.1C4CB02E-100C-4A40-8C98-55F21C6CEE30.svs",
+          "notes": ""
+        },
+        {
+          "slideId": "S26-0009_A2_S1",
+          "partDescription": "Prostate, section 2",
+          "blockDescription": "Representative section, TCGA-KK-A8IA",
+          "stain": "H&E",
+          "filename": "S26-0009_A2_S1.svs",
+          "originalFile": "TCGA-KK-A8IA-01Z-00-DX1.4396AFCE-0AE2-4066-BB73-1503173FC563.svs",
+          "notes": ""
+        },
+        {
+          "slideId": "S26-0009_A3_S1",
+          "partDescription": "Prostate, section 3",
+          "blockDescription": "Representative section, TCGA-J4-A83M",
+          "stain": "H&E",
+          "filename": "S26-0009_A3_S1.svs",
+          "originalFile": "TCGA-J4-A83M-01Z-00-DX1.EB350313-C46E-4B5E-9974-A4C2241E0DE0.svs",
+          "notes": ""
+        }
+      ]
+    },
+    {
+      "caseId": "S26-0010",
+      "patientMrn": "XN-000021",
+      "accessionDate": "2026-01-20",
+      "clinicalHistory": "Female with colon adenocarcinoma",
+      "specimenType": "Colon, resection",
+      "diagnosis": "Adenocarcinoma, NOS",
+      "status": "pending_review",
+      "priority": "routine",
+      "slides": [
+        {
+          "slideId": "S26-0010_A1_S1",
+          "partDescription": "Colon tumor",
+          "blockDescription": "Representative section, TCGA-AZ-4313",
+          "stain": "H&E",
+          "filename": "S26-0010_A1_S1.svs",
+          "originalFile": "TCGA-AZ-4313-01Z-00-DX1.5e7ecf69-d1fd-4997-9dcc-ab8e9f10b423.svs",
+          "notes": ""
+        },
+        {
+          "slideId": "S26-0010_A2_S1",
+          "partDescription": "Colon tumor",
+          "blockDescription": "Additional section, TCGA-AA-A02O",
+          "stain": "H&E",
+          "filename": "S26-0010_A2_S1.svs",
+          "originalFile": "TCGA-AA-A02O-01Z-00-DX1.CB9BE08B-D78B-46B3-8339-A3DADD24439F.svs",
+          "notes": ""
+        },
+        {
+          "slideId": "S26-0010_A2_S2",
+          "partDescription": "Colon tumor",
+          "blockDescription": "Additional section, TCGA-T9-A92H",
+          "stain": "H&E",
+          "filename": "S26-0010_A2_S2.svs",
+          "originalFile": "TCGA-T9-A92H-01Z-00-DX3.1DE7D5ED-60F7-4645-8243-AB0C027B3ED7.svs",
+          "notes": ""
+        }
+      ]
+    },
+    {
+      "caseId": "S26-0011",
+      "patientMrn": "XN-000031",
+      "accessionDate": "2026-01-20",
+      "clinicalHistory": "65 y/o female with breast lobular carcinoma",
+      "specimenType": "Breast, excisional biopsy",
+      "diagnosis": "Lobular carcinoma, NOS",
+      "status": "pending_review",
+      "priority": "routine",
+      "slides": [
+        {
+          "slideId": "S26-0011_A1_S1",
+          "partDescription": "Tumor",
+          "blockDescription": "Representative section, TCGA-AR-A2LN",
+          "stain": "H&E",
+          "filename": "S26-0011_A1_S1.svs",
+          "originalFile": "TCGA-AR-A2LN-01Z-00-DX1.3EF43524-28B8-4326-9356-6BCBC63A1DA8.svs",
+          "notes": ""
+        }
+      ]
+    },
+    {
+      "caseId": "S26-0012",
+      "patientMrn": "XN-000023",
+      "accessionDate": "2026-01-20",
+      "clinicalHistory": "44 y/o male with sigmoid colon adenocarcinoma",
+      "specimenType": "Colon, sigmoid resection",
+      "diagnosis": "Adenocarcinoma, NOS",
+      "status": "pending_review",
+      "priority": "routine",
+      "slides": [
+        {
+          "slideId": "S26-0012_A1_S1",
+          "partDescription": "Sigmoid colon tumor",
+          "blockDescription": "Representative section, TCGA-AY-A8YK",
+          "stain": "H&E",
+          "filename": "S26-0012_A1_S1.svs",
+          "originalFile": "TCGA-AY-A8YK-01Z-00-DX1.89E3C546-0425-449B-A6FB-1C35168EA7EB.svs",
+          "notes": ""
+        }
       ]
     }
   ]

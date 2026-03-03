@@ -16,47 +16,7 @@
 BEGIN;
 
 -- =========================================================================
--- Case 1: PS26-00001 — Proficiency sample, breast lumpectomy
---   Patient: XN-000003 → Chungum Khumgezvovgaur (F, 1971-08-24, age 54)
--- =========================================================================
-WITH c AS (
-    INSERT INTO wsi.cases (case_id, collection, specimen_type, clinical_history, accession_date, status, priority, patient_id, metadata)
-    VALUES (
-        'PS26-00001', 'clinical',
-        'Breast, left, lumpectomy',
-        '54 y/o female with palpable left breast mass, 2.1 cm on imaging',
-        '2026-01-15',
-        'pending_review', 'routine',
-        (SELECT id FROM core.patients WHERE mrn = 'XN-000003'),
-        '{}'::jsonb
-    )
-    ON CONFLICT (collection, case_id) DO UPDATE SET
-        clinical_history = EXCLUDED.clinical_history,
-        patient_id = EXCLUDED.patient_id,
-        metadata = EXCLUDED.metadata
-    RETURNING id
-), p AS (
-    INSERT INTO wsi.parts (case_id, part_label, part_designator, final_diagnosis, metadata)
-    SELECT id, '01', 'Tumor with margins',
-           'Invasive ductal carcinoma, grade 2',
-           '{}'::jsonb
-    FROM c
-    ON CONFLICT DO NOTHING
-    RETURNING id
-), b AS (
-    INSERT INTO wsi.blocks (part_id, block_label, block_description)
-    SELECT id, '01', 'Representative section of tumor'
-    FROM p
-    ON CONFLICT DO NOTHING
-    RETURNING id
-)
-INSERT INTO wsi.slides (block_id, slide_id, relative_path, format, stain, level_label)
-SELECT id, 'PS26-00001-01-01-01', '2026/PS26-00001/PS26-00001-01-01-01.svs', 'svs', 'H&E', 'S1'
-FROM b
-ON CONFLICT DO NOTHING;
-
--- =========================================================================
--- Case 2: S26-0001 — Breast lumpectomy (2 slides)
+-- Case 1: S26-0001 — Breast lumpectomy (2 slides)
 --   Patient: XN-000024 → Thisovau Oquuski (F, 1967-08-24, age 58)
 -- =========================================================================
 WITH c AS (
@@ -101,7 +61,7 @@ FROM b
 ON CONFLICT DO NOTHING;
 
 -- =========================================================================
--- Case 3: S26-0002 — Prostate resection (2 parts, 1 slide each)
+-- Case 2: S26-0002 — Prostate resection (2 parts, 1 slide each)
 --   Patient: XN-000030 → Ngupla Inotos (M, 1958-01-20, age 68)
 -- =========================================================================
 WITH c AS (
@@ -164,7 +124,7 @@ FROM bb
 ON CONFLICT DO NOTHING;
 
 -- =========================================================================
--- Case 4: S26-0003 — Cervix LEEP (1 slide)
+-- Case 3: S26-0003 — Cervix LEEP (1 slide)
 --   Patient: XN-000037 → Tingioth Sinkizvitrath (F, 1974-03-07, age 51)
 -- =========================================================================
 WITH c AS (
@@ -204,7 +164,7 @@ FROM b
 ON CONFLICT DO NOTHING;
 
 -- =========================================================================
--- Case 5: S26-0004 — Colon hemicolectomy (1 part, 3 blocks, 3 slides)
+-- Case 4: S26-0004 — Colon hemicolectomy (1 part, 3 blocks, 3 slides)
 --   Patient: XN-000018 → Glilmezair Gusa (M, 1980-01-22, age 46)
 -- =========================================================================
 WITH c AS (
@@ -272,7 +232,7 @@ FROM b3
 ON CONFLICT DO NOTHING;
 
 -- =========================================================================
--- Case 6: S26-0005 — Breast mastectomy with sentinel nodes
+-- Case 5: S26-0005 — Breast mastectomy with sentinel nodes
 --   Part A: Tumor (block 1, slides S1 + S2)
 --   Part B: Sentinel lymph node (block 1, slides S1 + S2)
 --   Patient: XN-000001 → Ourfir Bruntilavoul (F, 1955-02-15, age 71)
@@ -344,6 +304,365 @@ pb AS (
 INSERT INTO wsi.slides (block_id, slide_id, relative_path, format, stain, level_label)
 SELECT id, 'S26-0005_B1_S2', '2026/S26-0005/S26-0005_B1_S2.tiff', 'tiff', 'H&E', 'S2'
 FROM bb
+ON CONFLICT DO NOTHING;
+
+-- =========================================================================
+-- Case 6: S26-0006 — Breast infiltrating duct carcinoma (1 part, 1 block, 3 slides)
+--   Patient: XN-000003 (F)
+-- =========================================================================
+WITH c AS (
+    INSERT INTO wsi.cases (case_id, collection, specimen_type, clinical_history, accession_date, status, priority, patient_id, metadata)
+    VALUES (
+        'S26-0006', 'clinical',
+        'Breast, excisional biopsy',
+        '62 y/o female with breast mass, infiltrating duct carcinoma on biopsy',
+        '2026-01-20',
+        'pending_review', 'routine',
+        (SELECT id FROM core.patients WHERE mrn = 'XN-000003'),
+        '{}'::jsonb
+    )
+    ON CONFLICT (collection, case_id) DO UPDATE SET
+        clinical_history = EXCLUDED.clinical_history,
+        patient_id = EXCLUDED.patient_id,
+        metadata = EXCLUDED.metadata
+    RETURNING id
+), p AS (
+    INSERT INTO wsi.parts (case_id, part_label, part_designator, anatomic_site, final_diagnosis, metadata)
+    SELECT id, 'A', 'Tumor', 'Breast',
+           'Infiltrating duct carcinoma, NOS',
+           '{}'::jsonb
+    FROM c
+    ON CONFLICT DO NOTHING
+    RETURNING id
+), b AS (
+    INSERT INTO wsi.blocks (part_id, block_label, block_description)
+    SELECT id, '1', 'Representative section'
+    FROM p
+    ON CONFLICT DO NOTHING
+    RETURNING id
+), s1 AS (
+    INSERT INTO wsi.slides (block_id, slide_id, relative_path, format, stain, level_label)
+    SELECT id, 'S26-0006_A1_S1', '2026/S26-0006/S26-0006_A1_S1.svs', 'svs', 'H&E', 'S1'
+    FROM b
+    ON CONFLICT DO NOTHING
+), s2 AS (
+    INSERT INTO wsi.slides (block_id, slide_id, relative_path, format, stain, level_label)
+    SELECT id, 'S26-0006_A1_S2', '2026/S26-0006/S26-0006_A1_S2.svs', 'svs', 'H&E', 'S2'
+    FROM b
+    ON CONFLICT DO NOTHING
+)
+INSERT INTO wsi.slides (block_id, slide_id, relative_path, format, stain, level_label)
+SELECT id, 'S26-0006_A1_S3', '2026/S26-0006/S26-0006_A1_S3.svs', 'svs', 'H&E', 'S3'
+FROM b
+ON CONFLICT DO NOTHING;
+
+-- =========================================================================
+-- Case 7: S26-0007 — Breast mucinous adenocarcinoma, metastatic (1 slide)
+--   Patient: XN-000006 (F)
+-- =========================================================================
+WITH c AS (
+    INSERT INTO wsi.cases (case_id, collection, specimen_type, clinical_history, accession_date, status, priority, patient_id, metadata)
+    VALUES (
+        'S26-0007', 'clinical',
+        'Breast, metastatic site biopsy',
+        'Female with metastatic mucinous adenocarcinoma of the breast',
+        '2026-01-20',
+        'pending_review', 'routine',
+        (SELECT id FROM core.patients WHERE mrn = 'XN-000006'),
+        '{}'::jsonb
+    )
+    ON CONFLICT (collection, case_id) DO UPDATE SET
+        clinical_history = EXCLUDED.clinical_history,
+        patient_id = EXCLUDED.patient_id,
+        metadata = EXCLUDED.metadata
+    RETURNING id
+), p AS (
+    INSERT INTO wsi.parts (case_id, part_label, part_designator, anatomic_site, final_diagnosis, metadata)
+    SELECT id, 'A', 'Metastatic tumor', 'Breast',
+           'Mucinous adenocarcinoma',
+           '{}'::jsonb
+    FROM c
+    ON CONFLICT DO NOTHING
+    RETURNING id
+), b AS (
+    INSERT INTO wsi.blocks (part_id, block_label, block_description)
+    SELECT id, '1', 'Representative section'
+    FROM p
+    ON CONFLICT DO NOTHING
+    RETURNING id
+)
+INSERT INTO wsi.slides (block_id, slide_id, relative_path, format, stain, level_label)
+SELECT id, 'S26-0007_A1_S1', '2026/S26-0007/S26-0007_A1_S1.svs', 'svs', 'H&E', 'S1'
+FROM b
+ON CONFLICT DO NOTHING;
+
+-- =========================================================================
+-- Case 8: S26-0008 — Cervical squamous cell carcinoma (2 parts, 3 slides)
+--   Part A: block 1 (2 slides), Part A: block 2 (1 slide)
+--   Patient: XN-000011 (F)
+-- =========================================================================
+WITH c AS (
+    INSERT INTO wsi.cases (case_id, collection, specimen_type, clinical_history, accession_date, status, priority, patient_id, metadata)
+    VALUES (
+        'S26-0008', 'clinical',
+        'Cervix, excisional biopsy',
+        '54 y/o female with cervical squamous cell carcinoma',
+        '2026-01-20',
+        'pending_review', 'routine',
+        (SELECT id FROM core.patients WHERE mrn = 'XN-000011'),
+        '{}'::jsonb
+    )
+    ON CONFLICT (collection, case_id) DO UPDATE SET
+        clinical_history = EXCLUDED.clinical_history,
+        patient_id = EXCLUDED.patient_id,
+        metadata = EXCLUDED.metadata
+    RETURNING id
+), pa AS (
+    INSERT INTO wsi.parts (case_id, part_label, part_designator, anatomic_site, final_diagnosis, metadata)
+    SELECT id, 'A', 'Cervical biopsy', 'Cervix',
+           'Squamous cell carcinoma, NOS',
+           '{}'::jsonb
+    FROM c
+    ON CONFLICT DO NOTHING
+    RETURNING id
+),
+-- Block 1: 2 slides
+b1 AS (
+    INSERT INTO wsi.blocks (part_id, block_label, block_description)
+    SELECT id, '1', 'Representative section'
+    FROM pa
+    ON CONFLICT DO NOTHING
+    RETURNING id
+), s1 AS (
+    INSERT INTO wsi.slides (block_id, slide_id, relative_path, format, stain, level_label)
+    SELECT id, 'S26-0008_A1_S1', '2026/S26-0008/S26-0008_A1_S1.svs', 'svs', 'H&E', 'S1'
+    FROM b1
+    ON CONFLICT DO NOTHING
+), s2 AS (
+    INSERT INTO wsi.slides (block_id, slide_id, relative_path, format, stain, level_label)
+    SELECT id, 'S26-0008_A1_S2', '2026/S26-0008/S26-0008_A1_S2.svs', 'svs', 'H&E', 'S2'
+    FROM b1
+    ON CONFLICT DO NOTHING
+),
+-- Block 2: 1 slide
+b2 AS (
+    INSERT INTO wsi.blocks (part_id, block_label, block_description)
+    SELECT pa.id, '2', 'Additional section'
+    FROM pa
+    ON CONFLICT DO NOTHING
+    RETURNING id
+)
+INSERT INTO wsi.slides (block_id, slide_id, relative_path, format, stain, level_label)
+SELECT id, 'S26-0008_A2_S1', '2026/S26-0008/S26-0008_A2_S1.svs', 'svs', 'H&E', 'S1'
+FROM b2
+ON CONFLICT DO NOTHING;
+
+-- =========================================================================
+-- Case 9: S26-0009 — Prostate adenocarcinoma (1 part, 3 blocks, 3 slides)
+--   Patient: XN-000013 (M)
+-- =========================================================================
+WITH c AS (
+    INSERT INTO wsi.cases (case_id, collection, specimen_type, clinical_history, accession_date, status, priority, patient_id, metadata)
+    VALUES (
+        'S26-0009', 'clinical',
+        'Prostate, radical prostatectomy',
+        '60 y/o male with prostatic adenocarcinoma',
+        '2026-01-20',
+        'pending_review', 'routine',
+        (SELECT id FROM core.patients WHERE mrn = 'XN-000013'),
+        '{}'::jsonb
+    )
+    ON CONFLICT (collection, case_id) DO UPDATE SET
+        clinical_history = EXCLUDED.clinical_history,
+        patient_id = EXCLUDED.patient_id,
+        metadata = EXCLUDED.metadata
+    RETURNING id
+), pa AS (
+    INSERT INTO wsi.parts (case_id, part_label, part_designator, anatomic_site, final_diagnosis, metadata)
+    SELECT id, 'A', 'Prostate, section 1', 'Prostate',
+           'Adenocarcinoma, NOS',
+           '{}'::jsonb
+    FROM c
+    ON CONFLICT DO NOTHING
+    RETURNING id
+),
+-- Block 1
+b1 AS (
+    INSERT INTO wsi.blocks (part_id, block_label, block_description)
+    SELECT id, '1', 'Representative section'
+    FROM pa
+    ON CONFLICT DO NOTHING
+    RETURNING id
+), s1 AS (
+    INSERT INTO wsi.slides (block_id, slide_id, relative_path, format, stain, level_label)
+    SELECT id, 'S26-0009_A1_S1', '2026/S26-0009/S26-0009_A1_S1.svs', 'svs', 'H&E', 'S1'
+    FROM b1
+    ON CONFLICT DO NOTHING
+),
+-- Block 2
+b2 AS (
+    INSERT INTO wsi.blocks (part_id, block_label, block_description)
+    SELECT pa.id, '2', 'Representative section'
+    FROM pa
+    ON CONFLICT DO NOTHING
+    RETURNING id
+), s2 AS (
+    INSERT INTO wsi.slides (block_id, slide_id, relative_path, format, stain, level_label)
+    SELECT id, 'S26-0009_A2_S1', '2026/S26-0009/S26-0009_A2_S1.svs', 'svs', 'H&E', 'S1'
+    FROM b2
+    ON CONFLICT DO NOTHING
+),
+-- Block 3
+b3 AS (
+    INSERT INTO wsi.blocks (part_id, block_label, block_description)
+    SELECT pa.id, '3', 'Representative section'
+    FROM pa
+    ON CONFLICT DO NOTHING
+    RETURNING id
+)
+INSERT INTO wsi.slides (block_id, slide_id, relative_path, format, stain, level_label)
+SELECT id, 'S26-0009_A3_S1', '2026/S26-0009/S26-0009_A3_S1.svs', 'svs', 'H&E', 'S1'
+FROM b3
+ON CONFLICT DO NOTHING;
+
+-- =========================================================================
+-- Case 10: S26-0010 — Colon adenocarcinoma (1 part, 2 blocks, 3 slides)
+--   Patient: XN-000021 (F)
+-- =========================================================================
+WITH c AS (
+    INSERT INTO wsi.cases (case_id, collection, specimen_type, clinical_history, accession_date, status, priority, patient_id, metadata)
+    VALUES (
+        'S26-0010', 'clinical',
+        'Colon, resection',
+        'Female with colon adenocarcinoma',
+        '2026-01-20',
+        'pending_review', 'routine',
+        (SELECT id FROM core.patients WHERE mrn = 'XN-000021'),
+        '{}'::jsonb
+    )
+    ON CONFLICT (collection, case_id) DO UPDATE SET
+        clinical_history = EXCLUDED.clinical_history,
+        patient_id = EXCLUDED.patient_id,
+        metadata = EXCLUDED.metadata
+    RETURNING id
+), pa AS (
+    INSERT INTO wsi.parts (case_id, part_label, part_designator, anatomic_site, final_diagnosis, metadata)
+    SELECT id, 'A', 'Colon tumor', 'Colon',
+           'Adenocarcinoma, NOS',
+           '{}'::jsonb
+    FROM c
+    ON CONFLICT DO NOTHING
+    RETURNING id
+),
+-- Block 1: 1 slide
+b1 AS (
+    INSERT INTO wsi.blocks (part_id, block_label, block_description)
+    SELECT id, '1', 'Representative section'
+    FROM pa
+    ON CONFLICT DO NOTHING
+    RETURNING id
+), s1 AS (
+    INSERT INTO wsi.slides (block_id, slide_id, relative_path, format, stain, level_label)
+    SELECT id, 'S26-0010_A1_S1', '2026/S26-0010/S26-0010_A1_S1.svs', 'svs', 'H&E', 'S1'
+    FROM b1
+    ON CONFLICT DO NOTHING
+),
+-- Block 2: 2 slides
+b2 AS (
+    INSERT INTO wsi.blocks (part_id, block_label, block_description)
+    SELECT pa.id, '2', 'Additional section'
+    FROM pa
+    ON CONFLICT DO NOTHING
+    RETURNING id
+), s2 AS (
+    INSERT INTO wsi.slides (block_id, slide_id, relative_path, format, stain, level_label)
+    SELECT id, 'S26-0010_A2_S1', '2026/S26-0010/S26-0010_A2_S1.svs', 'svs', 'H&E', 'S1'
+    FROM b2
+    ON CONFLICT DO NOTHING
+)
+INSERT INTO wsi.slides (block_id, slide_id, relative_path, format, stain, level_label)
+SELECT id, 'S26-0010_A2_S2', '2026/S26-0010/S26-0010_A2_S2.svs', 'svs', 'H&E', 'S2'
+FROM b2
+ON CONFLICT DO NOTHING;
+
+-- =========================================================================
+-- Case 11: S26-0011 — Breast lobular carcinoma (1 slide)
+--   Patient: XN-000031 (F)
+-- =========================================================================
+WITH c AS (
+    INSERT INTO wsi.cases (case_id, collection, specimen_type, clinical_history, accession_date, status, priority, patient_id, metadata)
+    VALUES (
+        'S26-0011', 'clinical',
+        'Breast, excisional biopsy',
+        '65 y/o female with breast lobular carcinoma',
+        '2026-01-20',
+        'pending_review', 'routine',
+        (SELECT id FROM core.patients WHERE mrn = 'XN-000031'),
+        '{}'::jsonb
+    )
+    ON CONFLICT (collection, case_id) DO UPDATE SET
+        clinical_history = EXCLUDED.clinical_history,
+        patient_id = EXCLUDED.patient_id,
+        metadata = EXCLUDED.metadata
+    RETURNING id
+), p AS (
+    INSERT INTO wsi.parts (case_id, part_label, part_designator, anatomic_site, final_diagnosis, metadata)
+    SELECT id, 'A', 'Tumor', 'Breast',
+           'Lobular carcinoma, NOS',
+           '{}'::jsonb
+    FROM c
+    ON CONFLICT DO NOTHING
+    RETURNING id
+), b AS (
+    INSERT INTO wsi.blocks (part_id, block_label, block_description)
+    SELECT id, '1', 'Representative section'
+    FROM p
+    ON CONFLICT DO NOTHING
+    RETURNING id
+)
+INSERT INTO wsi.slides (block_id, slide_id, relative_path, format, stain, level_label)
+SELECT id, 'S26-0011_A1_S1', '2026/S26-0011/S26-0011_A1_S1.svs', 'svs', 'H&E', 'S1'
+FROM b
+ON CONFLICT DO NOTHING;
+
+-- =========================================================================
+-- Case 12: S26-0012 — Colon sigmoid adenocarcinoma (1 slide)
+--   Patient: XN-000023 (M)
+-- =========================================================================
+WITH c AS (
+    INSERT INTO wsi.cases (case_id, collection, specimen_type, clinical_history, accession_date, status, priority, patient_id, metadata)
+    VALUES (
+        'S26-0012', 'clinical',
+        'Colon, sigmoid resection',
+        '44 y/o male with sigmoid colon adenocarcinoma',
+        '2026-01-20',
+        'pending_review', 'routine',
+        (SELECT id FROM core.patients WHERE mrn = 'XN-000023'),
+        '{}'::jsonb
+    )
+    ON CONFLICT (collection, case_id) DO UPDATE SET
+        clinical_history = EXCLUDED.clinical_history,
+        patient_id = EXCLUDED.patient_id,
+        metadata = EXCLUDED.metadata
+    RETURNING id
+), p AS (
+    INSERT INTO wsi.parts (case_id, part_label, part_designator, anatomic_site, final_diagnosis, metadata)
+    SELECT id, 'A', 'Sigmoid colon tumor', 'Colon',
+           'Adenocarcinoma, NOS',
+           '{}'::jsonb
+    FROM c
+    ON CONFLICT DO NOTHING
+    RETURNING id
+), b AS (
+    INSERT INTO wsi.blocks (part_id, block_label, block_description)
+    SELECT id, '1', 'Representative section'
+    FROM p
+    ON CONFLICT DO NOTHING
+    RETURNING id
+)
+INSERT INTO wsi.slides (block_id, slide_id, relative_path, format, stain, level_label)
+SELECT id, 'S26-0012_A1_S1', '2026/S26-0012/S26-0012_A1_S1.svs', 'svs', 'H&E', 'S1'
+FROM b
 ON CONFLICT DO NOTHING;
 
 COMMIT;

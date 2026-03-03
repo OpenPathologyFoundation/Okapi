@@ -8,7 +8,7 @@
 import { browser } from '$app/environment';
 import { csrfHeaders } from '$lib/csrf';
 import { ViewerBridge, type ViewerBridgeState } from '$lib/viewer-bridge';
-import type { ViewerLaunchConfig } from '$lib/types/viewer-bridge';
+import type { ViewerLaunchConfig, ViewerMode } from '$lib/types/viewer-bridge';
 
 interface TokenResponse {
 	accessToken: string;
@@ -30,6 +30,9 @@ class ViewerStore {
 	/** Number of slides in the current viewer case */
 	slideCount: number | null = $state(null);
 
+	/** Current viewer mode (clinical or educational) */
+	currentMode: ViewerMode | null = $state(null);
+
 	/** Last error from the viewer */
 	lastError: { code: string; message: string } | null = $state(null);
 
@@ -43,10 +46,22 @@ class ViewerStore {
 	 * If the viewer is launching, does nothing (prevents double-open).
 	 */
 	async launchViewer(config: Omit<ViewerLaunchConfig, 'token'>): Promise<void> {
-		console.log('[ViewerStore] launchViewer — state=' + this.state + ', bridge=' + !!this.bridge + ', accession=' + config.accession);
+		const requestedMode = config.mode ?? 'clinical';
+		console.log('[ViewerStore] launchViewer — state=' + this.state + ', bridge=' + !!this.bridge + ', accession=' + config.accession + ', mode=' + requestedMode);
 		if (!browser) return;
 
-		// If already connected, just switch case
+		// If mode is changing (e.g. clinical→educational), close and reopen
+		// to prevent clinical/educational state leakage
+		if (this.bridge && this.state === 'connected' && this.currentMode !== requestedMode) {
+			console.log('[ViewerStore] Mode change detected (' + this.currentMode + '→' + requestedMode + '), closing viewer for clean reopen');
+			this.bridge.close();
+			this.bridge.destroy();
+			this.bridge = null;
+			this.state = 'idle';
+			this.currentMode = null;
+		}
+
+		// If already connected in the same mode, just switch case
 		if (this.bridge && this.state === 'connected') {
 			this.bridge.sendCaseChange(config.caseId, config.accession);
 			this.currentCase = config.accession;
@@ -84,6 +99,7 @@ class ViewerStore {
 		}
 
 		this.currentCase = config.accession;
+		this.currentMode = requestedMode;
 		this.slideCount = null;
 		this.lastError = null;
 
@@ -117,6 +133,7 @@ class ViewerStore {
 			this.bridge.close();
 		}
 		this.currentCase = null;
+		this.currentMode = null;
 		this.slideCount = null;
 		this.lastError = null;
 	}
@@ -129,6 +146,7 @@ class ViewerStore {
 		}
 		this.state = 'idle';
 		this.currentCase = null;
+		this.currentMode = null;
 		this.slideCount = null;
 		this.lastError = null;
 	}

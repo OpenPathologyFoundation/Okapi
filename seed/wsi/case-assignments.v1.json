@@ -2,13 +2,6 @@
   "version": "1.0",
   "assignments": [
     {
-      "accession_number": "PS26-00001",
-      "pathologists": [
-        { "username": "hlemsesor", "designation": "PRIMARY", "sequence": 1 },
-        { "username": "gmuklus", "designation": "SECONDARY", "sequence": 1 }
-      ]
-    },
-    {
       "accession_number": "S26-0001",
       "pathologists": [
         { "username": "ltsindi", "designation": "PRIMARY", "sequence": 1 },
@@ -41,6 +34,54 @@
       "pathologists": [
         { "username": "gsneakhan", "designation": "PRIMARY", "sequence": 1 },
         { "username": "hlemsesor", "designation": "CONSULTING", "sequence": 1 }
+      ]
+    },
+    {
+      "accession_number": "S26-0006",
+      "pathologists": [
+        { "username": "ltsindi", "designation": "PRIMARY", "sequence": 1 },
+        { "username": "gsneakhan", "designation": "SECONDARY", "sequence": 1 }
+      ]
+    },
+    {
+      "accession_number": "S26-0007",
+      "pathologists": [
+        { "username": "ppiolileibro", "designation": "PRIMARY", "sequence": 1 }
+      ]
+    },
+    {
+      "accession_number": "S26-0008",
+      "pathologists": [
+        { "username": "hlemsesor", "designation": "PRIMARY", "sequence": 1 },
+        { "username": "vbezho", "designation": "GROSSING", "sequence": 1 }
+      ]
+    },
+    {
+      "accession_number": "S26-0009",
+      "pathologists": [
+        { "username": "wnkunhalkevi", "designation": "PRIMARY", "sequence": 1 },
+        { "username": "bmodeswuv", "designation": "SECONDARY", "sequence": 1 }
+      ]
+    },
+    {
+      "accession_number": "S26-0010",
+      "pathologists": [
+        { "username": "bmodeswuv", "designation": "PRIMARY", "sequence": 1 },
+        { "username": "ltsindi", "designation": "CONSULTING", "sequence": 1 }
+      ]
+    },
+    {
+      "accession_number": "S26-0011",
+      "pathologists": [
+        { "username": "gsneakhan", "designation": "PRIMARY", "sequence": 1 }
+      ]
+    },
+    {
+      "accession_number": "S26-0012",
+      "pathologists": [
+        { "username": "gwukdaskornisauv", "designation": "PRIMARY", "sequence": 1 },
+        { "username": "ppiolileibro", "designation": "SECONDARY", "sequence": 1 },
+        { "username": "vbezho", "designation": "GROSSING", "sequence": 1 }
       ]
     }
   ]

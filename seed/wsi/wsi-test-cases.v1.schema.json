@@ -1,0 +1,120 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://okapi.local/schemas/seed/wsi-test-cases.v1.schema.json",
+  "title": "Okapi seed WSI test cases (v1)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "cases"],
+  "properties": {
+    "version": {
+      "type": "string",
+      "description": "Schema version (e.g., 1.0)."
+    },
+    "generated": {
+      "type": "string",
+      "format": "date",
+      "description": "Date the seed file was generated."
+    },
+    "description": {
+      "type": "string"
+    },
+    "namingConvention": {
+      "type": "object",
+      "additionalProperties": true,
+      "description": "Documents the slide ID naming convention.",
+      "properties": {
+        "pattern": { "type": "string" },
+        "example": { "type": "string" },
+        "parts": {
+          "type": "object",
+          "additionalProperties": { "type": "string" }
+        }
+      }
+    },
+    "cases": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["caseId", "patientMrn", "accessionDate", "specimenType"],
+        "properties": {
+          "caseId": {
+            "type": "string",
+            "pattern": "^S\\d{2}-\\d{4}$",
+            "description": "Accession number (e.g., S26-0001)."
+          },
+          "patientMrn": {
+            "type": "string",
+            "pattern": "^XN-\\d{6}$",
+            "description": "Patient MRN linking to xenonym-patients dataset."
+          },
+          "accessionDate": {
+            "type": "string",
+            "format": "date",
+            "description": "Date the specimen was accessioned."
+          },
+          "clinicalHistory": {
+            "type": "string",
+            "description": "Brief clinical history."
+          },
+          "specimenType": {
+            "type": "string",
+            "description": "Specimen site and procedure (e.g., Breast, left, lumpectomy)."
+          },
+          "diagnosis": {
+            "type": "string",
+            "description": "Final pathologic diagnosis."
+          },
+          "status": {
+            "type": "string",
+            "enum": ["pending_review", "in_review", "signed_out"],
+            "default": "pending_review"
+          },
+          "priority": {
+            "type": "string",
+            "enum": ["routine", "rush", "stat"],
+            "default": "routine"
+          },
+          "slides": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["slideId", "filename"],
+              "properties": {
+                "slideId": {
+                  "type": "string",
+                  "description": "Unique slide identifier following naming convention."
+                },
+                "partDescription": {
+                  "type": "string",
+                  "description": "Gross description of the part."
+                },
+                "blockDescription": {
+                  "type": "string",
+                  "description": "Description of the tissue block."
+                },
+                "stain": {
+                  "type": "string",
+                  "default": "H&E",
+                  "description": "Histochemical stain applied."
+                },
+                "filename": {
+                  "type": "string",
+                  "description": "Slide image filename (e.g., S26-0001_A1_S1.svs)."
+                },
+                "originalFile": {
+                  "type": "string",
+                  "description": "Source file name (e.g., TCGA UUID filename)."
+                },
+                "notes": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

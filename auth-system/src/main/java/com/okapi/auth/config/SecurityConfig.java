@@ -158,6 +158,9 @@ public class SecurityConfig {
         String proto = request.getHeader("X-Forwarded-Proto");
         String host  = request.getHeader("X-Forwarded-Host");
         if (proto != null && host != null) {
+            // Strip standard ports (:443 for https, :80 for http) so the URI
+            // matches what Keycloak has registered (without an explicit port).
+            host = host.replaceAll(":(443|80)$", "");
             return proto + "://" + host;
         }
         // Fallback: use the request's own URL

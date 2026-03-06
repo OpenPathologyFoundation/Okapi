@@ -10,6 +10,7 @@ import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.postgresql.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -41,8 +42,11 @@ class KeycloakOidcIntegrationTest {
             .withExposedPorts(8080)
             .withEnv("KEYCLOAK_ADMIN", "admin")
             .withEnv("KEYCLOAK_ADMIN_PASSWORD", "admin")
-            .withCopyFileToContainer(MountableFile.forHostPath(REALM_JSON), "/opt/keycloak/data/import/realm.json")
-            .withCommand("start-dev", "--import-realm");
+            .withCopyFileToContainer(MountableFile.forHostPath(REALM_JSON, 0644), "/opt/keycloak/data/import/realm.json")
+            .withCommand("start-dev", "--import-realm")
+            .waitingFor(Wait.forHttp("/realms/okapi/.well-known/openid-configuration")
+                    .forPort(8080)
+                    .forStatusCode(200));
 
     private static Path resolveRealmJson() {
         // When run from the auth-system module, working dir is typically `.../auth-system`.

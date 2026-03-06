@@ -279,6 +279,47 @@ Educational slide collections share the clinical WSI data model (case → part �
 | **SYS-EDU-023** | The system shall support search across the educational collection by: ICD code, anatomic site, specimen type, stain type, diagnosis text (full-text), annotation label text (full-text), and curator name. | UN-EDU-018 | Test |
 | **SYS-EDU-024** | The system shall store structured diagnostic metadata (ICD codes, specimen type, clinical history) on educational cases using the same `case_icd_codes` table structure and `metadata` JSONB conventions as clinical cases. | UN-EDU-006 | Inspection |
 
+## 1.14 Image Ingestion (ING) Requirements
+
+Image ingestion is the process by which whole-slide image files enter managed storage and become linked to database records so the tile server can serve them. The ingestion service is shared infrastructure used by both clinical and educational collections.
+
+### 1.14.1 Core Ingestion Service
+
+| ID | System Requirement | Trace to User Need | Verification Method |
+| :--- | :--- | :--- | :--- |
+| **SYS-ING-001** | The system shall provide a core ingestion function that accepts a file path, target collection (`clinical` or `educational`), and hierarchy metadata (case_id, part_label, block_label, stain), and performs: (a) file validation, (b) target path construction, (c) atomic file write, (d) HMAC-SHA256 computation, (e) image metadata extraction via large_image, (f) transactional database record creation. Both the API endpoint and the CLI tool shall call this same function. | UN-ING-001 | Test |
+| **SYS-ING-002** | The ingestion service shall validate that the image file exists, is fully written (not locked/zero-byte), and can be opened by the large_image library before proceeding with storage and database registration. | UN-ING-002 | Test |
+| **SYS-ING-003** | The ingestion service shall extract image metadata (width_px, height_px, magnification, mpp_x, mpp_y, scanner) from the file via `large_image.open()` and `getMetadata()` and populate the corresponding `slides` columns automatically. Extraction failure shall be non-fatal (the slide is still ingested with NULL metadata fields). | UN-ING-005 | Test |
+| **SYS-ING-004** | The ingestion service shall compute `HMAC-SHA256(key, file_bytes)` using the server-held secret (`LARGE_IMAGE_HMAC_KEY`) and store the 64-character hex digest in `slides.hmac`. | UN-ING-004 | Test |
+| **SYS-ING-005** | The ingestion service shall write the file atomically: write to a temporary file in the target directory, then `rename()` to the final path. If any subsequent step fails (HMAC, metadata extraction, DB insert), the file shall be deleted and the database transaction rolled back. | UN-ING-007 | Test |
+| **SYS-ING-006** | The ingestion service shall reject duplicate ingestion attempts: if a slide with the same `slide_id` already exists in the database, or if a file already exists at the target path, the service shall return an error without modifying existing data. | UN-ING-008 | Test |
+
+### 1.14.2 Clinical Ingestion API
+
+| ID | System Requirement | Trace to User Need | Verification Method |
+| :--- | :--- | :--- | :--- |
+| **SYS-ING-007** | The system shall provide `POST /admin/ingest/clinical` accepting a multipart file upload with form fields: `case_id` (required), `part_label` (required), `block_label` (required), `stain`, `level_label`, `specimen_type`, `accession_date`, `clinical_history`, `patient_mrn`, `patient_uuid`, `part_designator`, `anatomic_site`, `final_diagnosis`. The endpoint shall call the core ingestion function targeting the `wsi` schema and clinical storage root. | UN-ING-001, UN-ING-003 | Test |
+| **SYS-ING-008** | The clinical ingestion endpoint shall construct the storage path as `{clinical_root}/{YYYY}/{case_id}/{filename}` where `YYYY` is derived from the case_id prefix per SDS-STR-001 §3.2 path derivation rule. | UN-ING-001 | Test |
+| **SYS-ING-009** | The clinical ingestion endpoint shall create missing case, part, and block records if they do not already exist, linking the case to a patient via `patient_mrn` or `patient_uuid` if provided. | UN-ING-003 | Test |
+
+### 1.14.3 Educational Ingestion API
+
+| ID | System Requirement | Trace to User Need | Verification Method |
+| :--- | :--- | :--- | :--- |
+| **SYS-ING-010** | The system shall provide `POST /admin/ingest/educational` accepting a multipart file upload with form fields: `case_id` (optional — auto-assigned if omitted), `part_label` (default `'A'`), `block_label` (default `'1'`), `stain`, `specimen_type`, `anatomic_site`, `primary_diagnosis`, `icd_code`, `source_lineage` (JSON string), `curator_identity_id`. The endpoint shall call the core ingestion function targeting the `wsi_edu` schema and educational storage root. | UN-ING-001, UN-EDU-005 | Test |
+| **SYS-ING-011** | If `case_id` is omitted from the educational ingestion request, the system shall auto-assign the next available `EDU{YY}-{NNNNN}` accession number (e.g., `EDU26-00001`) based on the current year and the highest existing sequence number in the `wsi_edu.cases` table. | UN-EDU-003 | Test |
+| **SYS-ING-012** | The educational ingestion endpoint shall construct the storage path as `{edu_root}/{YYYY}/{case_id}/{filename}` using the EDU accession number as the directory name. | UN-ING-001 | Test |
+| **SYS-ING-013** | The educational ingestion endpoint shall create missing case, part, and block records with `provenance = 'IMPLIED'` if they do not already exist in the `wsi_edu` schema. If `curator_identity_id` is provided, the system shall assign that identity as `PRIMARY_CURATOR`. | UN-EDU-005, UN-EDU-007 | Test |
+| **SYS-ING-014** | The educational ingestion endpoint shall populate `source_lineage` on the case record from the `source_lineage` form field (JSON). If omitted, the source_lineage shall be set to `{"type": "external_upload"}`. | UN-EDU-019 | Test |
+
+### 1.14.4 Manifest-Driven Batch Ingestion
+
+| ID | System Requirement | Trace to User Need | Verification Method |
+| :--- | :--- | :--- | :--- |
+| **SYS-ING-015** | The system shall provide a CLI tool (`scripts/ingest-manifest.py`) that reads a JSON manifest file containing an array of slide entries, each specifying: `file_path`, `collection` (`clinical` or `educational`), `case_id`, `part_label`, `block_label`, `stain`, and optional metadata fields. The tool shall call the appropriate ingestion API endpoint for each entry. | UN-ING-006 | Test |
+| **SYS-ING-016** | The manifest ingestion tool shall report per-slide success/failure status and produce a summary at completion (N succeeded, N failed, N skipped-duplicate). Failed slides shall not halt processing of remaining slides. | UN-ING-006, UN-ING-007 | Test |
+| **SYS-ING-017** | The manifest ingestion tool shall support a `--dry-run` flag that validates all entries (file existence, format, duplicate check) without writing files or database records. | UN-ING-002 | Test |
+
 # 2. Interface Requirements
 
 | ID | Interface Requirement                                                                                          | Trace | Verification |

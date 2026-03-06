@@ -29,21 +29,23 @@ spring:
           okta:
             # Do NOT use `issuer-uri` here because it triggers OIDC discovery at app startup.
             # Using explicit endpoints allows `bootRun` to start even if Keycloak isn't running.
-            # Defaults target a local Keycloak realm when `OIDC_ISSUER_URI` is set.
-            authorization-uri: ${OIDC_AUTHORIZATION_URI:${OIDC_ISSUER_URI}/protocol/openid-connect/auth}
-            token-uri: ${OIDC_TOKEN_URI:${OIDC_ISSUER_URI}/protocol/openid-connect/token}
-            user-info-uri: ${OIDC_USER_INFO_URI:${OIDC_ISSUER_URI}/protocol/openid-connect/userinfo}
-            jwk-set-uri: ${OIDC_JWK_SET_URI:${OIDC_ISSUER_URI}/protocol/openid-connect/certs}
+            # Defaults derive from okapi.oidc.issuer-uri (below) which always resolves.
+            authorization-uri: ${OIDC_AUTHORIZATION_URI:${okapi.oidc.issuer-uri}/protocol/openid-connect/auth}
+            token-uri: ${OIDC_TOKEN_URI:${okapi.oidc.issuer-uri}/protocol/openid-connect/token}
+            user-info-uri: ${OIDC_USER_INFO_URI:${okapi.oidc.issuer-uri}/protocol/openid-connect/userinfo}
+            jwk-set-uri: ${OIDC_JWK_SET_URI:${okapi.oidc.issuer-uri}/protocol/openid-connect/certs}
 
 okapi:
   oidc:
-    # Used as a stable provider identifier for DB lookups when `issuer-uri` is not configured.
-    provider-id: ${OIDC_PROVIDER_ID:${OIDC_ISSUER_URI:local-oidc}}
-    end-session-uri: ${OIDC_END_SESSION_URI:${OIDC_ISSUER_URI}/protocol/openid-connect/logout}
+    # Single source of truth for OIDC issuer. All derived URIs reference this property.
+    # Override via OIDC_ISSUER_URI env var for production.
+    issuer-uri: ${OIDC_ISSUER_URI:http://localhost:8180/realms/okapi}
+    provider-id: ${OIDC_PROVIDER_ID:${okapi.oidc.issuer-uri}}
+    end-session-uri: ${OIDC_END_SESSION_URI:${okapi.oidc.issuer-uri}/protocol/openid-connect/logout}
   jwt:
     issuer: ${OKAPI_JWT_ISSUER:okapi}
     audience: ${OKAPI_JWT_AUDIENCE:okapi-tile-server}
-    secret: ${OKAPI_JWT_SECRET:dev-secret-change-dev-secret-change}
+    secret: ${OKAPI_JWT_SECRET}
     ttl-seconds: ${OKAPI_JWT_TTL_SECONDS:600}
   authz:
     version: ${OKAPI_AUTHZ_VERSION:2026.01.26+dev}

@@ -1,17 +1,27 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
+	import { page } from '$app/state';
 	import { worklistStore } from '$lib/stores/worklist.svelte';
+	import { eduStore } from '$lib/stores/edu.svelte';
 	import type { WorklistItem, WorklistPageResponse } from '$lib/types/worklist';
 	import {
 		SERVICE_LABELS,
-		STATUS_LABELS,
 		SERVICE_COLORS,
-		STATUS_COLORS
+		STATUS_LABELS as WL_STATUS_LABELS,
+		STATUS_COLORS as WL_STATUS_COLORS
 	} from '$lib/types/worklist';
+	import type { EduCaseListItem, EduPageResponse } from '$lib/types/edu';
+	import {
+		DIFFICULTY_LABELS,
+		DIFFICULTY_COLORS,
+		STATUS_LABELS as EDU_STATUS_LABELS,
+		STATUS_COLORS as EDU_STATUS_COLORS
+	} from '$lib/types/edu';
+	import type { SearchResult, SearchContext } from '$lib/types/search';
 
 	let query = $state('');
-	let results = $state<WorklistItem[]>([]);
+	let results = $state<SearchResult[]>([]);
 	let totalItems = $state(0);
 	let isLoading = $state(false);
 	let isOpen = $state(false);
@@ -19,6 +29,26 @@
 	let inputEl = $state<HTMLInputElement | null>(null);
 	let containerEl = $state<HTMLDivElement | null>(null);
 	let debounceTimer: ReturnType<typeof setTimeout> | null = null;
+
+	const context: SearchContext = $derived(
+		page.url.pathname.startsWith('/app/edu') ? 'edu' : 'worklist'
+	);
+
+	// Clear search state on context change
+	$effect(() => {
+		context; // track
+		query = '';
+		results = [];
+		totalItems = 0;
+		isOpen = false;
+		activeIndex = -1;
+	});
+
+	const placeholder = $derived(
+		context === 'edu'
+			? 'Search edu cases by diagnosis, site, or ID...'
+			: 'Search cases by accession, patient, or MRN...'
+	);
 
 	onMount(() => {
 		function handleClickOutside(e: MouseEvent) {
@@ -49,21 +79,27 @@
 		activeIndex = -1;
 
 		debounceTimer = setTimeout(async () => {
-			await searchCases(query.trim());
+			await search(query.trim());
 		}, 300);
 	}
 
-	async function searchCases(term: string) {
+	async function search(term: string) {
 		try {
-			const params = new URLSearchParams({
-				search: term,
-				pageSize: '8'
-			});
-			const res = await fetch(`/api/worklist?${params.toString()}`);
-			if (!res.ok) throw new Error('Search failed');
-			const data: WorklistPageResponse = await res.json();
-			results = data.items;
-			totalItems = data.totalItems;
+			if (context === 'edu') {
+				const params = new URLSearchParams({ query: term, pageSize: '8' });
+				const res = await fetch(`/api/edu/cases?${params.toString()}`);
+				if (!res.ok) throw new Error('Search failed');
+				const data: EduPageResponse = await res.json();
+				results = data.items.map(mapEduResult);
+				totalItems = data.totalItems;
+			} else {
+				const params = new URLSearchParams({ search: term, pageSize: '8' });
+				const res = await fetch(`/api/worklist?${params.toString()}`);
+				if (!res.ok) throw new Error('Search failed');
+				const data: WorklistPageResponse = await res.json();
+				results = data.items.map(mapWorklistResult);
+				totalItems = data.totalItems;
+			}
 		} catch {
 			results = [];
 			totalItems = 0;
@@ -72,21 +108,55 @@
 		}
 	}
 
-	function navigateToCase(item: WorklistItem) {
+	function mapWorklistResult(item: WorklistItem): SearchResult {
+		return {
+			id: String(item.id),
+			title: item.accessionNumber,
+			subtitle:
+				[item.patientDisplay, item.patientMrn ? `(${item.patientMrn})` : '']
+					.filter(Boolean)
+					.join(' ') || '—',
+			badge1: { label: SERVICE_LABELS[item.service], color: SERVICE_COLORS[item.service] },
+			badge2: { label: WL_STATUS_LABELS[item.status], color: WL_STATUS_COLORS[item.status] },
+			href: `/app/case/${item.accessionNumber}`
+		};
+	}
+
+	function mapEduResult(item: EduCaseListItem): SearchResult {
+		return {
+			id: item.id,
+			title: item.caseId,
+			subtitle: item.primaryDiagnosis ?? item.anatomicSite ?? '—',
+			badge1: item.difficultyLevel
+				? {
+						label: DIFFICULTY_LABELS[item.difficultyLevel],
+						color: DIFFICULTY_COLORS[item.difficultyLevel]
+					}
+				: null,
+			badge2: { label: EDU_STATUS_LABELS[item.status], color: EDU_STATUS_COLORS[item.status] },
+			href: `/app/edu/case/${item.caseId}`
+		};
+	}
+
+	function navigateToResult(item: SearchResult) {
 		isOpen = false;
 		query = '';
 		results = [];
-		goto(`/app/case/${item.accessionNumber}`);
+		goto(item.href);
 	}
 
 	function viewAllResults() {
-		isOpen = false;
 		const searchTerm = query.trim();
-		query = '';
-		results = [];
-		worklistStore.setSearch(searchTerm);
-		worklistStore.loadWorklist();
-		goto('/app/worklist');
+		clearSearch();
+		if (context === 'edu') {
+			eduStore.setFilter('query', searchTerm);
+			eduStore.loadCases();
+			goto('/app/edu');
+		} else {
+			worklistStore.setSearch(searchTerm);
+			worklistStore.loadWorklist();
+			goto('/app/worklist');
+		}
 	}
 
 	function clearSearch() {
@@ -116,7 +186,7 @@
 			case 'Enter':
 				e.preventDefault();
 				if (activeIndex >= 0 && activeIndex < results.length) {
-					navigateToCase(results[activeIndex]);
+					navigateToResult(results[activeIndex]);
 				} else if (activeIndex === results.length && hasFooter) {
 					viewAllResults();
 				}
@@ -164,7 +234,7 @@
 				if (query.trim().length >= 2 && results.length > 0) isOpen = true;
 			}}
 			type="text"
-			placeholder="Search cases by accession, patient, or MRN..."
+			{placeholder}
 			class="block w-full rounded-md border-0 bg-clinical-bg py-1.5 pl-10 pr-8 text-clinical-text ring-1 ring-inset ring-clinical-border placeholder:text-clinical-muted focus:ring-2 focus:ring-inset focus:ring-clinical-primary sm:text-sm sm:leading-6 transition-all"
 		/>
 		{#if query.length > 0}
@@ -205,7 +275,7 @@
 						<li>
 							<button
 								type="button"
-								onclick={() => navigateToCase(item)}
+								onclick={() => navigateToResult(item)}
 								onmouseenter={() => (activeIndex = i)}
 								class="flex w-full items-center gap-3 px-4 py-2.5 text-left transition-colors {activeIndex ===
 								i
@@ -213,28 +283,27 @@
 									: 'hover:bg-clinical-hover'}"
 							>
 								<span class="shrink-0 font-mono text-sm font-semibold text-clinical-primary">
-									{item.accessionNumber}
+									{item.title}
 								</span>
 								<span class="min-w-0 flex-1 truncate text-sm text-clinical-text">
-									{item.patientDisplay ?? '—'}
-									{#if item.patientMrn}
-										<span class="text-clinical-muted">({item.patientMrn})</span>
-									{/if}
+									{item.subtitle}
 								</span>
-								<span
-									class="shrink-0 rounded-full border px-2 py-0.5 text-[10px] font-medium {SERVICE_COLORS[
-										item.service
-									]}"
-								>
-									{SERVICE_LABELS[item.service]}
-								</span>
-								<span
-									class="shrink-0 rounded-full border px-2 py-0.5 text-[10px] font-medium {STATUS_COLORS[
-										item.status
-									]}"
-								>
-									{STATUS_LABELS[item.status]}
-								</span>
+								{#if item.badge1}
+									<span
+										class="shrink-0 rounded-full border px-2 py-0.5 text-[10px] font-medium {item
+											.badge1.color}"
+									>
+										{item.badge1.label}
+									</span>
+								{/if}
+								{#if item.badge2}
+									<span
+										class="shrink-0 rounded-full border px-2 py-0.5 text-[10px] font-medium {item
+											.badge2.color}"
+									>
+										{item.badge2.label}
+									</span>
+								{/if}
 							</button>
 						</li>
 					{/each}
@@ -249,7 +318,7 @@
 							? 'bg-clinical-hover text-clinical-primary'
 							: 'text-clinical-muted hover:bg-clinical-hover hover:text-clinical-primary'}"
 					>
-						View all {totalItems} results in Worklist
+						View all {totalItems} results in {context === 'edu' ? 'Education' : 'Worklist'}
 						<svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 							<path
 								stroke-linecap="round"

@@ -48,17 +48,21 @@
         "http://localhost:8080/login/oauth2/code/okta",
         "http://localhost:5173/login/oauth2/code/okta",
         "http://localhost:8443/login/oauth2/code/okta",
+        "https://okapi.openpathology.tech/login/oauth2/code/okta",
         "http://localhost:8080/logged-out",
         "http://localhost:5173/logged-out",
-        "http://localhost:8443/logged-out"
+        "http://localhost:8443/logged-out",
+        "https://okapi.openpathology.tech/logged-out",
+        "https://okapi.openpathology.tech:443/logged-out"
       ],
       "webOrigins": [
         "http://localhost:8080",
         "http://localhost:5173",
-        "http://localhost:8443"
+        "http://localhost:8443",
+        "https://okapi.openpathology.tech"
       ],
       "attributes": {
-        "post.logout.redirect.uris": "http://localhost:8080/logged-out##http://localhost:5173/logged-out##http://localhost:8443/logged-out"
+        "post.logout.redirect.uris": "http://localhost:8080/logged-out##http://localhost:5173/logged-out##http://localhost:8443/logged-out##https://okapi.openpathology.tech/logged-out##https://okapi.openpathology.tech:443/logged-out"
       },
       "defaultClientScopes": [
         "web-origins",

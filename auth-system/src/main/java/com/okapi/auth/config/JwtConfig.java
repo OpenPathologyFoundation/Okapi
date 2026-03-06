@@ -14,7 +14,16 @@ public class JwtConfig {
 
     @Bean
     public JwtEncoder jwtEncoder(
-            @Value("${okapi.jwt.secret:dev-secret-change}") String secret) {
+            @Value("${okapi.jwt.secret}") String secret) {
+        if (secret == null || secret.isBlank()) {
+            throw new IllegalStateException(
+                    "OKAPI_JWT_SECRET must be set. " +
+                    "Generate one with: openssl rand -base64 48");
+        }
+        if (secret.length() < 32) {
+            throw new IllegalStateException(
+                    "OKAPI_JWT_SECRET must be at least 32 characters for HMAC-SHA256");
+        }
         byte[] secretBytes = secret.getBytes(java.nio.charset.StandardCharsets.UTF_8);
         SecretKey secretKey = new SecretKeySpec(secretBytes, "HmacSHA256");
         return NimbusJwtEncoder.withSecretKey(secretKey).build();

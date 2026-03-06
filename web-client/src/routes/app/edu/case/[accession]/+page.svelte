@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import { onMount } from 'svelte';
 	import { eduStore } from '$lib/stores/edu.svelte';
 	import { viewerStore } from '$lib/stores/viewer.svelte';
 	import { authStore } from '$lib/stores/auth.svelte';
@@ -16,7 +15,7 @@
 
 	const accession = $derived(page.params.accession);
 
-	onMount(() => {
+	$effect(() => {
 		if (accession) {
 			eduStore.loadCaseDetail(accession);
 		}

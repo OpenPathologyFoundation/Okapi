@@ -31,3 +31,7 @@ spring:
 okapi:
   jwt:
     secret: test-secret-that-is-at-least-256-bits-long-for-hmac-sha256
+  oidc:
+    issuer-uri: http://localhost:8080/test
+    provider-id: test-provider
+    end-session-uri: http://localhost:8080/test/logout

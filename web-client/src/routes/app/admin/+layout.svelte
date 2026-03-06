@@ -20,6 +20,7 @@
         { label: "IdP Mappings", href: "/app/admin/mappings" },
         { label: "Audit Log", href: "/app/admin/audit" },
         { label: "Grants", href: "/app/admin/grants" },
+        { label: "Feedback", href: "/app/admin/feedback" },
         { label: "Settings", href: "/app/admin/settings" },
     ];
 

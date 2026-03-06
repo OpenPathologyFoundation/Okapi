@@ -59,6 +59,10 @@ export class ViewerBridge {
 
 	/** Launch the viewer window */
 	launch(config: ViewerLaunchConfig): void {
+		if (!config.viewerOrigin) {
+			throw new Error('[ViewerBridge] viewerOrigin is required — cannot launch without origin validation');
+		}
+
 		// Clean up any previous session before opening a new window
 		this.cleanup();
 		if (this.viewerWindow && !this.viewerWindow.closed) {
@@ -173,8 +177,9 @@ export class ViewerBridge {
 
 	private sendToViewer(message: OrchestratorMessage): void {
 		if (!this.viewerWindow || this.viewerWindow.closed) return;
+		if (!this.viewerOrigin) return; // Never send without origin validation
 		try {
-			this.viewerWindow.postMessage(message, this.viewerOrigin || '*');
+			this.viewerWindow.postMessage(message, this.viewerOrigin);
 		} catch (error) {
 			console.warn('[ViewerBridge] Failed to send message:', error);
 		}

@@ -28,6 +28,7 @@ public class AdminService {
     private final BreakGlassGrantRepository breakGlassGrantRepository;
     private final ResearchAccessGrantRepository researchAccessGrantRepository;
     private final SessionDeviceRepository sessionDeviceRepository;
+    private final UserFeedbackRepository userFeedbackRepository;
     private final AuthzPermissionService authzPermissionService;
     private final AuthAuditService authAuditService;
 
@@ -40,6 +41,7 @@ public class AdminService {
             BreakGlassGrantRepository breakGlassGrantRepository,
             ResearchAccessGrantRepository researchAccessGrantRepository,
             SessionDeviceRepository sessionDeviceRepository,
+            UserFeedbackRepository userFeedbackRepository,
             AuthzPermissionService authzPermissionService,
             AuthAuditService authAuditService) {
         this.identityRepository = identityRepository;
@@ -50,6 +52,7 @@ public class AdminService {
         this.breakGlassGrantRepository = breakGlassGrantRepository;
         this.researchAccessGrantRepository = researchAccessGrantRepository;
         this.sessionDeviceRepository = sessionDeviceRepository;
+        this.userFeedbackRepository = userFeedbackRepository;
         this.authzPermissionService = authzPermissionService;
         this.authAuditService = authAuditService;
     }
@@ -360,9 +363,85 @@ public class AdminService {
         long activeResearch = researchAccessGrantRepository
                 .findByRevokedAtIsNullAndExpiresAtAfter(OffsetDateTime.now()).size();
 
+        long pendingFeedback = userFeedbackRepository.countByStatus("pending");
+
         return new DashboardSummary(
                 totalIdentities, activeIdentities, totalRoles,
-                activeDevices, activeBG, activeResearch);
+                activeDevices, activeBG, activeResearch, pendingFeedback);
+    }
+
+    // ── Feedback ─────────────────────────────────────────────────
+
+    @Transactional
+    public void submitFeedback(Identity actor, FeedbackSubmitRequest request) {
+        IdentityEntity stored = identityRepository
+                .findByProviderIdAndExternalSubject(actor.getProviderId(), actor.getExternalSubject())
+                .orElseThrow(() -> new IllegalStateException("Identity not found"));
+
+        UserFeedbackEntity feedback = UserFeedbackEntity.builder()
+                .identityId(stored.getIdentityId())
+                .category(request.category() != null ? request.category() : "general")
+                .body(request.body())
+                .context(request.context() != null ? request.context() : Map.of())
+                .build();
+
+        userFeedbackRepository.save(feedback);
+    }
+
+    @Transactional(readOnly = true)
+    public PageResponse<FeedbackSummary> listFeedback(Identity actor, String status, int page, int size) {
+        authzPermissionService.requirePermission(actor, "ADMIN_SYSTEM", "FEEDBACK", null, "listFeedback");
+        size = Math.max(1, Math.min(size, 100));
+        page = Math.max(0, page);
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+
+        Page<UserFeedbackEntity> result = (status != null && !status.isBlank())
+                ? userFeedbackRepository.findByStatus(status, pageable)
+                : userFeedbackRepository.findAll(pageable);
+
+        List<FeedbackSummary> content = result.getContent().stream()
+                .map(this::toFeedbackSummary)
+                .toList();
+
+        return new PageResponse<>(content, result.getNumber(), result.getSize(),
+                result.getTotalElements(), result.getTotalPages());
+    }
+
+    @Transactional(readOnly = true)
+    public FeedbackDetail getFeedback(Identity actor, UUID feedbackId) {
+        authzPermissionService.requirePermission(actor, "ADMIN_SYSTEM", "FEEDBACK", feedbackId, "getFeedback");
+        UserFeedbackEntity entity = userFeedbackRepository.findById(feedbackId)
+                .orElseThrow(() -> new IllegalStateException("Feedback not found: " + feedbackId));
+        return toFeedbackDetail(entity);
+    }
+
+    @Transactional
+    public void updateFeedback(Identity actor, UUID feedbackId, FeedbackUpdateRequest request) {
+        authzPermissionService.requirePermission(actor, "ADMIN_SYSTEM", "FEEDBACK", feedbackId, "updateFeedback");
+        UserFeedbackEntity entity = userFeedbackRepository.findById(feedbackId)
+                .orElseThrow(() -> new IllegalStateException("Feedback not found: " + feedbackId));
+
+        if (request.status() != null) {
+            entity.setStatus(request.status());
+            if ("acknowledged".equals(request.status()) && entity.getAcknowledgedAt() == null) {
+                entity.setAcknowledgedAt(OffsetDateTime.now());
+            }
+            if ("archived".equals(request.status())) {
+                entity.setArchivedAt(OffsetDateTime.now());
+            }
+        }
+        if (request.adminNotes() != null) {
+            entity.setAdminNotes(request.adminNotes());
+        }
+        userFeedbackRepository.save(entity);
+    }
+
+    @Transactional
+    public void deleteFeedback(Identity actor, UUID feedbackId) {
+        authzPermissionService.requirePermission(actor, "ADMIN_SYSTEM", "FEEDBACK", feedbackId, "deleteFeedback");
+        UserFeedbackEntity entity = userFeedbackRepository.findById(feedbackId)
+                .orElseThrow(() -> new IllegalStateException("Feedback not found: " + feedbackId));
+        userFeedbackRepository.delete(entity);
     }
 
     // ── Mappers ────────────────────────────────────────────────────
@@ -404,5 +483,28 @@ public class AdminService {
                 entity.getTargetEntityId(), entity.getTargetIdentityId(),
                 entity.getOutcome(), entity.getOutcomeReason(),
                 entity.getDetails(), entity.getMetadata());
+    }
+
+    private FeedbackSummary toFeedbackSummary(UserFeedbackEntity entity) {
+        IdentityEntity submitter = identityRepository.findById(entity.getIdentityId()).orElse(null);
+        String name = submitter != null ? submitter.getDisplayName() : "Unknown";
+        String email = submitter != null ? submitter.getEmail() : "";
+        String bodyPreview = entity.getBody().length() > 120
+                ? entity.getBody().substring(0, 120) + "..."
+                : entity.getBody();
+        return new FeedbackSummary(
+                entity.getFeedbackId(), name, email, entity.getCategory(),
+                bodyPreview, entity.getStatus(), entity.getCreatedAt());
+    }
+
+    private FeedbackDetail toFeedbackDetail(UserFeedbackEntity entity) {
+        IdentityEntity submitter = identityRepository.findById(entity.getIdentityId()).orElse(null);
+        String name = submitter != null ? submitter.getDisplayName() : "Unknown";
+        String email = submitter != null ? submitter.getEmail() : "";
+        return new FeedbackDetail(
+                entity.getFeedbackId(), entity.getIdentityId(), name, email,
+                entity.getCategory(), entity.getBody(), entity.getContext(),
+                entity.getStatus(), entity.getAdminNotes(),
+                entity.getCreatedAt(), entity.getAcknowledgedAt(), entity.getArchivedAt());
     }
 }

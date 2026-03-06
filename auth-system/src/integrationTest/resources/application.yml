@@ -9,6 +9,14 @@ spring:
       ddl-auto: validate
     show-sql: false
 
+okapi:
+  jwt:
+    secret: integration-test-secret-at-least-32-characters-long-for-hmac
+  oidc:
+    issuer-uri: http://localhost:8080/test
+    provider-id: integration-test-provider
+    end-session-uri: http://localhost:8080/test/logout
+
 logging:
   level:
     root: INFO

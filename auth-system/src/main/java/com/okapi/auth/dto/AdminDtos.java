@@ -124,7 +124,33 @@ public final class AdminDtos {
             long totalRoles,
             long activeDevices,
             long activeBreakGlassGrants,
-            long activeResearchGrants) {
+            long activeResearchGrants,
+            long pendingFeedback) {
+    }
+
+    public record FeedbackSummary(
+            UUID feedbackId,
+            String submitterName,
+            String submitterEmail,
+            String category,
+            String bodyPreview,
+            String status,
+            OffsetDateTime createdAt) {
+    }
+
+    public record FeedbackDetail(
+            UUID feedbackId,
+            UUID identityId,
+            String submitterName,
+            String submitterEmail,
+            String category,
+            String body,
+            Map<String, Object> context,
+            String status,
+            String adminNotes,
+            OffsetDateTime createdAt,
+            OffsetDateTime acknowledgedAt,
+            OffsetDateTime archivedAt) {
     }
 
     public record PageResponse<T>(
@@ -151,5 +177,11 @@ public final class AdminDtos {
     }
 
     public record ResearchGrantRevokeRequest(String reason) {
+    }
+
+    public record FeedbackSubmitRequest(String category, String body, Map<String, Object> context) {
+    }
+
+    public record FeedbackUpdateRequest(String status, String adminNotes) {
     }
 }

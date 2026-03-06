@@ -178,6 +178,41 @@ public class AdminController {
         return ResponseEntity.noContent().build();
     }
 
+    // ── Feedback ─────────────────────────────────────────────────
+
+    @GetMapping("/feedback")
+    public PageResponse<FeedbackSummary> listFeedback(
+            @AuthenticationPrincipal Identity actor,
+            @RequestParam(required = false) String status,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size) {
+        return adminService.listFeedback(actor, status, page, size);
+    }
+
+    @GetMapping("/feedback/{id}")
+    public FeedbackDetail getFeedback(
+            @AuthenticationPrincipal Identity actor,
+            @PathVariable UUID id) {
+        return adminService.getFeedback(actor, id);
+    }
+
+    @PatchMapping("/feedback/{id}")
+    public ResponseEntity<Void> updateFeedback(
+            @AuthenticationPrincipal Identity actor,
+            @PathVariable UUID id,
+            @RequestBody FeedbackUpdateRequest request) {
+        adminService.updateFeedback(actor, id, request);
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/feedback/{id}")
+    public ResponseEntity<Void> deleteFeedback(
+            @AuthenticationPrincipal Identity actor,
+            @PathVariable UUID id) {
+        adminService.deleteFeedback(actor, id);
+        return ResponseEntity.noContent().build();
+    }
+
     // ── Dashboard ──────────────────────────────────────────────────
 
     @GetMapping("/dashboard")

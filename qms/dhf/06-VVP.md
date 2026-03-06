@@ -240,6 +240,45 @@ HAT verification will be implemented incrementally as the module is built. At mi
 | `SYS-EDU-023` | Search by ICD code, anatomic site, stain, diagnosis text, annotation text, curator name | Integration test | Test: populate 10 educational cases with varied metadata → search by each dimension → verify correct result sets; full-text search across diagnosis and annotation labels |
 | `SYS-EDU-024` | Educational cases carry ICD codes and metadata in same structure as clinical | Inspection + Test | Test: insert educational case with ICD codes → query by ICD code → verify returned; query metadata JSONB fields → verify GIN index used |
 
+## 4.7 Requirements Verification Matrix (Image Ingestion subset)
+
+### 4.7.1 Core Ingestion Service (SYS-ING-001 to SYS-ING-006)
+
+| SRS ID | Requirement (summary) | Verification method | Evidence/artifact |
+|--------|------------------------|---------------------|------------------|
+| `SYS-ING-001` | Shared core ingestion function used by both API and CLI | Inspection + Test | Code review: verify single function called from both endpoints; test: ingest via API and via CLI → verify identical DB records |
+| `SYS-ING-002` | File validation (exists, complete, openable by large_image) | Test | Test: ingest zero-byte file → verify rejection; ingest corrupt file → verify rejection; ingest valid SVS → verify acceptance |
+| `SYS-ING-003` | Automatic metadata extraction (dimensions, magnification, mpp) | Test | Test: ingest SVS with known 40x magnification → verify slides.magnification = 40.0, width_px/height_px populated |
+| `SYS-ING-004` | HMAC-SHA256 computed and stored at ingestion | Test | Test: ingest slide → verify slides.hmac is 64-char hex; verify HMAC matches independent computation with same key |
+| `SYS-ING-005` | Atomic file write with rollback on failure | Test | Test: simulate DB failure after file write → verify file cleaned up, no orphaned tmp files; verify no DB record created |
+| `SYS-ING-006` | Duplicate rejection (same slide_id or same path) | Test | Test: ingest slide → ingest same slide again → verify 409 error; verify original record unchanged |
+
+### 4.7.2 Clinical Ingestion API (SYS-ING-007 to SYS-ING-009)
+
+| SRS ID | Requirement (summary) | Verification method | Evidence/artifact |
+|--------|------------------------|---------------------|------------------|
+| `SYS-ING-007` | `POST /admin/ingest/clinical` with multipart upload | Integration test | Test: POST with file + form fields → verify 201 response with slide metadata |
+| `SYS-ING-008` | Clinical storage path: `{root}/{YYYY}/{case_id}/{filename}` | Test | Test: ingest S26-0001 slide → verify file at `clinical/2026/S26-0001/filename.svs` |
+| `SYS-ING-009` | Auto-create missing case/part/block; link patient by MRN/UUID | Integration test | Test: ingest with new case_id + patient_mrn → verify case, part, block created; verify case.patient_id links to correct patient |
+
+### 4.7.3 Educational Ingestion API (SYS-ING-010 to SYS-ING-014)
+
+| SRS ID | Requirement (summary) | Verification method | Evidence/artifact |
+|--------|------------------------|---------------------|------------------|
+| `SYS-ING-010` | `POST /admin/ingest/educational` with multipart upload and optional fields | Integration test | Test: POST with file + minimal fields → verify 201; verify case created in wsi_edu schema |
+| `SYS-ING-011` | Auto-assign EDU accession when case_id omitted | Test | Test: ingest 3 slides without case_id → verify EDU26-00001, EDU26-00002, EDU26-00003 assigned sequentially |
+| `SYS-ING-012` | Educational storage path: `{edu_root}/{YYYY}/{case_id}/{filename}` | Test | Test: ingest edu slide → verify file at `edu/2026/EDU26-00001/filename.svs` |
+| `SYS-ING-013` | Auto-create case/part/block with provenance=IMPLIED; assign curator | Integration test | Test: ingest with curator_identity_id → verify case_curators row with PRIMARY_CURATOR role; verify parts.provenance = 'IMPLIED' |
+| `SYS-ING-014` | source_lineage populated from form field or defaulted | Test | Test: ingest with source_lineage JSON → verify case.source_lineage matches; ingest without → verify default external_upload |
+
+### 4.7.4 Manifest-Driven Batch Ingestion (SYS-ING-015 to SYS-ING-017)
+
+| SRS ID | Requirement (summary) | Verification method | Evidence/artifact |
+|--------|------------------------|---------------------|------------------|
+| `SYS-ING-015` | CLI tool reads manifest JSON and calls ingestion API per entry | Integration test | Test: create manifest with 3 slides → run CLI → verify all 3 ingested with correct metadata |
+| `SYS-ING-016` | Per-slide status reporting; failures don't halt batch | Test | Test: manifest with 1 valid + 1 invalid + 1 valid → verify 2 succeeded, 1 failed, processing continued |
+| `SYS-ING-017` | --dry-run validates without writing | Test | Test: run with --dry-run → verify no files written, no DB records created; verify validation report output |
+
 # 5. Validation Notes
 Clinical workflow validation (usability, human factors, and operational monitoring) will be defined in later V&V activities once clinical workflows are implemented beyond IAM.
 

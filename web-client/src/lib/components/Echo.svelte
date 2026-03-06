@@ -1,10 +1,15 @@
 <script lang="ts">
     import { onMount, tick } from "svelte";
     import { fade, fly } from "svelte/transition";
+    import { page } from "$app/state";
+    import { viewerStore } from "$lib/stores/viewer.svelte";
+    import { csrfHeaders } from "$lib/csrf";
 
     let isOpen = false;
     let isListening = false;
-    let isSuccess = false; // New success state
+    let isSuccess = false;
+    let isSubmitting = false;
+    let submitError = "";
     let transcript = "";
 
     // Audio State
@@ -19,13 +24,17 @@
     // PTT State
     let spacePressedTime = 0;
 
-    // [Mock] Context Capture
-    const contextData = {
-        caseId: "CASE-2026-X99",
-        zoom: "40x",
-        activeTool: "Heatmap v2",
-        latency: "42ms",
-    };
+    function getContext(): Record<string, unknown> {
+        return {
+            route: page.url.pathname,
+            caseAccession: page.params?.accession ?? null,
+            viewerOpen: viewerStore.isOpen,
+            viewerCase: viewerStore.currentCase,
+            viewerMode: viewerStore.currentMode,
+            userAgent: navigator.userAgent,
+            screenSize: `${window.innerWidth}x${window.innerHeight}`,
+        };
+    }
 
     function toggleEcho() {
         if (isSuccess) {
@@ -174,25 +183,36 @@
         }
     }
 
-    function handleSubmit() {
-        if (!transcript.trim()) return;
+    async function handleSubmit() {
+        if (!transcript.trim() || isSubmitting) return;
+        isSubmitting = true;
+        submitError = "";
+        try {
+            const res = await fetch("/api/feedback", {
+                method: "POST",
+                headers: { "Content-Type": "application/json", ...csrfHeaders() },
+                credentials: "include",
+                body: JSON.stringify({
+                    category: "general",
+                    body: transcript,
+                    context: getContext(),
+                }),
+            });
+            if (!res.ok) throw new Error(`Submit failed: ${res.status}`);
 
-        console.log("[Echo] Feedback Logged:", {
-            ...contextData,
-            userFeedback: transcript,
-            timestamp: new Date().toISOString(),
-        });
-
-        // Success UX
-        isSuccess = true;
-        setTimeout(() => {
-            isOpen = false;
-            // Delay reset slightly so it fades out with success message
+            isSuccess = true;
             setTimeout(() => {
-                isSuccess = false;
-                transcript = "";
-            }, 300);
-        }, 1500); // Show "Thank you" for 1.5s
+                isOpen = false;
+                setTimeout(() => {
+                    isSuccess = false;
+                    transcript = "";
+                }, 300);
+            }, 1500);
+        } catch (e) {
+            submitError = e instanceof Error ? e.message : "Failed to submit feedback";
+        } finally {
+            isSubmitting = false;
+        }
     }
 
     function handleInputKeydown(e: KeyboardEvent) {
@@ -259,8 +279,10 @@
         <div
             class="px-5 py-3 bg-white/5 border-b border-white/5 flex items-center justify-between text-[10px] uppercase tracking-wider text-gray-400 font-mono"
         >
-            <span>Ctx: {contextData.caseId}</span>
-            <span>Zm: {contextData.zoom}</span>
+            <span>Route: {page.url.pathname}</span>
+            {#if viewerStore.currentCase}
+                <span>Case: {viewerStore.currentCase}</span>
+            {/if}
             <span class="text-amber-500">Echo Active</span>
         </div>
 
@@ -362,12 +384,16 @@
                 </div>
             </div>
 
+            {#if submitError}
+                <div class="px-6 pb-2 text-red-400 text-xs">{submitError}</div>
+            {/if}
+
             <!-- Footer -->
             <div
                 class="px-5 py-2 bg-black/20 text-[10px] text-gray-600 flex justify-between"
             >
                 <span>[Space] HOLD to Speak</span>
-                <span>[Enter] Submit</span>
+                <span>{isSubmitting ? "Submitting..." : "[Enter] Submit"}</span>
             </div>
         {/if}
     </div>

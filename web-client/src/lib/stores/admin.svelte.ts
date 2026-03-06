@@ -11,6 +11,8 @@ import type {
 	ResearchGrantSummary,
 	DeviceSummary,
 	DashboardSummary,
+	FeedbackSummary,
+	FeedbackDetail,
 	PageResponse
 } from '$lib/types/admin';
 
@@ -37,6 +39,12 @@ class AdminStore {
 	researchGrants = $state<ResearchGrantSummary[]>([]);
 
 	devices = $state<DeviceSummary[]>([]);
+
+	feedback = $state<FeedbackSummary[]>([]);
+	feedbackPage = $state(0);
+	feedbackTotalPages = $state(0);
+	feedbackTotalElements = $state(0);
+	selectedFeedback = $state<FeedbackDetail | null>(null);
 
 	dashboard = $state<DashboardSummary | null>(null);
 
@@ -264,6 +272,47 @@ class AdminStore {
 			this.devices = this.devices.map((d) =>
 				d.deviceId === id ? { ...d, revokedAt: new Date().toISOString() } : d
 			);
+		});
+	}
+
+	// ── Feedback ───────────────────────────────────────────────────
+
+	async loadFeedback(status?: string, page = 0, size = 20): Promise<void> {
+		await this.withLoading(async () => {
+			const params = new URLSearchParams({ page: String(page), size: String(size) });
+			if (status) params.set('status', status);
+			const data = await this.fetchJson<PageResponse<FeedbackSummary>>(
+				`/admin/feedback?${params}`
+			);
+			this.feedback = data.content;
+			this.feedbackPage = data.page;
+			this.feedbackTotalPages = data.totalPages;
+			this.feedbackTotalElements = data.totalElements;
+		});
+	}
+
+	async loadFeedbackDetail(id: string): Promise<void> {
+		await this.withLoading(async () => {
+			this.selectedFeedback = await this.fetchJson<FeedbackDetail>(
+				`/admin/feedback/${id}`
+			);
+		});
+	}
+
+	async updateFeedback(id: string, status?: string, adminNotes?: string): Promise<void> {
+		await this.withLoading(async () => {
+			await this.fetchJson(`/admin/feedback/${id}`, {
+				method: 'PATCH',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ status, adminNotes })
+			});
+		});
+	}
+
+	async deleteFeedback(id: string): Promise<void> {
+		await this.withLoading(async () => {
+			await this.fetchJson(`/admin/feedback/${id}`, { method: 'DELETE' });
+			this.feedback = this.feedback.filter((f) => f.feedbackId !== id);
 		});
 	}
 

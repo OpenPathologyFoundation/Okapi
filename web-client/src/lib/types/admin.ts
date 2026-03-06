@@ -111,6 +111,38 @@ export interface DashboardSummary {
 	activeDevices: number;
 	activeBreakGlassGrants: number;
 	activeResearchGrants: number;
+	pendingFeedback: number;
+}
+
+export interface FeedbackSummary {
+	feedbackId: string;
+	submitterName: string;
+	submitterEmail: string;
+	category: string;
+	bodyPreview: string;
+	status: string;
+	createdAt: string;
+}
+
+export interface FeedbackDetail {
+	feedbackId: string;
+	identityId: string;
+	submitterName: string;
+	submitterEmail: string;
+	category: string;
+	body: string;
+	context: Record<string, unknown>;
+	status: string;
+	adminNotes: string | null;
+	createdAt: string;
+	acknowledgedAt: string | null;
+	archivedAt: string | null;
+}
+
+export interface FeedbackSubmitRequest {
+	category: string;
+	body: string;
+	context: Record<string, unknown>;
 }
 
 export interface PageResponse<T> {

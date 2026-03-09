@@ -96,12 +96,19 @@ large_image_server --image-dir /path/to/slides --port 8000
 ```
 
 ```bash
-# or with database-backed case routing:
+# or with database-backed case routing clinical only:
 large_image_server \
     --db-url "postgresql://okapi_service:postgres_dev_password@localhost:5433/okapi_auth" \
     --clinical-root test-cases/clinical \
     --port 8000
 ```
+
+```bash
+# or with database-backed case routing with clinical and edu:
+large_image_server --db-url "postgresql://okapi_service:postgres_dev_password@localhost:5433/okapi_auth" --clinical-root test-cases/clinical --edu-root test-cases/edu --port 8000
+```
+
+
 
 **4. Digital Viewer (Vite on :5174)**
 ```bash

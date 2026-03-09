@@ -55,7 +55,7 @@
             </div>
 
             <div class="text-sm text-slate-500">
-                &copy; 2026 Open Pathology Foundation. FDA Clearance Pending.
+                &copy; 2026 Open Pathology Foundation.
             </div>
         </div>
     </div>

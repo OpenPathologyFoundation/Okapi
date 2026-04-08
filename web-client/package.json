@@ -29,5 +29,9 @@
 		"typescript": "^5.9.3",
 		"vite": "^7.2.6",
 		"vitest": "^4.0.18"
+	},
+	"dependencies": {
+		"@starling/module-protocol": "file:../packages/module-protocol",
+		"@starling/module-sdk": "file:../packages/module-sdk"
 	}
 }

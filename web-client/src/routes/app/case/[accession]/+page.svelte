@@ -1,29 +1,38 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { page } from '$app/state';
-	import { viewerStore } from '$lib/stores/viewer.svelte';
+	import { activityStore } from '$lib/stores/activity.svelte';
 	import { authStore } from '$lib/stores/auth.svelte';
+	import ModuleHost from '$lib/components/ModuleHost.svelte';
 	import ConfirmDialog from '$lib/components/ConfirmDialog.svelte';
 
 	const accession = $derived(page.params.accession);
+	const viewerActivity = $derived(activityStore.getActivity('pelican-viewer'));
+	const viewerState = $derived(viewerActivity?.status ?? 'idle');
+	const viewerCurrentCase = $derived(viewerActivity?.accession ?? null);
+	const viewerSlideCount = $derived((viewerActivity?.moduleState.slideCount as number | undefined) ?? null);
+	const viewerLastError = $derived(viewerActivity?.lastError ?? null);
+	const viewerIsOpen = $derived(viewerState === 'connected' || viewerState === 'launching');
+	const reportActivity = $derived(activityStore.getActivity('report-module'));
+	const reportIsVisible = $derived(Boolean(reportActivity?.visible));
 
 	/** Whether to show the case-switch confirmation dialog */
 	let showCaseSwitchDialog = $state(false);
 
 	/** Whether the viewer is actively showing this case */
 	const isViewerActiveForCase = $derived(
-		viewerStore.isOpen && viewerStore.currentCase === accession
+		viewerIsOpen && viewerCurrentCase === accession
 	);
 
 	/** Whether the viewer is open for a different case */
 	const isViewerOpenOtherCase = $derived(
-		viewerStore.isOpen && viewerStore.currentCase !== accession
+		viewerIsOpen && viewerCurrentCase !== accession
 	);
 
 	/** Handle "Launch Viewer" button click */
 	async function handleLaunchViewer(): Promise<void> {
 		const acc = accession;
-		console.log('[CasePage] handleLaunchViewer — acc=' + acc + ', isViewerActiveForCase=' + isViewerActiveForCase + ', isViewerOpenOtherCase=' + isViewerOpenOtherCase + ', storeState=' + viewerStore.state);
+		console.log('[CasePage] handleLaunchViewer — acc=' + acc + ', isViewerActiveForCase=' + isViewerActiveForCase + ', isViewerOpenOtherCase=' + isViewerOpenOtherCase + ', storeState=' + viewerState);
 		if (!acc) return;
 
 		if (isViewerActiveForCase) {
@@ -38,33 +47,43 @@
 		}
 
 		// Launch new viewer window
-		await viewerStore.launchViewer({
+		await activityStore.launchActivity('pelican-viewer', {
 			caseId: acc,
 			accession: acc,
-			viewerUrl: '/viewer/orchestrated.html',
-			viewerOrigin: window.location.origin,
 			tileServerUrl: '/tiles',
 			sessionServiceUrl: '/ws',
 			userId: authStore.user?.identityId ?? 'unknown',
 		});
 	}
 
+	async function handleLaunchReport(): Promise<void> {
+		const acc = accession;
+		if (!acc) return;
+
+		await activityStore.launchActivity('report-module', {
+			caseId: acc,
+			accession: acc,
+			userId: authStore.user?.identityId ?? 'unknown',
+			role: authStore.roles[0] ?? 'AUTHOR',
+		});
+	}
+
 	/** Button label depends on viewer state */
 	const viewerButtonLabel = $derived.by(() => {
-		if (viewerStore.state === 'launching') return 'Opening Viewer...';
+		if (viewerState === 'launching') return 'Opening Viewer...';
 		if (isViewerActiveForCase) return 'Viewer Active';
 		if (isViewerOpenOtherCase) return 'Switch in Viewer';
 		return 'Launch Viewer';
 	});
 
 	/** Button disabled when launching or already active for this case */
-	const viewerButtonDisabled = $derived(viewerStore.state === 'launching' || isViewerActiveForCase);
+	const viewerButtonDisabled = $derived(viewerState === 'launching' || isViewerActiveForCase);
 
 	function confirmCaseSwitch(): void {
 		showCaseSwitchDialog = false;
 		const acc = accession;
 		if (acc) {
-			viewerStore.sendCaseChange(acc, acc);
+			activityStore.sendCaseChange('pelican-viewer', acc, acc);
 		}
 	}
 
@@ -106,8 +125,8 @@
 					<span class="inline-flex items-center gap-1.5 rounded-full bg-green-500/10 px-2.5 py-0.5 text-xs font-medium text-green-400">
 						<span class="h-1.5 w-1.5 rounded-full bg-green-400"></span>
 						Viewer Active
-						{#if viewerStore.slideCount !== null}
-							<span class="text-green-500/60">&middot; {viewerStore.slideCount} slides</span>
+						{#if viewerSlideCount !== null}
+							<span class="text-green-500/60">&middot; {viewerSlideCount} slides</span>
 						{/if}
 					</span>
 				{/if}
@@ -122,7 +141,7 @@
 					disabled={viewerButtonDisabled}
 					onclick={handleLaunchViewer}
 				>
-					{#if viewerStore.state === 'launching'}
+					{#if viewerState === 'launching'}
 						<svg class="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
 							<circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
 							<path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
@@ -138,27 +157,29 @@
 				<button
 					type="button"
 					class="flex items-center gap-2 rounded-md bg-clinical-primary px-4 py-2 text-sm font-medium text-white hover:bg-clinical-primary/90"
+					onclick={handleLaunchReport}
 				>
 					<svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
 					</svg>
-					Edit Report
+					{reportIsVisible ? 'Report Open' : 'Edit Report'}
 				</button>
 			</div>
 		</div>
 	</header>
 
 	<!-- Viewer error toast -->
-	{#if viewerStore.lastError}
+	{#if viewerLastError}
 		<div class="mx-6 mt-4 rounded-md border border-red-500/20 bg-red-500/10 p-3 text-sm text-red-400">
-			<span class="font-medium">Viewer error:</span> {viewerStore.lastError.message}
-			<span class="text-red-500/60">({viewerStore.lastError.code})</span>
+			<span class="font-medium">Viewer error:</span> {viewerLastError.message}
+			<span class="text-red-500/60">({viewerLastError.code})</span>
 		</div>
 	{/if}
 
 	<!-- Main Content Area -->
 	<main class="flex-1 overflow-auto p-6">
-		<div class="mx-auto max-w-5xl">
+		<div class="mx-auto grid max-w-7xl gap-6 xl:grid-cols-[minmax(0,1.3fr)_minmax(22rem,0.9fr)]">
+			<div class="min-w-0">
 			<!-- Placeholder content -->
 			<div class="rounded-lg border border-clinical-border bg-clinical-surface p-8 text-center">
 				<svg class="mx-auto h-16 w-16 text-clinical-muted opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -175,7 +196,7 @@
 			</div>
 
 			<!-- Feature preview cards -->
-			<div class="mt-8 grid grid-cols-1 gap-4 md:grid-cols-3">
+				<div class="mt-8 grid grid-cols-1 gap-4 md:grid-cols-3">
 				<div class="rounded-lg border border-clinical-border bg-clinical-surface p-4">
 					<h3 class="flex items-center gap-2 font-medium text-clinical-text">
 						<svg class="h-5 w-5 text-clinical-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -204,6 +225,11 @@
 					<p class="mt-2 text-sm text-clinical-muted">Draft, review, and sign-out workflow</p>
 				</div>
 			</div>
+			</div>
+
+			<div class="min-h-0">
+				<ModuleHost activityId="report-module" className="sticky top-0" />
+			</div>
 		</div>
 	</main>
 </div>
@@ -211,7 +237,7 @@
 <ConfirmDialog
 	open={showCaseSwitchDialog}
 	title="Switch Viewer Case"
-	message="The viewer is currently showing case {viewerStore.currentCase}. Switch to {accession}?"
+	message="The viewer is currently showing case {viewerCurrentCase}. Switch to {accession}?"
 	confirmLabel="Switch Case"
 	variant="warning"
 	onconfirm={confirmCaseSwitch}

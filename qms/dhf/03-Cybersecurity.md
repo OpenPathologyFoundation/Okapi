@@ -10,6 +10,8 @@ trace_source: SRS-001
 trace_destination: DHF-06-VVP
 ---
 
+> **Project rename notice (2026-04-08):** This project was renamed from **Okapi** to **Starling**. Historical references to "Okapi" within this document are preserved for regulatory traceability. See `qms/dhf/00-Index.md` for the rename record.
+
 # 1. Purpose
 Define cybersecurity assumptions, threat model (STRIDE), and security requirements for Okapi modules in scope, including:
 - IAM (Authentication/Authorization)

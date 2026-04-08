@@ -1,4 +1,6 @@
-# Design History File (DHF) Index — Okapi
+# Design History File (DHF) Index — Starling (formerly Okapi)
+
+> **Project rename notice (2026-04-08):** This project was renamed from **Okapi** to **Starling** as part of a rebranding of the orchestration platform. The new name reflects the murmuration metaphor for coordinated independent modules — a flock of autonomous agents producing unified behavior through a shared coordination protocol. Historical DHF documents, code identifiers (Java packages `com.okapi.*`, Spring configuration namespace `okapi.*`, Keycloak realm `okapi`, database `okapi_auth`, etc.), and legacy repository references retain the original name for regulatory traceability and build stability. All new documentation and user-facing surfaces use the name **Starling**.
 
 ## 1. Purpose
 This file is the authoritative index for the Design History File (DHF) for the Okapi system.
@@ -96,6 +98,7 @@ The following artifacts constitute the DHF for this system.
 | 04-03 | IAM Schema | IAM database schema specification | qms/dhf/04-SDS/03-IAM-Schema.md | Draft/Active |
 | 04-04 | HAT Architecture | Histology Asset Tracking architecture, data concepts, and controls | qms/dhf/04-SDS/04-HAT-Architecture.md | Draft/Active |
 | 04-05 | Worklist Architecture | Work List module design | qms/dhf/04-SDS/05-Worklist-Architecture.md | Draft/Active |
+| 04-07 | Module Orchestration | Module bridge, activity registry, cross-module routing | qms/dhf/04-SDS/07-Module-Orchestration-Architecture.md | Draft |
 
 ### 5.4 RISK & QUALITY (The "Safety")
 | ID | Artifact | Purpose | Path | Status |
@@ -169,4 +172,5 @@ Each RELREC-<release>.md SHALL reference:
 
 ## 10. Revision History (Index)
 - v0.1: Initial DHF index created (YYYY-MM-DD)
-- v0.2: <TBD>
+- v0.2: Project renamed from Okapi to Starling (2026-04-08). Title and purpose narrative updated; historical code identifiers and legacy references retained for traceability and build stability. See rename notice at top of this document.
+- v0.3: <TBD>

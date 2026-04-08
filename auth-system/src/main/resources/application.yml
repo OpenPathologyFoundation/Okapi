@@ -1,6 +1,6 @@
 spring:
   application:
-    name: okapi-auth-system
+    name: starling-auth-system
   datasource:
     url: jdbc:postgresql://localhost:${POSTGRES_PORT:5432}/${POSTGRES_DB:okapi_auth}
     username: ${POSTGRES_USER:okapi_service}

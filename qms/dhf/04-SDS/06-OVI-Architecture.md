@@ -2,7 +2,7 @@
 
 ---
 document_id: SDS-OVI-001
-title: Okapi Orchestrator — Digital Viewer Integration Architecture
+title: Starling Orchestrator — Digital Viewer Integration Architecture (formerly Okapi)
 version: 1.0
 status: DRAFT
 owner: Engineering
@@ -15,6 +15,8 @@ references:
   - SDS-FDP-001 (Focus Declaration Protocol Architecture — §6.2 Session Awareness)
   - IEC 62304:2006+A1:2015 (Section 5.4 — Software Architectural Design)
 ---
+
+> **Project rename notice (2026-04-08):** This project was renamed from **Okapi** to **Starling**. Historical references to "Okapi" within this document are preserved for regulatory traceability. See `qms/dhf/00-Index.md` for the rename record.
 
 ## 1. Purpose
 

@@ -30,12 +30,12 @@
       <div class="flex items-center gap-3">
         <img
           src="/logo-nb.png"
-          alt="Okapi Logo"
+          alt="Starling Logo"
           class="h-16 w-auto drop-shadow-lg"
         />
         <span
           class="text-2xl font-bold tracking-tight text-white drop-shadow-sm"
-          >Okapi</span
+          >Starling</span
         >
       </div>
 

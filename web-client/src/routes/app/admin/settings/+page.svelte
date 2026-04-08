@@ -33,7 +33,7 @@
 <div class="max-w-2xl">
     <h2 class="text-lg font-semibold text-clinical-text mb-1">Settings</h2>
     <p class="text-sm text-clinical-muted mb-6">
-        Site-wide configuration for the Okapi platform.
+        Site-wide configuration for the Starling platform.
     </p>
 
     <!-- Session Idle Timeout -->

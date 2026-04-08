@@ -10,6 +10,8 @@ created_date: 2026-01-26
 trace_source: DHF-04, SRS-001
 ---
 
+> **Project rename notice (2026-04-08):** This project was renamed from **Okapi** to **Starling**. Historical references to "Okapi" within this document are preserved for regulatory traceability. See `qms/dhf/00-Index.md` for the rename record.
+
 > Detailed architecture for Okapi Authorization services. This document covers **RBAC**, **permissions**, **IdP group mapping**, **break-glass access**, and **research access grants**. For authentication (identity federation, sessions), see [01-AuthN-Architecture.md](01-AuthN-Architecture.md).
 
 ## 1. Overview

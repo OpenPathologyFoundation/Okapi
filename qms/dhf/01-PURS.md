@@ -10,6 +10,8 @@ effective_date: TBD
 trace_destination: SRS-001
 ---
 
+> **Project rename notice (2026-04-08):** This project was renamed from **Okapi** to **Starling**. Historical references to "Okapi" within this document are preserved for regulatory traceability. See `qms/dhf/00-Index.md` for the rename record.
+
 # 1. Purpose
 To define user needs for Okapi modules in scope for the current baseline, including:
 - Identity and Access Management (IAM) (authentication + authorization)

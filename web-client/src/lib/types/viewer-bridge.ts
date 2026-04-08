@@ -2,7 +2,7 @@
  * Viewer Bridge Message Protocol
  *
  * Defines the typed postMessage protocol between the orchestrator
- * (Okapi web-client) and the viewer (digital-viewer) windows.
+ * (Starling web-client) and the viewer (digital-viewer) windows.
  *
  * Security: All messages are validated by origin before processing.
  */

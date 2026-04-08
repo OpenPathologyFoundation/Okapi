@@ -10,7 +10,7 @@
         <div class="mx-auto flex justify-center">
             <img
                 src="/logo-nb.png"
-                alt="Okapi"
+                alt="Starling"
                 class="h-16 w-auto opacity-50 grayscale hover:grayscale-0 transition-all duration-1000"
             />
         </div>

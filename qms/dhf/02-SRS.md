@@ -11,6 +11,8 @@ trace_source: URS-001
 trace_destination: TP-001 (Test Plan)
 ---
 
+> **Project rename notice (2026-04-08):** This project was renamed from **Okapi** to **Starling**. Historical references to "Okapi" within this document are preserved for regulatory traceability. See `qms/dhf/00-Index.md` for the rename record.
+
 # 1. Functional Requirements
 
 ## 1.1 Authentication (AuthN) Requirements

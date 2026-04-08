@@ -7,9 +7,6 @@ on:
 jobs:
   web-client:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: web-client
     env:
       OPENAI_API_KEY: sk-placeholder-ci
     steps:
@@ -18,10 +15,10 @@ jobs:
         with:
           node-version: 20
           cache: npm
-          cache-dependency-path: web-client/package-lock.json
+          cache-dependency-path: package-lock.json
       - run: npm ci
-      - run: npm run check
-      - run: npm test
+      - run: npm run check --workspace web-client
+      - run: npm test --workspace web-client
 
   auth-system:
     runs-on: ubuntu-latest

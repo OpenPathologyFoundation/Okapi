@@ -1,0 +1,8 @@
+{
+  "name": "starling-workspace",
+  "private": true,
+  "workspaces": [
+    "packages/*",
+    "web-client"
+  ]
+}

@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-: "${KEYCLOAK_CONTAINER:=okapi-keycloak}"
+: "${KEYCLOAK_CONTAINER:=starling-keycloak}"
 : "${KEYCLOAK_INTERNAL_URL:=http://localhost:8080}"   # URL as seen from inside the container
 : "${KEYCLOAK_ADMIN_REALM:=master}"
 : "${KEYCLOAK_REALM:=okapi}"
 
 : "${SEED_IDENTITY_FILES:=seed/identities/xenonym-identities.v1.json}"
-: "${DEMO_PASSWORD_DEFAULT:=OkapiDev!2026}"           # dev only; set via .env, do not commit secrets
+: "${DEMO_PASSWORD_DEFAULT:=StarlingDev!2026}"           # dev only; set via .env, do not commit secrets
 : "${OUT_DIR:=seed/keycloak/out}"
 
 # NOTE:

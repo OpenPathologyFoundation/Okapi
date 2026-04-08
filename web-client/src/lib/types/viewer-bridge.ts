@@ -1,3 +1,6 @@
+import type { BaseInitPayload, ModuleAuditEvent } from '@starling/module-protocol';
+import type { ModuleLaunchConfig } from './module-bridge';
+
 /**
  * Viewer Bridge Message Protocol
  *
@@ -13,9 +16,7 @@
 export type ViewerMode = 'clinical' | 'educational';
 
 /** Initialization payload sent after viewer signals ready */
-export interface InitPayload {
-	/** JWT access token for tile server authentication */
-	token: string;
+export interface InitPayload extends BaseInitPayload {
 	/** Case identifier to load */
 	caseId: string;
 	/** Accession number */
@@ -24,16 +25,12 @@ export interface InitPayload {
 	tileServerUrl: string;
 	/** Session awareness WebSocket URL (e.g., '/ws' behind proxy) */
 	sessionServiceUrl: string;
-	/** Authenticated user identifier */
-	userId: string;
-	/** Orchestrator's origin for reply validation */
-	orchestratorOrigin: string;
 	/** Viewer mode — clinical enables DX mode, educational disables it */
 	mode?: ViewerMode;
 }
 
 /** Audit event reported by the viewer */
-export interface ViewerAuditEvent {
+export interface ViewerAuditEvent extends ModuleAuditEvent {
 	/** Event type */
 	eventType: 'VIEWER_CASE_OPENED' | 'VIEWER_SLIDE_VIEWED' | 'VIEWER_CASE_CLOSED' | 'VIEWER_ANNOTATION_CREATED';
 	/** Case identifier */
@@ -84,7 +81,7 @@ export type PayloadOf<T extends BridgeMessage['type']> = Extract<BridgeMessage, 
 // | { type: 'viewer:annotation-deleted'; payload: { annotationId: string } }
 
 /** Configuration for launching the viewer window */
-export interface ViewerLaunchConfig {
+export interface ViewerLaunchConfig extends ModuleLaunchConfig {
 	/** JWT access token */
 	token: string;
 	/** Case identifier */

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { eduStore } from '$lib/stores/edu.svelte';
-	import { viewerStore } from '$lib/stores/viewer.svelte';
+	import { activityStore } from '$lib/stores/activity.svelte';
 	import { authStore } from '$lib/stores/auth.svelte';
 	import {
 		DIFFICULTY_LABELS,
@@ -23,11 +23,9 @@
 
 	async function handleLaunchViewer(slideId: string): Promise<void> {
 		const acc = accession ?? '';
-		await viewerStore.launchViewer({
+		await activityStore.launchActivity('pelican-viewer', {
 			caseId: acc,
 			accession: acc,
-			viewerUrl: '/viewer/orchestrated.html',
-			viewerOrigin: window.location.origin,
 			tileServerUrl: '/tiles',
 			sessionServiceUrl: '/ws',
 			userId: authStore.user?.identityId ?? 'unknown',

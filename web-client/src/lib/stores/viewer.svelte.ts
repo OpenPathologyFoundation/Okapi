@@ -1,174 +1,67 @@
 /**
- * Viewer Store — Tracks the viewer bridge state across the orchestrator app.
+ * Viewer Store compatibility facade.
  *
- * Owns the singleton ViewerBridge instance. Provides reactive state
- * so that the case page, header, and worklist can all show viewer status.
+ * Preserves the existing viewerStore API while the underlying lifecycle and
+ * tracking move into the generic activityStore.
  */
 
-import { browser } from '$app/environment';
-import { csrfHeaders } from '$lib/csrf';
-import { ViewerBridge, type ViewerBridgeState } from '$lib/viewer-bridge';
+import { activityStore } from '$lib/stores/activity.svelte';
+import type { ViewerBridgeState } from '$lib/viewer-bridge';
 import type { ViewerLaunchConfig, ViewerMode } from '$lib/types/viewer-bridge';
 
-interface TokenResponse {
-	accessToken: string;
-	tokenType: string;
-	expiresInSeconds: number;
-	okapiAuthzVersion: string;
-}
+const VIEWER_ACTIVITY_ID = 'pelican-viewer';
 
 class ViewerStore {
-	/** Bridge instance (null until first launch) */
-	bridge: ViewerBridge | null = $state(null);
+	private get activity() {
+		return activityStore.getActivity(VIEWER_ACTIVITY_ID);
+	}
 
-	/** Current bridge state */
-	state: ViewerBridgeState = $state('idle');
+	get bridge() {
+		return this.activity?.bridge ?? null;
+	}
 
-	/** Accession of the case currently open in the viewer */
-	currentCase: string | null = $state(null);
+	get state(): ViewerBridgeState {
+		return (this.activity?.status ?? 'idle') as ViewerBridgeState;
+	}
 
-	/** Number of slides in the current viewer case */
-	slideCount: number | null = $state(null);
+	get currentCase(): string | null {
+		return this.activity?.accession ?? null;
+	}
 
-	/** Current viewer mode (clinical or educational) */
-	currentMode: ViewerMode | null = $state(null);
+	get slideCount(): number | null {
+		return (this.activity?.moduleState.slideCount as number | undefined) ?? null;
+	}
 
-	/** Last error from the viewer */
-	lastError: { code: string; message: string } | null = $state(null);
+	get currentMode(): ViewerMode | null {
+		return (this.activity?.moduleState.mode as ViewerMode | undefined) ?? null;
+	}
 
-	/** Whether the viewer window is alive */
-	isOpen = $derived(this.state === 'connected' || this.state === 'launching');
+	get lastError(): { code: string; message: string } | null {
+		return this.activity?.lastError ?? null;
+	}
 
-	/**
-	 * Launch the viewer for a given case.
-	 *
-	 * If the viewer is already connected, sends a case-change message instead.
-	 * If the viewer is launching, does nothing (prevents double-open).
-	 */
+	get isOpen(): boolean {
+		return this.state === 'connected' || this.state === 'launching';
+	}
+
 	async launchViewer(config: Omit<ViewerLaunchConfig, 'token'>): Promise<void> {
-		const requestedMode = config.mode ?? 'clinical';
-		console.log('[ViewerStore] launchViewer — state=' + this.state + ', bridge=' + !!this.bridge + ', accession=' + config.accession + ', mode=' + requestedMode);
-		if (!browser) return;
-
-		// If mode is changing (e.g. clinical→educational), close and reopen
-		// to prevent clinical/educational state leakage
-		if (this.bridge && this.state === 'connected' && this.currentMode !== requestedMode) {
-			console.log('[ViewerStore] Mode change detected (' + this.currentMode + '→' + requestedMode + '), closing viewer for clean reopen');
-			this.bridge.close();
-			this.bridge.destroy();
-			this.bridge = null;
-			this.state = 'idle';
-			this.currentMode = null;
-		}
-
-		// If already connected in the same mode, just switch case
-		if (this.bridge && this.state === 'connected') {
-			this.bridge.sendCaseChange(config.caseId, config.accession);
-			this.currentCase = config.accession;
-			this.slideCount = null;
-			this.lastError = null;
-			return;
-		}
-
-		// Prevent double-open while launching
-		if (this.state === 'launching') return;
-
-		// Mint a fresh JWT
-		const token = await this.mintToken();
-		if (!token) {
-			this.lastError = { code: 'TOKEN_MINT_FAILED', message: 'Failed to obtain viewer token' };
-			return;
-		}
-
-		// Create or reuse bridge
-		if (!this.bridge) {
-			this.bridge = new ViewerBridge({
-				mintToken: () => this.mintToken(),
-			});
-
-			// Subscribe to bridge events
-			this.bridge.on('stateChange', (s) => {
-				this.state = s;
-			});
-			this.bridge.on('caseLoaded', (data) => {
-				this.slideCount = data.slideCount;
-			});
-			this.bridge.on('viewerError', (data) => {
-				this.lastError = data;
-			});
-		}
-
-		this.currentCase = config.accession;
-		this.currentMode = requestedMode;
-		this.slideCount = null;
-		this.lastError = null;
-
-		this.bridge.launch({
-			...config,
-			token,
-		});
+		await activityStore.launchActivity(VIEWER_ACTIVITY_ID, config);
 	}
 
-	/** Send focus/blur state to the viewer */
 	setViewerFocus(focused: boolean): void {
-		if (this.bridge && this.state === 'connected') {
-			this.bridge.sendFocusState(focused ? 'active' : 'blurred');
-		}
+		activityStore.focusActivity(VIEWER_ACTIVITY_ID, focused);
 	}
 
-	/** Send a case-change to the already-open viewer */
 	sendCaseChange(caseId: string, accession: string): void {
-		if (this.bridge && this.state === 'connected') {
-			this.bridge.sendCaseChange(caseId, accession);
-			this.currentCase = accession;
-			this.slideCount = null;
-			this.lastError = null;
-		}
+		activityStore.sendCaseChange(VIEWER_ACTIVITY_ID, caseId, accession);
 	}
 
-	/** Close the viewer window */
 	closeViewer(): void {
-		console.warn('[ViewerStore] closeViewer() called — state=' + this.state + ', currentCase=' + this.currentCase, new Error().stack);
-		if (this.bridge) {
-			this.bridge.close();
-		}
-		this.currentCase = null;
-		this.currentMode = null;
-		this.slideCount = null;
-		this.lastError = null;
+		activityStore.closeActivity(VIEWER_ACTIVITY_ID);
 	}
 
-	/** Destroy bridge and all resources */
 	destroy(): void {
-		if (this.bridge) {
-			this.bridge.destroy();
-			this.bridge = null;
-		}
-		this.state = 'idle';
-		this.currentCase = null;
-		this.currentMode = null;
-		this.slideCount = null;
-		this.lastError = null;
-	}
-
-	/** Mint a JWT via the auth backend */
-	private async mintToken(): Promise<string | null> {
-		try {
-			const res = await fetch('/auth/token', {
-				method: 'POST',
-				credentials: 'include',
-				headers: csrfHeaders(),
-			});
-			if (!res.ok) {
-				console.error('[ViewerStore] Token mint failed:', res.status);
-				return null;
-			}
-			const data: TokenResponse = await res.json();
-			return data.accessToken;
-		} catch (error) {
-			console.error('[ViewerStore] Token mint error:', error);
-			return null;
-		}
+		activityStore.closeActivity(VIEWER_ACTIVITY_ID);
 	}
 }
 

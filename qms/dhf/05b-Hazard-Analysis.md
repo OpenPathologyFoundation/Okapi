@@ -10,6 +10,8 @@ created_date: 2026-01-09
 risk_plan_ref: DHF-05a (Risk Management Plan)
 ---
 
+> **Project rename notice (2026-04-08):** This project was renamed from **Okapi** to **Starling**. Historical references to "Okapi" within this document are preserved for regulatory traceability. See `qms/dhf/00-Index.md` for the rename record.
+
 # 1. Introduction
 This document records the specific hazards, failure modes, and risk controls for the Okapi system. The risk acceptability matrix and scoring definitions (e.g., what "Severity 5" means) are defined in **[DHF-05a]**.
 

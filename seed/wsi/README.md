@@ -4,8 +4,8 @@ Test data for the `wsi` schema (Flyway migration V6+). Seeds **12 clinical cases
 
 ## Prerequisites
 
-1. Postgres running: `docker compose -f Okapi/auth-system/docker-compose.yml up -d postgres`
-2. V6 migration applied (via `./gradlew bootRun` in `Okapi/auth-system/`, or manually)
+1. Postgres running: `docker compose -f starling/auth-system/docker-compose.yml up -d postgres`
+2. V6 migration applied (via `./gradlew bootRun` in `starling/auth-system/`, or manually)
 3. Patients seeded (cases reference patients by MRN)
 
 ## Usage

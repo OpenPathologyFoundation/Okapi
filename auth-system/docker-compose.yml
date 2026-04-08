@@ -1,7 +1,7 @@
 services:
   keycloak:
     image: quay.io/keycloak/keycloak:latest
-    container_name: okapi-keycloak
+    container_name: starling-keycloak
     command: start-dev --import-realm
     environment:
       KEYCLOAK_ADMIN: admin
@@ -14,7 +14,7 @@ services:
 
   postgres:
     image: postgres:16-alpine
-    container_name: okapi-postgres
+    container_name: starling-postgres
     ports:
       - "${POSTGRES_PORT:-5432}:5432"
     environment:

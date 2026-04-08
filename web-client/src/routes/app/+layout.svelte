@@ -88,12 +88,12 @@
         <div class="flex items-center gap-2 w-64">
             <img
                 src="/logo-nb.png"
-                alt="Okapi"
+                alt="Starling"
                 class="h-10 w-auto opacity-80"
             />
             <span
                 class="font-bold tracking-tight text-clinical-text"
-                >Okapi</span
+                >Starling</span
             >
         </div>
 

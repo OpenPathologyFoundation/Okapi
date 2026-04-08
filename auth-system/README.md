@@ -1,18 +1,20 @@
-# Okapi Auth System
+# Starling Auth System (formerly Okapi Auth System)
 
-An authentication and authorization service for Okapi, built with Spring Boot 4.0.2 and Java 25.
+An authentication and authorization service for the Starling open pathology platform, built with Spring Boot 4.0.2 and Java 25.
+
+> **Note:** Internal code identifiers — Java packages (`com.okapi.auth.*`), Spring configuration namespace (`okapi.*`), Keycloak realm, database name (`okapi_auth`), and JWT issuer strings — retain the legacy `okapi` name for regulatory traceability and build stability. The service name, documentation, and user-facing surfaces use **Starling**.
 
 ## What this service does
 
 - OIDC login with Keycloak (or any OIDC provider).
-- Normalizes external identities into the Okapi Postgres schema.
+- Normalizes external identities into the Postgres IAM schema.
 - Role-based access control via IdP group mapping.
 - Device trust, break-glass, and research grants.
-- Issues short-lived Okapi authorization JWTs for downstream services (`POST /auth/token`).
+- Issues short-lived authorization JWTs for downstream services (`POST /auth/token`).
 
 ## Repo structure (auth-system/)
 
-- `src/main/java/com/okapi/auth`: application code and API endpoints.
+- `src/main/java/com/okapi/auth`: application code and API endpoints (legacy package name retained).
 - `src/main/resources/db/migration`: Flyway migrations.
 - `docker-compose.yml`: local Keycloak + Postgres.
 - `keycloak-data/realm.json`: local realm import.

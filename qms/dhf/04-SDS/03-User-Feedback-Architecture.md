@@ -10,6 +10,8 @@ created_date: 2026-01-10
 trace_source: DHF-04
 ---
 
+> **Project rename notice (2026-04-08):** This project was renamed from **Okapi** to **Starling**. The "Okapi Echo" module name within this document is retained as the historical design name. See `qms/dhf/00-Index.md` for the rename record.
+
 > Defines the architecture for the "Okapi Echo" feedback module, enabling context-aware user reporting to mitigate clinical disruption and improve usability.
 
 ## 1. Concept: "The Glass Scribe"

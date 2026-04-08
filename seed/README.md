@@ -1,6 +1,6 @@
 # Seed Data
 
-Versioned seed datasets for populating Okapi dev/demo/test environments. Inputs are tool-agnostic JSON files consumed by the Spring Boot Admin API, `psql`, or the Keycloak CLI.
+Versioned seed datasets for populating Starling (formerly Okapi) dev/demo/test environments. Inputs are tool-agnostic JSON files consumed by the Spring Boot Admin API, `psql`, or the Keycloak CLI.
 
 ## Directory Structure
 

@@ -1,35 +1,39 @@
 <div align="center">
-  <img src="assets/card.jpg" alt="Okapi Logo" width="600">
+  <img src="assets/card.jpg" alt="Starling Logo" width="600">
 </div>
 
-Okapi is a cloud-native platform designed to modernize Anatomic Pathology workflows by bridging the gap between hospital Laboratory Information Systems (LIS) and advanced AI decision support tools.
+# Starling — Open Pathology Platform
+
+> **Note:** This project was renamed from **Okapi** to **Starling** on 2026-04-08. Internal code identifiers (Java packages `com.okapi.*`, Spring configuration namespace `okapi.*`, Keycloak realm, database names, and JWT issuer strings) retain the legacy `okapi` name for regulatory traceability and build stability. User-facing documentation uses **Starling**.
+
+Starling is a cloud-native open pathology platform designed to modernize Anatomic Pathology workflows by bridging the gap between hospital Laboratory Information Systems (LIS) and advanced AI decision support tools. The name reflects the murmuration metaphor — independent modules coordinating through a shared protocol to produce unified behavior, like a flock of starlings in flight.
 
 ---
 
 ## 🎯 Purpose
 
-Okapi serves as the "Orchestration Kernel" that enables:
+Starling serves as the "Orchestration Kernel" that enables:
 -   **AI-Assisted Diagnostics**: Seamlessly integrating AI suggestions into the pathologist's workflow.
 -   **Interoperability**: Connecting on-premise hospital networks (Traditional AP LIS, Cerner) with cloud-hosted utilities via HL7/FHIR.
 -   **Clinical Decision Support (CDS)**: Automating routine tasks to reduce burnout and error rates.
 
 ## 🏗️ System Architecture
 
-Okapi uses a **two-window orchestrator + viewer architecture** for clinical pathology:
+Starling uses a **two-window orchestrator + viewer architecture** for clinical pathology:
 
 ```
 ┌──────────────────────────────────────────────────────────────────────────────┐
 │                         nginx reverse proxy (:8443)                          │
-│   /              → Okapi web-client (SvelteKit)  ← orchestrator window      │
-│   /viewer/       → Digital viewer (Svelte 5)     ← viewer window            │
+│   /              → Starling web-client (SvelteKit)  ← orchestrator window   │
+│   /viewer/       → Digital viewer (Svelte 5)        ← viewer window         │
 │   /tiles/        → Large Image tile server (Python/FastAPI)                  │
 │   /ws            → Session awareness service (Node.js WebSocket)             │
-│   /oauth2/       → Okapi auth-system (Spring Security OIDC initiation)      │
-│   /login/oauth2/ → Okapi auth-system (OIDC callback)                        │
-│   /logout        → Okapi auth-system (Spring Security logout)               │
-│   /auth/         → Okapi auth-system (Spring Boot API)                      │
-│   /api/          → Okapi auth-system (viewer events, annotations)           │
-│   /admin/        → Okapi auth-system (admin API)                            │
+│   /oauth2/       → Starling auth-system (Spring Security OIDC initiation)   │
+│   /login/oauth2/ → Starling auth-system (OIDC callback)                     │
+│   /logout        → Starling auth-system (Spring Security logout)            │
+│   /auth/         → Starling auth-system (Spring Boot API)                   │
+│   /api/          → Starling auth-system (viewer events, annotations)        │
+│   /admin/        → Starling auth-system (admin API)                         │
 └───────┬──────────────┬──────────────┬──────────────┬──────────────┬──────────┘
         │              │              │              │              │
  ┌──────┴──────┐ ┌─────┴─────┐ ┌─────┴─────┐ ┌─────┴─────┐ ┌─────┴─────┐
@@ -58,7 +62,7 @@ The viewer window is a separate application (`large_image/digital-viewer`) with 
 | **[`auth-system/`](auth-system/README.md)** | **Authentication & Audit Service**<br>Identity & Access Management backend. Handles OIDC/SAML login, Identity Normalization, RBAC, viewer event auditing, and annotation API stubs.<br>_Tech: Java 25, Spring Boot 3.5, Keycloak, Postgres_ |
 | **[`web-client/`](web-client/README.md)** | **Orchestrator Web Client**<br>The clinician-facing SvelteKit application. Provides login, worklist, case detail, and viewer window management.<br>_Tech: Svelte 5, SvelteKit, TypeScript, Tailwind CSS_ |
 | **[`proxy/`](proxy/)** | **Development Reverse Proxy**<br>nginx config that routes all services through a single origin (`:8443`) to avoid CORS issues during development.<br>_See `proxy/nginx.dev.conf`_ |
-| **[`seed/`](seed/README.md)** | **Demo Data Seeding**<br>Scripts and datasets for provisioning Keycloak users/groups and Okapi identities. |
+| **[`seed/`](seed/README.md)** | **Demo Data Seeding**<br>Scripts and datasets for provisioning Keycloak users/groups and Starling identities. |
 | **[`qms/`](qms/dhf/00-Index.md)** | **Quality Management System**<br>Design History File (DHF) and SOPs for regulated medical software.<br>_Includes: Requirements (SRS), Design (SDS), Risk Management_ |
 | **[`docs/`](docs/)** | **Integration Guides**<br>End-to-end authentication and authorization documentation. |
 
@@ -174,7 +178,7 @@ For an end-to-end walkthrough (setup, login flow, token handling, backend verifi
 
 If you want a fully working local demo with:
 - demo users/groups in Keycloak, and
-- normalized identities populated in Okapi/Postgres,
+- normalized identities populated in Starling/Postgres,
 
 see:
 - `auth-system/README.md` (end-to-end local run + Admin seeding endpoint)
@@ -182,7 +186,7 @@ see:
 
 ## 📜 Quality & Compliance
 
-Okapi follows a strict Quality Management System (QMS) compliant with medical software standards.
+Starling follows a strict Quality Management System (QMS) compliant with medical software standards.
 
 -   **Design History File**: Start with the [DHF Index](qms/dhf/00-Index.md) to understand the system definition.
 -   **Contributing**: All changes must follow the [Git Contribution Workflow (SOP-DocControl)](sops/SOP-DocControl.md).

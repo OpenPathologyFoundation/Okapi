@@ -4,17 +4,17 @@ Test data for the `wsi_edu` schema (SDS-EDU-001). Seeds 10 educational cases wit
 
 ## Prerequisites
 
-1. Postgres running: `docker compose -f Okapi/auth-system/docker-compose.yml up -d postgres`
-2. `wsi_edu` schema migration V12 applied (via `./gradlew bootRun` in `Okapi/auth-system/`)
+1. Postgres running: `docker compose -f starling/auth-system/docker-compose.yml up -d postgres`
+2. `wsi_edu` schema migration V12 applied (via `./gradlew bootRun` in `starling/auth-system/`)
 3. IAM identities loaded (for curator assignments)
 
 ## Usage
 
 ```bash
 # From workspace root
-source Okapi/auth-system/.env
+source starling/auth-system/.env
 PGPASSWORD="$POSTGRES_PASSWORD" psql -h localhost -p "$POSTGRES_PORT" -U "$POSTGRES_USER" -d "$POSTGRES_DB" \
-  -f Okapi/seed/wsi-edu/seed-wsi-edu-cases.sql
+  -f starling/seed/wsi-edu/seed-wsi-edu-cases.sql
 ```
 
 The script is idempotent (`ON CONFLICT DO NOTHING`) — safe to re-run.

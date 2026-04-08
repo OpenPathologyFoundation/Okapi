@@ -1,7 +1,7 @@
 /**
  * Viewer Bridge — Orchestrator Side
  *
- * Manages the communication channel between the Okapi orchestrator
+ * Manages the communication channel between the Starling orchestrator
  * and the digital-viewer window via postMessage.
  *
  * Responsibilities:

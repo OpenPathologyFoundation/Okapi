@@ -27,12 +27,12 @@
             <div class="flex items-center gap-3">
                 <img
                     src="/logo-nb.png"
-                    alt="Okapi Logo"
+                    alt="Starling Logo"
                     class="h-16 w-auto drop-shadow-lg"
                 />
                 <span
                     class="text-2xl font-bold tracking-tight text-white drop-shadow-sm"
-                    >Okapi</span
+                    >Starling</span
                 >
             </div>
 
@@ -94,7 +94,7 @@
                     Signed Out
                 </h2>
                 <p class="mt-3 text-sm text-clinical-muted leading-relaxed">
-                    You have been securely signed out of Okapi.<br />
+                    You have been securely signed out of Starling.<br />
                     Your session and credentials have been cleared.
                 </p>
             </div>

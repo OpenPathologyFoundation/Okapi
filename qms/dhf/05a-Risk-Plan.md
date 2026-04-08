@@ -9,6 +9,8 @@ owner: Safety Officer
 created_date: 2026-01-09
 ---
 
+> **Project rename notice (2026-04-08):** This project was renamed from **Okapi** to **Starling**. Historical references to "Okapi" within this document are preserved for regulatory traceability. See `qms/dhf/00-Index.md` for the rename record.
+
 # 1. Purpose
 This plan defines the risk management process for Okapi, including scoring for Severity (S) and Probability (P).
 

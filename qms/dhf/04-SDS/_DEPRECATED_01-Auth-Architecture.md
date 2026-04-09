@@ -10,16 +10,16 @@ created_date: 2026-01-10
 trace_source: DHF-04
 ---
 
-> Detailed architecture for the Okapi Authentication Service. See [00-SDS-Overview.md](00-SDS-Overview.md) for high-level design.
+> Detailed architecture for the Starling Authentication Service. See [00-SDS-Overview.md](00-SDS-Overview.md) for high-level design.
 
 ## Quick Summary
 
-Okapi Auth separates **who you are** (Authentication) from **what you can do** (Authorization):
+Starling Auth separates **who you are** (Authentication) from **what you can do** (Authorization):
 
 | Concern | Handled By | Where |
 |---------|-----------|-------|
-| **Authentication (AuthN)** | External IdPs (Okta, Keycloak, SAML) | Outside Okapi |
-| **Authorization (AuthZ)** | RBAC with Roles & Permissions | Inside Okapi |
+| **Authentication (AuthN)** | External IdPs (Okta, Keycloak, SAML) | Outside Starling |
+| **Authorization (AuthZ)** | RBAC with Roles & Permissions | Inside Starling |
 
 ---
 
@@ -32,7 +32,7 @@ Okapi Auth separates **who you are** (Authentication) from **what you can do** (
 
     ┌──────────┐         ┌──────────────────┐         ┌──────────────────┐
     │          │         │                  │         │                  │
-    │   User   │────────▶│   Okapi Web UI   │────────▶│  Okapi Auth API  │
+    │   User   │────────▶│   Starling Web UI   │────────▶│  Starling Auth API  │
     │          │         │                  │         │                  │
     └──────────┘         └──────────────────┘         └────────┬─────────┘
                                                                │
@@ -74,7 +74,7 @@ Okapi Auth separates **who you are** (Authentication) from **what you can do** (
 
 ```
 ┌────────┐     ┌─────────┐     ┌──────────────┐     ┌─────────┐     ┌──────────┐
-│  User  │     │ Browser │     │  Okapi Auth  │     │   IdP   │     │ Database │
+│  User  │     │ Browser │     │  Starling Auth  │     │   IdP   │     │ Database │
 └───┬────┘     └────┬────┘     └──────┬───────┘     └────┬────┘     └────┬─────┘
     │               │                 │                  │               │
     │ 1. Login      │                 │                  │               │
@@ -165,7 +165,7 @@ Okapi Auth separates **who you are** (Authentication) from **what you can do** (
 
 | Control | Implementation | Requirement |
 |---------|----------------|-------------|
-| **External AuthN** | Authentication is delegated to external IdP (OIDC/SAML). Okapi does not store passwords. | SYS-AUTHN-001, SYS-AUTHN-002 |
+| **External AuthN** | Authentication is delegated to external IdP (OIDC/SAML). Starling does not store passwords. | SYS-AUTHN-001, SYS-AUTHN-002 |
 | **Fail closed on invalid tokens** | Invalid/expired tokens or missing auth context results in `401/403`. | SYS-AUTHN-006 |
 | **Issuer-scoped identity** | Identity uniqueness is enforced per IdP issuer via `(provider_id, external_subject)`. | SYS-AUTHN-005 |
 | **Least privilege RBAC** | Roles are derived from IdP groups via DB mappings; unmapped groups yield no elevated access. | SYS-AUTHZ-001, SYS-AUTHZ-002 |
@@ -173,9 +173,9 @@ Okapi Auth separates **who you are** (Authentication) from **what you can do** (
 | **No committed secrets** | IdP and DB secrets are supplied via env vars/secret stores (`.env` is dev-only and gitignored). | SYS-SEC-010 |
 
 ### Administrative access management (no local credential creation)
-- **Identity provisioning** is managed centrally in the IdP (e.g., Keycloak). Okapi does not create primary credentials.
-- Okapi **derives** administrative authority from IdP group membership (e.g., `Okapi_Admins`) via issuer-scoped group→role mappings.
-- Okapi provides an authenticated "who am I" endpoint (`GET /auth/me`) to enable UI integration and rapid troubleshooting of incorrect or delayed access.
+- **Identity provisioning** is managed centrally in the IdP (e.g., Keycloak). Starling does not create primary credentials.
+- Starling **derives** administrative authority from IdP group membership (e.g., `Starling_Admins`) via issuer-scoped group→role mappings.
+- Starling provides an authenticated "who am I" endpoint (`GET /auth/me`) to enable UI integration and rapid troubleshooting of incorrect or delayed access.
 
 ---
 

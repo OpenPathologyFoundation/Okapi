@@ -129,4 +129,4 @@ This module is designed to support compliance with:
 
 ## License
 
-This QMS module is provided as part of the Okapi project. See the root LICENSE file for terms.
+This QMS module is provided as part of the Starling project. See the root LICENSE file for terms.

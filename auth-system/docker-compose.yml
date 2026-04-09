@@ -10,7 +10,7 @@ services:
       - "8180:8080"
     volumes:
       - ./keycloak-data:/opt/keycloak/data/import
-      - ./keycloak-data/themes/okapi:/opt/keycloak/themes/okapi
+      - ./keycloak-data/themes/starling:/opt/keycloak/themes/starling
 
   postgres:
     image: postgres:16-alpine

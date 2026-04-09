@@ -58,20 +58,20 @@ ON CONFLICT (name) DO NOTHING;
 
 -- Seed IdP Group Mappings
 INSERT INTO idp_group_mappings (idp_group_name, role_id) VALUES
-('Okapi_Admins', (SELECT id FROM roles WHERE name = 'ADMIN')),
-('Okapi_Pathologists', (SELECT id FROM roles WHERE name = 'PATHOLOGIST')),
-('Okapi_Technicians', (SELECT id FROM roles WHERE name = 'TECHNICIAN')),
-('Okapi_Residents', (SELECT id FROM roles WHERE name = 'RESIDENT'))
+('Starling_Admins', (SELECT id FROM roles WHERE name = 'ADMIN')),
+('Starling_Pathologists', (SELECT id FROM roles WHERE name = 'PATHOLOGIST')),
+('Starling_Technicians', (SELECT id FROM roles WHERE name = 'TECHNICIAN')),
+('Starling_Residents', (SELECT id FROM roles WHERE name = 'RESIDENT'))
 ON CONFLICT (idp_group_name) DO NOTHING;
 
 -- Seed Sample Identity (Optional, matches Keycloak test user)
 INSERT INTO identities (external_subject, provider_id, display_name, email) VALUES
-('test-subject-id', 'http://localhost:8180/realms/okapi', 'Test User', 'testuser@okapi.com')
+('test-subject-id', 'http://localhost:8180/realms/starling', 'Test User', 'testuser@starling.invalid')
 ON CONFLICT (email) DO NOTHING;
 
 -- Assign Role to Sample Identity
 INSERT INTO identity_roles (identity_id, role_id) 
 SELECT i.id, r.id 
 FROM identities i, roles r 
-WHERE i.email = 'testuser@okapi.com' AND r.name = 'PATHOLOGIST'
+WHERE i.email = 'testuser@starling.invalid' AND r.name = 'PATHOLOGIST'
 ON CONFLICT DO NOTHING;

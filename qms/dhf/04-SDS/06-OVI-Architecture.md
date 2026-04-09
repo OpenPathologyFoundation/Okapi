@@ -16,11 +16,11 @@ references:
   - IEC 62304:2006+A1:2015 (Section 5.4 — Software Architectural Design)
 ---
 
-> **Project rename notice (2026-04-08):** This project was renamed from **Okapi** to **Starling**. Historical references to "Okapi" within this document are preserved for regulatory traceability. See `qms/dhf/00-Index.md` for the rename record.
+> **Project rename notice (2026-04-08, v2):** This project was renamed from **Okapi** to **Starling**. An initial cosmetic rename retained structural identifiers; the full rename was completed on this date across Java packages (`com.starling.auth.*`), Spring configuration, database (`starling_auth`), Keycloak realm (`starling`), JWT issuer, protocol field names, seed group names (`Starling_*`), and documentation. Historical traceability of the Okapi name is preserved via git history and `qms/dhf/00-Index.md` revision history; no legacy Okapi identifiers remain.
 
 ## 1. Purpose
 
-This document specifies the architecture for the integration between the Okapi web client (orchestrator, `:5173`) and the Digital Viewer (`:5174`). The integration uses two independent communication channels: a synchronous `postMessage` bridge for same-browser window coordination, and an asynchronous WebSocket connection to the Session Awareness Service for cross-browser/cross-device awareness.
+This document specifies the architecture for the integration between the Starling web client (orchestrator, `:5173`) and the Digital Viewer (`:5174`). The integration uses two independent communication channels: a synchronous `postMessage` bridge for same-browser window coordination, and an asynchronous WebSocket connection to the Session Awareness Service for cross-browser/cross-device awareness.
 
 The architecture must be reliable enough for clinical diagnostic use. The primary design concern is that a communication failure between the orchestrator and viewer must never cause patient safety harm (case-image mismatch, loss of diagnostic work) or abrupt workflow disruption.
 
@@ -103,7 +103,7 @@ This separation is fundamental to the reliability model. Channel 1 failure degra
 - Ensures the viewer is never a "dead" application when the bridge fails
 - Supports educational, demo, and testing scenarios where the orchestrator is not present
 - Provides a natural degradation path: if the bridge fails, the viewer simply operates as if it were standalone, with the last-known case context
-- Two HTML entry points exist: `index.html` (standalone) and `orchestrated.html` (launched by Okapi)
+- Two HTML entry points exist: `index.html` (standalone) and `orchestrated.html` (launched by Starling)
 
 ## 4. Component Architecture
 
@@ -136,7 +136,7 @@ This separation is fundamental to the reliability model. Channel 1 failure degra
 └──────────────────────────────────────────────────────────────────┘
 ```
 
-**Location**: `Okapi/web-client/src/lib/viewer-bridge.ts`
+**Location**: `Starling/web-client/src/lib/viewer-bridge.ts`
 
 ### 4.2 Viewer Side — OrchestratorBridge
 
@@ -357,7 +357,7 @@ Orchestrator (reloaded)                          Viewer (still open)
     ▼                                               ▼
 ```
 
-The viewer window is opened with a deterministic `windowName` (e.g., `okapi-viewer-{sessionId}`). On orchestrator reload, `window.open('', windowName)` returns the existing window reference without navigating it.
+The viewer window is opened with a deterministic `windowName` (e.g., `starling-viewer-{sessionId}`). On orchestrator reload, `window.open('', windowName)` returns the existing window reference without navigating it.
 
 ### 6.5 JWT Refresh Lifecycle
 

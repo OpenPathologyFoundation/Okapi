@@ -1,6 +1,6 @@
 # 02-SRS
 ---
-title: System Requirements Specification - Okapi Core
+title: System Requirements Specification - Starling Core
 document_id: SRS-001
 version: 1.1
 status: DRAFT
@@ -11,7 +11,7 @@ trace_source: URS-001
 trace_destination: TP-001 (Test Plan)
 ---
 
-> **Project rename notice (2026-04-08):** This project was renamed from **Okapi** to **Starling**. Historical references to "Okapi" within this document are preserved for regulatory traceability. See `qms/dhf/00-Index.md` for the rename record.
+> **Project rename notice (2026-04-08, v2):** This project was renamed from **Okapi** to **Starling**. An initial cosmetic rename retained structural identifiers; the full rename was completed on this date across Java packages (`com.starling.auth.*`), Spring configuration, database (`starling_auth`), Keycloak realm (`starling`), JWT issuer, protocol field names, seed group names (`Starling_*`), and documentation. Historical traceability of the Okapi name is preserved via git history and `qms/dhf/00-Index.md` revision history; no legacy Okapi identifiers remain.
 
 # 1. Functional Requirements
 
@@ -39,14 +39,14 @@ trace_destination: TP-001 (Test Plan)
 | **SYS-AUTHZ-002** | The system shall derive internal roles from IdP group attributes using issuer-scoped mappings. | UN-AUTHZ-002 | Test |
 | **SYS-AUTHZ-003** | The system shall support fine-grained permissions assigned to roles (e.g., `CASE_VIEW`, `CASE_SIGN_OUT`) to enable least-privilege access. | UN-AUTHZ-003 | Test |
 | **SYS-AUTHZ-004** | The system shall support time-bounded role assignments with `effective_from` and `effective_to` dates for temporary access scenarios. | UN-AUTHZ-004 | Test |
-| **SYS-AUTHZ-005** | The system shall support administrative access management by deriving the internal `ADMIN` role from centralized IdP group membership and Okapi-local mappings; Okapi shall not create primary credentials for users. | UN-AUTHZ-005 | Analysis/Test |
-| **SYS-AUTHZ-006** | The system shall support timely provisioning updates by relying on centralized identity management (IdP) plus Okapi-local permission mappings, reducing manual errors and pressure to bypass security controls. | UN-AUTHZ-006 | Analysis |
+| **SYS-AUTHZ-005** | The system shall support administrative access management by deriving the internal `ADMIN` role from centralized IdP group membership and Starling-local mappings; Starling shall not create primary credentials for users. | UN-AUTHZ-005 | Analysis/Test |
+| **SYS-AUTHZ-006** | The system shall support timely provisioning updates by relying on centralized identity management (IdP) plus Starling-local permission mappings, reducing manual errors and pressure to bypass security controls. | UN-AUTHZ-006 | Analysis |
 | **SYS-AUTHZ-007** | The system shall record authorization-relevant events (role changes, permission grants/revocations, access denials) in the audit log. | UN-AUTHZ-007 | Test |
 | **SYS-AUTHZ-008** | The system shall support break-glass access grants that are time-bounded, scoped to specific entities, require justification, and are fully audited. | UN-AUTHZ-008 | Test |
 | **SYS-AUTHZ-009** | The system shall allow administrators to configure which users are eligible for break-glass access via permission flags. | UN-AUTHZ-009 | Analysis/Test |
 | **SYS-AUTHZ-010** | The system shall enforce default-deny authorization: permissions and roles are granted only by explicit mappings; unmapped IdP groups grant no access. | UN-AUTHZ-003 | Test |
 | **SYS-AUTHZ-011** | The system shall enforce authorization on the server for every protected API; client/UI checks are advisory only. | UN-AUTHZ-001 | Inspection/Test |
-| **SYS-AUTHZ-012** | The system shall augment access tokens with Okapi-derived `roles` and `permissions` (names), include mandatory `okapi_authz_version` (format `YYYY.MM.DD+<short-hash>`), and refresh/recompute them on session renewal; access token TTL shall default to 10 minutes (configurable). | UN-AUTHZ-002, UN-AUTHZ-003 | Analysis/Test |
+| **SYS-AUTHZ-012** | The system shall augment access tokens with Starling-derived `roles` and `permissions` (names), include mandatory `starling_authz_version` (format `YYYY.MM.DD+<short-hash>`), and refresh/recompute them on session renewal; access token TTL shall default to 10 minutes (configurable). | UN-AUTHZ-002, UN-AUTHZ-003 | Analysis/Test |
 
 ## 1.3 User Profile Requirements
 
@@ -141,7 +141,7 @@ HAT requirements are written to enforce the separation between:
 
 ## 1.11 Orchestrator-Viewer Integration (OVI) Requirements
 
-Requirements for the cross-window communication bridge between the Okapi web client (orchestrator) and the Digital Viewer. The orchestrator owns the lifecycle of the viewer window and is the authority for case context, authentication tokens, and case-switching decisions.
+Requirements for the cross-window communication bridge between the Starling web client (orchestrator) and the Digital Viewer. The orchestrator owns the lifecycle of the viewer window and is the authority for case context, authentication tokens, and case-switching decisions.
 
 ### 1.11.1 Viewer Window Lifecycle
 

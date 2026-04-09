@@ -9,10 +9,10 @@ owner: Safety Officer
 created_date: 2026-01-09
 ---
 
-> **Project rename notice (2026-04-08):** This project was renamed from **Okapi** to **Starling**. Historical references to "Okapi" within this document are preserved for regulatory traceability. See `qms/dhf/00-Index.md` for the rename record.
+> **Project rename notice (2026-04-08, v2):** This project was renamed from **Okapi** to **Starling**. An initial cosmetic rename retained structural identifiers; the full rename was completed on this date across Java packages (`com.starling.auth.*`), Spring configuration, database (`starling_auth`), Keycloak realm (`starling`), JWT issuer, protocol field names, seed group names (`Starling_*`), and documentation. Historical traceability of the Okapi name is preserved via git history and `qms/dhf/00-Index.md` revision history; no legacy Okapi identifiers remain.
 
 # 1. Purpose
-This plan defines the risk management process for Okapi, including scoring for Severity (S) and Probability (P).
+This plan defines the risk management process for Starling, including scoring for Severity (S) and Probability (P).
 
 # 2. Severity Scoring (1-5)
 
@@ -50,5 +50,5 @@ This plan defines the risk management process for Okapi, including scoring for S
 
 # 5. Cybersecurity Risk Activities (IAM subset)
 - Threat modeling and cybersecurity requirements are captured in `qms/dhf/03-Cybersecurity.md`.
-- Authentication is delegated to external IdP policy (OIDC/SAML); Okapi focuses on authorization (RBAC), normalization, and audit evidence.
+- Authentication is delegated to external IdP policy (OIDC/SAML); Starling focuses on authorization (RBAC), normalization, and audit evidence.
 - Verification evidence for cybersecurity-related requirements is tracked in `qms/dhf/06-VVP.md`.

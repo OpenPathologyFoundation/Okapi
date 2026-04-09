@@ -1,13 +1,13 @@
 logging:
   level:
     root: INFO
-    com.okapi: DEBUG
+    com.starling: DEBUG
     org.springframework.security: DEBUG
     org.springframework.web: DEBUG
 
 spring:
   application:
-    name: okapi-auth-system-test
+    name: starling-auth-system-test
   jpa:
     hibernate:
       ddl-auto: validate
@@ -28,7 +28,7 @@ spring:
             user-info-uri: http://localhost:8080/test/userinfo
             jwk-set-uri: http://localhost:8080/test/jwks
 
-okapi:
+starling:
   jwt:
     secret: test-secret-that-is-at-least-256-bits-long-for-hmac-sha256
   oidc:

@@ -2,7 +2,7 @@
 
 An authentication and authorization service for the Starling open pathology platform, built with Spring Boot 4.0.2 and Java 25.
 
-> **Note:** Internal code identifiers — Java packages (`com.okapi.auth.*`), Spring configuration namespace (`okapi.*`), Keycloak realm, database name (`okapi_auth`), and JWT issuer strings — retain the legacy `okapi` name for regulatory traceability and build stability. The service name, documentation, and user-facing surfaces use **Starling**.
+> **Note:** Internal code identifiers — Java packages (`com.starling.auth.*`), Spring configuration namespace (`starling.*`), Keycloak realm, database name (`starling_auth`), and JWT issuer strings — retain the legacy `starling` name for regulatory traceability and build stability. The service name, documentation, and user-facing surfaces use **Starling**.
 
 ## What this service does
 
@@ -14,7 +14,7 @@ An authentication and authorization service for the Starling open pathology plat
 
 ## Repo structure (auth-system/)
 
-- `src/main/java/com/okapi/auth`: application code and API endpoints (legacy package name retained).
+- `src/main/java/com/starling/auth`: application code and API endpoints (legacy package name retained).
 - `src/main/resources/db/migration`: Flyway migrations.
 - `docker-compose.yml`: local Keycloak + Postgres.
 - `keycloak-data/realm.json`: local realm import.
@@ -70,11 +70,11 @@ Coverage reports are generated automatically after `./gradlew test`.
 - HTML report: `auth-system/build/reports/jacoco/test/html/index.html`
 - XML report: `auth-system/build/reports/jacoco/test/jacocoTestReport.xml`
 
-## Demo provisioning (Keycloak -> Okapi DB)
+## Demo provisioning (Keycloak -> Starling DB)
 
-Okapi follows the pattern:
+Starling follows the pattern:
 - Keycloak is the source of truth for accounts and group membership.
-- Okapi/Postgres stores normalized identities and local flags/metadata.
+- Starling/Postgres stores normalized identities and local flags/metadata.
 
 ### 1) Seed Keycloak demo users and groups
 
@@ -86,11 +86,11 @@ docker compose -f auth-system/docker-compose.yml up -d keycloak
 ```
 
 Notes:
-- The script runs `kcadm.sh` inside the Keycloak container (`okapi-keycloak`).
+- The script runs `kcadm.sh` inside the Keycloak container (`starling-keycloak`).
 - The script parses the JSON on the host using `python3`.
 - Re-running is intended to be safe and overwrites `seed/keycloak/out/keycloak-user-map.tsv`.
 
-### 2) Seed Okapi/Postgres identities (Admin-only)
+### 2) Seed Starling/Postgres identities (Admin-only)
 
 Endpoint:
 - `POST /admin/seed/identities`
@@ -103,7 +103,7 @@ What it does:
 - Writes a summary `audit_events` record
 
 #### Pre-req: you must be logged in as an Admin
-The endpoint is protected by `ROLE_ADMIN` (`/admin/**` requires Admin). Ensure your Keycloak user is in `Okapi_Admins`.
+The endpoint is protected by `ROLE_ADMIN` (`/admin/**` requires Admin). Ensure your Keycloak user is in `Starling_Admins`.
 
 #### Easiest way to call it (browser + session cookie)
 1. Start the app (`./gradlew bootRun`).
@@ -132,8 +132,8 @@ curl -X POST \
 The seed endpoint validates identities against Keycloak via the Keycloak Admin API.
 By default it expects a Keycloak admin password via Spring config:
 
-- Property: `okapi.keycloak.admin.password`
-- Environment variable form: `OKAPI_KEYCLOAK_ADMIN_PASSWORD`
+- Property: `starling.keycloak.admin.password`
+- Environment variable form: `STARLING_KEYCLOAK_ADMIN_PASSWORD`
 
 For local `docker-compose` the default Keycloak admin password is `admin` (see `auth-system/docker-compose.yml`).
 
@@ -143,34 +143,34 @@ This service is a standalone runtime, not a shared library. Other modules should
 
 ### Option A: Web clients (browser session)
 
-1. Users sign in through OIDC (Keycloak -> Okapi Auth).
+1. Users sign in through OIDC (Keycloak -> Starling Auth).
 2. The app can call `GET /auth/me` to read the normalized identity.
-3. The app can call `POST /auth/token` to mint an Okapi authorization JWT for downstream services.
+3. The app can call `POST /auth/token` to mint an Starling authorization JWT for downstream services.
 
-### Option B: Service-to-service authorization (Okapi JWT)
+### Option B: Service-to-service authorization (Starling JWT)
 
 If a service needs authorization context, call `POST /auth/token` and pass the token as a Bearer token to downstream services.
 
-Okapi JWT claims:
-- `iss` = `OKAPI_JWT_ISSUER` (default `okapi`)
+Starling JWT claims:
+- `iss` = `STARLING_JWT_ISSUER` (default `starling`)
 - `sub` = OIDC subject (`external_subject`)
 - `roles` and `permissions`
-- `okapi_authz_version`
+- `starling_authz_version`
 - `exp` and `iat`
 
 Validation details:
 - Algorithm: HS256 (shared secret)
-- Secret: `OKAPI_JWT_SECRET`
-- TTL: `OKAPI_JWT_TTL_SECONDS` (default 600 seconds)
+- Secret: `STARLING_JWT_SECRET`
+- TTL: `STARLING_JWT_TTL_SECONDS` (default 600 seconds)
 
 Downstream services should validate the signature, issuer, expiry, and required roles/permissions before handling sensitive routes.
 
-### Example: verify Okapi JWT in a downstream service
+### Example: verify Starling JWT in a downstream service
 
-The Okapi token uses HS256 and a shared secret. A downstream service can verify it and gate routes by roles/permissions.
+The Starling token uses HS256 and a shared secret. A downstream service can verify it and gate routes by roles/permissions.
 
 ```java
-package com.okapi.example;
+package com.starling.example;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
@@ -181,8 +181,8 @@ import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
-public final class OkapiJwtVerifier {
-    private OkapiJwtVerifier() {
+public final class StarlingJwtVerifier {
+    private StarlingJwtVerifier() {
     }
 
     public static Claims verify(String token, String sharedSecret, String expectedIssuer) {
@@ -210,7 +210,7 @@ public final class OkapiJwtVerifier {
 ## Auth endpoints (quick reference)
 
 - `GET /auth/me` - current identity profile
-- `POST /auth/token` - mint Okapi JWT for downstream services
+- `POST /auth/token` - mint Starling JWT for downstream services
 - Device trust:
   - `GET /auth/devices`
   - `POST /auth/devices`
@@ -259,5 +259,5 @@ See `keycloak-data/realm.json` for the full list.
 
 SAML 2.0 support is present but disabled by default. To enable it, follow the steps in this file and uncomment the relevant lines in:
 - `auth-system/build.gradle`
-- `auth-system/src/main/java/com/okapi/auth/config/SecurityConfig.java`
+- `auth-system/src/main/java/com/starling/auth/config/SecurityConfig.java`
 - `auth-system/src/main/resources/application.yml`

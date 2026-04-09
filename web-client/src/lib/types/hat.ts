@@ -55,7 +55,7 @@ export interface AssetCustody {
 
 /** Provenance for state assertions */
 export interface Provenance {
-	source: 'OKAPI' | 'COPATH' | 'BEAKER' | 'MANUAL' | 'EXTERNAL';
+	source: 'STARLING' | 'COPATH' | 'BEAKER' | 'MANUAL' | 'EXTERNAL';
 	assertedBy: string;
 	assertedAt: string;
 	comment?: string;

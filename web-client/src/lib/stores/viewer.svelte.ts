@@ -14,7 +14,7 @@ interface TokenResponse {
 	accessToken: string;
 	tokenType: string;
 	expiresInSeconds: number;
-	okapiAuthzVersion: string;
+	starlingAuthzVersion: string;
 }
 
 class ViewerStore {

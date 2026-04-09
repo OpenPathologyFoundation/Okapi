@@ -104,10 +104,10 @@ ON CONFLICT DO NOTHING;
 WITH inserted_groups AS (
     INSERT INTO iam.idp_group (provider_id, group_name)
     VALUES
-        ('http://localhost:8180/realms/okapi', 'Okapi_Admins'),
-        ('http://localhost:8180/realms/okapi', 'Okapi_Pathologists'),
-        ('http://localhost:8180/realms/okapi', 'Okapi_Technicians'),
-        ('http://localhost:8180/realms/okapi', 'Okapi_Residents')
+        ('http://localhost:8180/realms/starling', 'Starling_Admins'),
+        ('http://localhost:8180/realms/starling', 'Starling_Pathologists'),
+        ('http://localhost:8180/realms/starling', 'Starling_Technicians'),
+        ('http://localhost:8180/realms/starling', 'Starling_Residents')
     ON CONFLICT (provider_id, group_name) DO UPDATE
         SET provider_id = EXCLUDED.provider_id
     RETURNING idp_group_id, group_name
@@ -118,9 +118,9 @@ SELECT
     r.role_id
 FROM inserted_groups g
 JOIN iam.role r ON (
-    (g.group_name = 'Okapi_Admins' AND r.name = 'ADMIN') OR
-    (g.group_name = 'Okapi_Pathologists' AND r.name = 'PATHOLOGIST') OR
-    (g.group_name = 'Okapi_Technicians' AND r.name = 'TECHNICIAN') OR
-    (g.group_name = 'Okapi_Residents' AND r.name = 'RESIDENT')
+    (g.group_name = 'Starling_Admins' AND r.name = 'ADMIN') OR
+    (g.group_name = 'Starling_Pathologists' AND r.name = 'PATHOLOGIST') OR
+    (g.group_name = 'Starling_Technicians' AND r.name = 'TECHNICIAN') OR
+    (g.group_name = 'Starling_Residents' AND r.name = 'RESIDENT')
 )
 ON CONFLICT DO NOTHING;

@@ -83,7 +83,7 @@ export class ViewerBridge {
 			'status=no',
 		].join(',');
 
-		this.viewerWindow = window.open(config.viewerUrl, 'okapi-viewer', features);
+		this.viewerWindow = window.open(config.viewerUrl, 'starling-viewer', features);
 		console.log('[ViewerBridge] window.open result:', this.viewerWindow ? 'opened (closed=' + this.viewerWindow.closed + ')' : 'NULL (blocked)');
 
 		if (!this.viewerWindow) {

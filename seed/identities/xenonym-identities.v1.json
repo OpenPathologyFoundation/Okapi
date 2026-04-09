@@ -1,10 +1,10 @@
 {
   "version": "v1",
-  "providerId": "http://localhost:8180/realms/okapi",
+  "providerId": "http://localhost:8180/realms/starling",
   "identities": [
     {
       "subject": "1b901726-68ec-4bde-8ee6-7c817ffd5b51",
-      "provider_id": "http://localhost:8180/realms/okapi",
+      "provider_id": "http://localhost:8180/realms/starling",
       "username": "hlemsesor",
       "email": "hekzozhio.lemsesor@xenonym.test",
       "display_name": "Dr. Hekzozhio Lemsesor, MD, PhD",
@@ -17,7 +17,7 @@
         "full": "Dr. Hekzozhio Lemsesor, MD, PhD",
         "short": "Dr. H. Lemsesor, MD, PhD"
       },
-      "idp_groups": ["Okapi_Pathologists"],
+      "idp_groups": ["Starling_Pathologists"],
       "local": {
         "account_type": "TEST",
         "seed": "sage-echo-7610",
@@ -38,7 +38,7 @@
     },
     {
       "subject": "5844a8aa-1db7-41a9-94e2-e4a83a88361a",
-      "provider_id": "http://localhost:8180/realms/okapi",
+      "provider_id": "http://localhost:8180/realms/starling",
       "username": "ltsindi",
       "email": "lukbavrul.tsindi@xenonym.test",
       "display_name": "Dr. Lukbavrul Tsindi, DO",
@@ -51,7 +51,7 @@
         "full": "Dr. Lukbavrul Tsindi, DO",
         "short": "Dr. L. Tsindi, DO"
       },
-      "idp_groups": ["Okapi_Pathologists"],
+      "idp_groups": ["Starling_Pathologists"],
       "local": {
         "account_type": "TEST",
         "seed": "frost-shard-2428",
@@ -72,7 +72,7 @@
     },
     {
       "subject": "7afa0c57-72da-4f4d-b776-b3c717dfd069",
-      "provider_id": "http://localhost:8180/realms/okapi",
+      "provider_id": "http://localhost:8180/realms/starling",
       "username": "ppiolileibro",
       "email": "piarto.piolileibro@xenonym.test",
       "display_name": "Dr. Piarto Piolileibro, MD",
@@ -85,7 +85,7 @@
         "full": "Dr. Piarto Piolileibro, MD",
         "short": "Dr. P. Piolileibro, MD"
       },
-      "idp_groups": ["Okapi_Pathologists"],
+      "idp_groups": ["Starling_Pathologists"],
       "local": {
         "account_type": "TEST",
         "seed": "warm-dale-4612",
@@ -106,7 +106,7 @@
     },
     {
       "subject": "38db1486-2f98-4eeb-ac99-4c35a7e3cc12",
-      "provider_id": "http://localhost:8180/realms/okapi",
+      "provider_id": "http://localhost:8180/realms/starling",
       "username": "bmodeswuv",
       "email": "broulanmun.modeswuv@xenonym.test",
       "display_name": "Dr. Broulanmun Modeswuv, MD",
@@ -119,7 +119,7 @@
         "full": "Dr. Broulanmun Modeswuv, MD",
         "short": "Dr. B. Modeswuv, MD"
       },
-      "idp_groups": ["Okapi_Pathologists"],
+      "idp_groups": ["Starling_Pathologists"],
       "local": {
         "account_type": "TEST",
         "seed": "frost-haven-4631",
@@ -140,7 +140,7 @@
     },
     {
       "subject": "900dd77b-5486-4f56-86a4-7bc8e833f5e2",
-      "provider_id": "http://localhost:8180/realms/okapi",
+      "provider_id": "http://localhost:8180/realms/starling",
       "username": "gsneakhan",
       "email": "ghovru.sneakhan@xenonym.test",
       "display_name": "Dr. Ghovru Sneakhan, DO",
@@ -153,7 +153,7 @@
         "full": "Dr. Ghovru Sneakhan, DO",
         "short": "Dr. G. Sneakhan, DO"
       },
-      "idp_groups": ["Okapi_Pathologists"],
+      "idp_groups": ["Starling_Pathologists"],
       "local": {
         "account_type": "TEST",
         "seed": "jade-fern-8057",
@@ -174,7 +174,7 @@
     },
     {
       "subject": "21206199-8438-4c4a-8fa2-4d5f2e69bbec",
-      "provider_id": "http://localhost:8180/realms/okapi",
+      "provider_id": "http://localhost:8180/realms/starling",
       "username": "gmuklus",
       "email": "gluber.muklus@xenonym.test",
       "display_name": "Dr. Gluber Muklus, MD",
@@ -187,7 +187,7 @@
         "full": "Dr. Gluber Muklus, MD",
         "short": "Dr. G. Muklus, MD"
       },
-      "idp_groups": ["Okapi_Residents"],
+      "idp_groups": ["Starling_Residents"],
       "local": {
         "account_type": "TEST",
         "seed": "dusty-prism-6667",
@@ -208,7 +208,7 @@
     },
     {
       "subject": "1162db98-a46e-40f6-8a4e-9fee48a492db",
-      "provider_id": "http://localhost:8180/realms/okapi",
+      "provider_id": "http://localhost:8180/realms/starling",
       "username": "vbezho",
       "email": "vokfiornotios.bezho@xenonym.test",
       "display_name": "Dr. Vokfiornotios Bezho, MD",
@@ -221,7 +221,7 @@
         "full": "Dr. Vokfiornotios Bezho, MD",
         "short": "Dr. V. Bezho, MD"
       },
-      "idp_groups": ["Okapi_Residents"],
+      "idp_groups": ["Starling_Residents"],
       "local": {
         "account_type": "TEST",
         "seed": "pale-brook-4959",
@@ -241,7 +241,7 @@
     },
     {
       "subject": "974a1d66-f757-459d-aca7-bf57c8f777ab",
-      "provider_id": "http://localhost:8180/realms/okapi",
+      "provider_id": "http://localhost:8180/realms/starling",
       "username": "gwukdaskornisauv",
       "email": "grejath.wukdaskornisauv@xenonym.test",
       "display_name": "Dr. Grejath Wukdaskornisauv, MD",
@@ -254,7 +254,7 @@
         "full": "Dr. Grejath Wukdaskornisauv, MD",
         "short": "Dr. G. Wukdaskornisauv, MD"
       },
-      "idp_groups": ["Okapi_Residents"],
+      "idp_groups": ["Starling_Residents"],
       "local": {
         "account_type": "TEST",
         "seed": "coral-dale-4594",
@@ -274,7 +274,7 @@
     },
     {
       "subject": "37b6e002-b647-4ce2-826e-d0e4f1cca6f5",
-      "provider_id": "http://localhost:8180/realms/okapi",
+      "provider_id": "http://localhost:8180/realms/starling",
       "username": "wnkunhalkevi",
       "email": "whanvianu.nkunhalkevi@xenonym.test",
       "display_name": "Dr. Whanvianu Nkunhalkevi, MD",
@@ -287,7 +287,7 @@
         "full": "Dr. Whanvianu Nkunhalkevi, MD",
         "short": "Dr. W. Nkunhalkevi, MD"
       },
-      "idp_groups": ["Okapi_Fellows"],
+      "idp_groups": ["Starling_Fellows"],
       "local": {
         "account_type": "TEST",
         "seed": "mist-grove-1948",
@@ -308,7 +308,7 @@
     },
     {
       "subject": "459326f2-a911-40bb-b4df-bd656d7249d9",
-      "provider_id": "http://localhost:8180/realms/okapi",
+      "provider_id": "http://localhost:8180/realms/starling",
       "username": "gzobirvofain",
       "email": "glothefakpuv.zobirvofain@xenonym.test",
       "display_name": "Glothefakpuv Zobirvofain, HT(ASCP)",
@@ -320,7 +320,7 @@
         "full": "Glothefakpuv Zobirvofain, HT(ASCP)",
         "short": "G. Zobirvofain, HT(ASCP)"
       },
-      "idp_groups": ["Okapi_HistoTechs"],
+      "idp_groups": ["Starling_HistoTechs"],
       "local": {
         "account_type": "TEST",
         "seed": "crisp-shard-1709",
@@ -341,7 +341,7 @@
     },
     {
       "subject": "04dac93f-a1d6-4d36-a708-da4e81985429",
-      "provider_id": "http://localhost:8180/realms/okapi",
+      "provider_id": "http://localhost:8180/realms/starling",
       "username": "tsnausfo",
       "email": "tholgan.snausfo@xenonym.test",
       "display_name": "Tholgan Snausfo",
@@ -353,7 +353,7 @@
         "full": "Tholgan Snausfo",
         "short": "T. Snausfo"
       },
-      "idp_groups": ["Okapi_Admins"],
+      "idp_groups": ["Starling_Admins"],
       "local": {
         "account_type": "TEST",
         "seed": "lush-pine-8652",

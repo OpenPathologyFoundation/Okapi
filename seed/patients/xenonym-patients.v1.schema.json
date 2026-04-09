@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://okapi.local/schemas/seed/xenonym-patients.v1.schema.json",
-  "title": "Okapi seed xenonym patients (v1)",
+  "$id": "https://starling.local/schemas/seed/xenonym-patients.v1.schema.json",
+  "title": "Starling seed xenonym patients (v1)",
   "type": "object",
   "additionalProperties": false,
   "required": ["seed", "count", "patients"],

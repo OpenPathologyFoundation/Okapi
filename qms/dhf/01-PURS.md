@@ -10,16 +10,16 @@ effective_date: TBD
 trace_destination: SRS-001
 ---
 
-> **Project rename notice (2026-04-08):** This project was renamed from **Okapi** to **Starling**. Historical references to "Okapi" within this document are preserved for regulatory traceability. See `qms/dhf/00-Index.md` for the rename record.
+> **Project rename notice (2026-04-08, v2):** This project was renamed from **Okapi** to **Starling**. An initial cosmetic rename retained structural identifiers; the full rename was completed on this date across Java packages (`com.starling.auth.*`), Spring configuration, database (`starling_auth`), Keycloak realm (`starling`), JWT issuer, protocol field names, seed group names (`Starling_*`), and documentation. Historical traceability of the Okapi name is preserved via git history and `qms/dhf/00-Index.md` revision history; no legacy Okapi identifiers remain.
 
 # 1. Purpose
-To define user needs for Okapi modules in scope for the current baseline, including:
+To define user needs for Starling modules in scope for the current baseline, including:
 - Identity and Access Management (IAM) (authentication + authorization)
 - Histology Asset Tracking (HAT)
 
 # 2. Scope
 This document covers user needs for:
-- login, identity federation, and **role-based access** for clinical users of Okapi
+- login, identity federation, and **role-based access** for clinical users of Starling
 - **administrative management** of identities, roles, permissions, grants, and audit
 - tracking and orchestrating work on histology physical assets (slides/blocks/specimen parts)
 
@@ -46,10 +46,10 @@ User needs related to permissions, roles, and access control decisions.
 | ID | User Need Statement | Rationale/Clinical Justification |
 | :--- | :--- | :--- |
 | **UN-AUTHZ-001** | The user needs access to be restricted by clinical role (e.g., Pathologist, Technician, Admin) so only appropriate actions are available. | Prevents inappropriate access and reduces risk of unsafe or non-compliant actions. |
-| **UN-AUTHZ-002** | The user needs the system to automatically reflect institutional group membership (IdP groups) into Okapi roles without manual account provisioning. | Reduces admin burden and prevents inconsistent access assignments. |
+| **UN-AUTHZ-002** | The user needs the system to automatically reflect institutional group membership (IdP groups) into Starling roles without manual account provisioning. | Reduces admin burden and prevents inconsistent access assignments. |
 | **UN-AUTHZ-003** | The user needs fine-grained permissions within roles (e.g., view vs. edit vs. sign-out) so that access is appropriately scoped to job function. | Supports least-privilege access; enables nuanced access models (e.g., resident can draft but not sign). |
 | **UN-AUTHZ-004** | The user needs time-bounded role assignments for temporary access scenarios (e.g., coverage, training rotations, locum tenens). | Eliminates stale access from expired assignments; reduces admin burden of manual revocation. |
-| **UN-AUTHZ-005** | The administrator needs a reliable, low-error way to grant and revoke access by managing centralized identity provider groups and Okapi-local permission mappings (without creating credentials in Okapi). | Reduces configuration mistakes and avoids "shadow accounts"; supports controlled access management aligned to institutional identity governance. |
+| **UN-AUTHZ-005** | The administrator needs a reliable, low-error way to grant and revoke access by managing centralized identity provider groups and Starling-local permission mappings (without creating credentials in Starling). | Reduces configuration mistakes and avoids "shadow accounts"; supports controlled access management aligned to institutional identity governance. |
 | **UN-AUTHZ-006** | The user needs access provisioning and updates to occur in a timely manner to avoid care delays caused by missing or incorrect permissions. | Delayed access can cause clinical workflow interruption; timely provisioning reduces pressure to bypass security controls. |
 | **UN-AUTHZ-007** | The user needs the system to record authorization-relevant events (role changes, permission grants/revocations, access denials) in an auditable manner. | Supports security monitoring, investigations, and regulatory expectations. |
 | **UN-AUTHZ-008** | The user needs emergency "break-glass" access to resources outside their normal assignment when clinical necessity demands (e.g., covering for absent colleague, emergency consult). | Ensures patient safety is not compromised by rigid permission models; break-glass must be justified, time-limited, and audited. |
@@ -119,14 +119,14 @@ Pathologist assignment to cases is a source-of-truth relationship in the core da
 
 ## 3.8 IAM Administration (Admin)
 
-User needs for the institutional administrator managing identities, roles, permissions, IdP mappings, grants, and audit. (Note: the provisioning workflow — user appears in Keycloak → identity syncs to Okapi → admin reviews and assigns roles → user gains access — is addressed by UN-AUTHZ-002, UN-AUTHZ-006, and UN-ADMIN-001/002/003 collectively.)
+User needs for the institutional administrator managing identities, roles, permissions, IdP mappings, grants, and audit. (Note: the provisioning workflow — user appears in Keycloak → identity syncs to Starling → admin reviews and assigns roles → user gains access — is addressed by UN-AUTHZ-002, UN-AUTHZ-006, and UN-ADMIN-001/002/003 collectively.)
 
 | ID | User Need Statement | Rationale/Clinical Justification |
 | :--- | :--- | :--- |
 | **UN-ADMIN-001** | The administrator needs to view, search, and filter all user identities in the system to manage access across the institution. | Enables efficient user lookup for access troubleshooting, onboarding verification, and compliance auditing; prevents reliance on ad hoc database queries. |
 | **UN-ADMIN-002** | The administrator needs to activate and deactivate user identities without deleting historical records. | Supports offboarding workflows (e.g., departed staff, expired affiliations) while preserving audit trail and case attribution integrity for regulatory defensibility. |
 | **UN-ADMIN-003** | The administrator needs to assign and revoke roles for individual users with documented justification. | Supports local role overrides beyond IdP-derived assignments (e.g., temporary coverage, cross-training); justification requirement supports audit trail. |
-| **UN-ADMIN-004** | The administrator needs to manage IdP group-to-role mappings to control how institutional directory groups translate to Okapi permissions. | Enables centralized identity governance; reduces configuration drift between IdP groups and Okapi roles; supports multi-tenant/multi-IdP scenarios. |
+| **UN-ADMIN-004** | The administrator needs to manage IdP group-to-role mappings to control how institutional directory groups translate to Starling permissions. | Enables centralized identity governance; reduces configuration drift between IdP groups and Starling roles; supports multi-tenant/multi-IdP scenarios. |
 | **UN-ADMIN-005** | The administrator needs to view the role-permission matrix to understand what capabilities each role provides. | Supports access review, compliance reporting, and informed decision-making when assigning roles or responding to access requests. |
 | **UN-ADMIN-006** | The administrator needs to view, filter, and export audit logs for security investigations and compliance reporting. | Supports HIPAA audit requirements, incident response, and institutional security monitoring without requiring direct database access. |
 | **UN-ADMIN-007** | The administrator needs to view and revoke active break-glass and research access grants across all users. | Enables institutional oversight of emergency and research access; supports timely response to grant abuse or policy violations. |

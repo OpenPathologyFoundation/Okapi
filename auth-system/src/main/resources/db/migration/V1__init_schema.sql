@@ -1,4 +1,4 @@
--- Okapi IAM schema (managed by Flyway)
+-- Starling IAM schema (managed by Flyway)
 
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
 CREATE SCHEMA IF NOT EXISTS iam;

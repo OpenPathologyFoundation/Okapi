@@ -11,11 +11,11 @@ updated_date: 2026-01-26
 trace_source: SRS-001
 ---
 
-> **Project rename notice (2026-04-08):** This project was renamed from **Okapi** to **Starling**. Historical references to "Okapi" within this document are preserved for regulatory traceability. See `qms/dhf/00-Index.md` for the rename record.
+> **Project rename notice (2026-04-08, v2):** This project was renamed from **Okapi** to **Starling**. An initial cosmetic rename retained structural identifiers; the full rename was completed on this date across Java packages (`com.starling.auth.*`), Spring configuration, database (`starling_auth`), Keycloak realm (`starling`), JWT issuer, protocol field names, seed group names (`Starling_*`), and documentation. Historical traceability of the Okapi name is preserved via git history and `qms/dhf/00-Index.md` revision history; no legacy Okapi identifiers remain.
 
 # 1. Introduction
 
-This Software Design Specification (SDS) describes the technical architecture and design for the Okapi system. The SDS is organized into the following component documents:
+This Software Design Specification (SDS) describes the technical architecture and design for the Starling system. The SDS is organized into the following component documents:
 
 | Document | ID | Description |
 |----------|-----|-------------|
@@ -29,12 +29,12 @@ This Software Design Specification (SDS) describes the technical architecture an
 
 ## 2.1 IAM Architecture
 
-Okapi follows a "Connector + Normalization" architecture for identity, with clear separation between:
+Starling follows a "Connector + Normalization" architecture for identity, with clear separation between:
 
 - **Authentication (AuthN)** — Proving identity; delegated to external Enterprise Identity Providers (IdPs)
 - **Authorization (AuthZ)** — Determining permissions; managed internally via Role-Based Access Control (RBAC)
 
-Institutional SSO is the source of authentication truth (Keycloak used to emulate OIDC/SAML in development). Authorization is derived from Okapi's internal IAM schema (roles, permissions, grants) and is used to augment access tokens for downstream services.
+Institutional SSO is the source of authentication truth (Keycloak used to emulate OIDC/SAML in development). Authorization is derived from Starling's internal IAM schema (roles, permissions, grants) and is used to augment access tokens for downstream services.
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -43,7 +43,7 @@ Institutional SSO is the source of authentication truth (Keycloak used to emulat
 
     ┌──────────┐         ┌──────────────────┐         ┌──────────────────┐
     │          │         │                  │         │                  │
-    │   User   │────────▶│   Okapi Web UI   │────────▶│  Okapi Auth API  │
+    │   User   │────────▶│   Starling Web UI   │────────▶│  Starling Auth API  │
     │          │         │  (Clinical +     │         │                  │
     │          │         │   Admin views)   │         │                  │
     └──────────┘         └──────────────────┘         └────────┬─────────┘

@@ -9,7 +9,7 @@ created_date: 2026-01-11
 trace_source: SRS-001
 ---
 
-> **Project rename notice (2026-04-08):** This project was renamed from **Okapi** to **Starling**. Historical references to "Okapi" within this document are preserved for regulatory traceability. See `qms/dhf/00-Index.md` for the rename record.
+> **Project rename notice (2026-04-08, v2):** This project was renamed from **Okapi** to **Starling**. An initial cosmetic rename retained structural identifiers; the full rename was completed on this date across Java packages (`com.starling.auth.*`), Spring configuration, database (`starling_auth`), Keycloak realm (`starling`), JWT issuer, protocol field names, seed group names (`Starling_*`), and documentation. Historical traceability of the Okapi name is preserved via git history and `qms/dhf/00-Index.md` revision history; no legacy Okapi identifiers remain.
 
 # 1. Purpose
 Define verification activities and acceptance evidence for AuthN/AuthZ capabilities (OIDC/SAML federation, internal RBAC, issuer-scoped normalization, Flyway-managed schema).
@@ -57,11 +57,11 @@ HAT verification will be implemented incrementally as the module is built. At mi
 | `SYS-AUTHN-004` | Persist normalized identity (incl. structured name fields when provided) | Integration test (when Docker) + manual | `KeycloakOidcIntegrationTest` (DB assertions) / `bootRun` logs; verify columns (`given_name`, `family_name`, `display_short`) after OIDC login |
 | `SYS-AUTHN-005` | `UNIQUE(provider_id, external_subject)` | Inspection | Flyway `V1__init_schema.sql` |
 | `SYS-AUTHN-006` | Fail closed (`401/403`) | Unit test (config) | `SecurityConfigTest` |
-| `SYS-AUTHN-008` | Authenticated “who am I” endpoint | Unit test | `auth-system/src/test/java/com/okapi/auth/controller/UserControllerTest.java` |
+| `SYS-AUTHN-008` | Authenticated “who am I” endpoint | Unit test | `auth-system/src/test/java/com/starling/auth/controller/UserControllerTest.java` |
 | `SYS-AUTHN-011` | AuthN events recorded in audit log | Unit/Integration test | `AuthAuditServiceTest` (planned) |
 | `SYS-AUTHZ-010` | Default-deny authorization (no unmapped access) | Unit test | `UserRoleMapperTest` + permission checks |
 | `SYS-AUTHZ-011` | Server-side authorization on protected APIs | Inspection/Test | `SecurityConfig` + controller tests |
-| `SYS-AUTHZ-012` | Token augmentation with `roles`, `permissions`, and `okapi_authz_version` (`YYYY.MM.DD+<short-hash>`, 10 min TTL) | Analysis/Test | Token claim inspection in integration test; inspection of short-lived token policy (no per-token revocation) in `qms/dhf/04-SDS/02-AuthZ-Architecture.md` |
+| `SYS-AUTHZ-012` | Token augmentation with `roles`, `permissions`, and `starling_authz_version` (`YYYY.MM.DD+<short-hash>`, 10 min TTL) | Analysis/Test | Token claim inspection in integration test; inspection of short-lived token policy (no per-token revocation) in `qms/dhf/04-SDS/02-AuthZ-Architecture.md` |
 | `SYS-AUD-002` | Audit-event schema exists | Inspection | Flyway `V1__init_schema.sql` (`iam.audit_event`) |
 | `SYS-DATA-001` | Flyway-managed schema at startup | Integration + manual | Flyway logs; `flyway_schema_history` table |
 | `SYS-SEC-010` | No committed secrets; env/secret store | Inspection | `.gitignore` + configuration review; no secrets in DHF |

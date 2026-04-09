@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://okapi.local/schemas/seed/case-assignments.v1.schema.json",
-  "title": "Okapi seed case assignments (v1)",
+  "$id": "https://starling.local/schemas/seed/case-assignments.v1.schema.json",
+  "title": "Starling seed case assignments (v1)",
   "type": "object",
   "additionalProperties": false,
   "required": ["version", "assignments"],

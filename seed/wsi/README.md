@@ -25,9 +25,9 @@ POST /admin/seed/worklist-sync    → populates worklist from wsi.cases
 ### Via psql (direct SQL)
 
 ```bash
-source Okapi/auth-system/.env
+source Starling/auth-system/.env
 PGPASSWORD="$POSTGRES_PASSWORD" psql -h localhost -p "$POSTGRES_PORT" -U "$POSTGRES_USER" -d "$POSTGRES_DB" \
-  -f Okapi/seed/wsi/seed-wsi-test-cases.sql
+  -f Starling/seed/wsi/seed-wsi-test-cases.sql
 ```
 
 The SQL script is idempotent (`ON CONFLICT DO NOTHING`) — safe to re-run.

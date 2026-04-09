@@ -2,8 +2,8 @@ spring:
   application:
     name: starling-auth-system
   datasource:
-    url: jdbc:postgresql://localhost:${POSTGRES_PORT:5432}/${POSTGRES_DB:okapi_auth}
-    username: ${POSTGRES_USER:okapi_service}
+    url: jdbc:postgresql://localhost:${POSTGRES_PORT:5432}/${POSTGRES_DB:starling_auth}
+    username: ${POSTGRES_USER:starling_service}
     password: ${POSTGRES_PASSWORD}
     driver-class-name: org.postgresql.Driver
   flyway:
@@ -29,43 +29,43 @@ spring:
           okta:
             # Do NOT use `issuer-uri` here because it triggers OIDC discovery at app startup.
             # Using explicit endpoints allows `bootRun` to start even if Keycloak isn't running.
-            # Defaults derive from okapi.oidc.issuer-uri (below) which always resolves.
-            authorization-uri: ${OIDC_AUTHORIZATION_URI:${okapi.oidc.issuer-uri}/protocol/openid-connect/auth}
-            token-uri: ${OIDC_TOKEN_URI:${okapi.oidc.issuer-uri}/protocol/openid-connect/token}
-            user-info-uri: ${OIDC_USER_INFO_URI:${okapi.oidc.issuer-uri}/protocol/openid-connect/userinfo}
-            jwk-set-uri: ${OIDC_JWK_SET_URI:${okapi.oidc.issuer-uri}/protocol/openid-connect/certs}
+            # Defaults derive from starling.oidc.issuer-uri (below) which always resolves.
+            authorization-uri: ${OIDC_AUTHORIZATION_URI:${starling.oidc.issuer-uri}/protocol/openid-connect/auth}
+            token-uri: ${OIDC_TOKEN_URI:${starling.oidc.issuer-uri}/protocol/openid-connect/token}
+            user-info-uri: ${OIDC_USER_INFO_URI:${starling.oidc.issuer-uri}/protocol/openid-connect/userinfo}
+            jwk-set-uri: ${OIDC_JWK_SET_URI:${starling.oidc.issuer-uri}/protocol/openid-connect/certs}
 
-okapi:
+starling:
   oidc:
     # Single source of truth for OIDC issuer. All derived URIs reference this property.
     # Override via OIDC_ISSUER_URI env var for production.
-    issuer-uri: ${OIDC_ISSUER_URI:http://localhost:8180/realms/okapi}
-    provider-id: ${OIDC_PROVIDER_ID:${okapi.oidc.issuer-uri}}
-    end-session-uri: ${OIDC_END_SESSION_URI:${okapi.oidc.issuer-uri}/protocol/openid-connect/logout}
+    issuer-uri: ${OIDC_ISSUER_URI:http://localhost:8180/realms/starling}
+    provider-id: ${OIDC_PROVIDER_ID:${starling.oidc.issuer-uri}}
+    end-session-uri: ${OIDC_END_SESSION_URI:${starling.oidc.issuer-uri}/protocol/openid-connect/logout}
   jwt:
-    issuer: ${OKAPI_JWT_ISSUER:okapi}
-    audience: ${OKAPI_JWT_AUDIENCE:okapi-tile-server}
-    secret: ${OKAPI_JWT_SECRET}
-    ttl-seconds: ${OKAPI_JWT_TTL_SECONDS:600}
+    issuer: ${STARLING_JWT_ISSUER:starling}
+    audience: ${STARLING_JWT_AUDIENCE:starling-tile-server}
+    secret: ${STARLING_JWT_SECRET}
+    ttl-seconds: ${STARLING_JWT_TTL_SECONDS:600}
   authz:
-    version: ${OKAPI_AUTHZ_VERSION:2026.01.26+dev}
+    version: ${STARLING_AUTHZ_VERSION:2026.01.26+dev}
   device:
     trust:
-      ttl-days: ${OKAPI_DEVICE_TRUST_TTL_DAYS:30}
+      ttl-days: ${STARLING_DEVICE_TRUST_TTL_DAYS:30}
   break-glass:
-    ttl-hours: ${OKAPI_BREAK_GLASS_TTL_HOURS:24}
+    ttl-hours: ${STARLING_BREAK_GLASS_TTL_HOURS:24}
   research:
     grant:
-      ttl-days: ${OKAPI_RESEARCH_GRANT_TTL_DAYS:90}
+      ttl-days: ${STARLING_RESEARCH_GRANT_TTL_DAYS:90}
   viewer:
     # Comma-separated list of allowed origins for the viewer window.
     # Only needed when viewer is NOT behind the nginx reverse proxy.
-    # Example: http://viewer.okapi.local,http://localhost:5174
-    allowed-origins: ${OKAPI_VIEWER_ALLOWED_ORIGINS:}
+    # Example: http://viewer.starling.local,http://localhost:5174
+    allowed-origins: ${STARLING_VIEWER_ALLOWED_ORIGINS:}
 #      saml2:
 #        relying-party:
 #          registration:
-#            okapi-saml:
+#            starling-saml:
 #              asserting-party:
 #                metadata-uri: ${SAML_IDP_METADATA_URL}
 

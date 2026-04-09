@@ -10,15 +10,15 @@ created_date: 2026-01-26
 trace_source: DHF-04, SRS-001
 ---
 
-> **Project rename notice (2026-04-08):** This project was renamed from **Okapi** to **Starling**. Historical references to "Okapi" within this document are preserved for regulatory traceability. See `qms/dhf/00-Index.md` for the rename record.
+> **Project rename notice (2026-04-08, v2):** This project was renamed from **Okapi** to **Starling**. An initial cosmetic rename retained structural identifiers; the full rename was completed on this date across Java packages (`com.starling.auth.*`), Spring configuration, database (`starling_auth`), Keycloak realm (`starling`), JWT issuer, protocol field names, seed group names (`Starling_*`), and documentation. Historical traceability of the Okapi name is preserved via git history and `qms/dhf/00-Index.md` revision history; no legacy Okapi identifiers remain.
 
-> Detailed architecture for Okapi Authentication services. This document covers **identity federation**, **session management**, and **device trust**. For authorization (RBAC, permissions, access grants), see [02-AuthZ-Architecture.md](02-AuthZ-Architecture.md).
+> Detailed architecture for Starling Authentication services. This document covers **identity federation**, **session management**, and **device trust**. For authorization (RBAC, permissions, access grants), see [02-AuthZ-Architecture.md](02-AuthZ-Architecture.md).
 
 ## 1. Overview
 
 Authentication (AuthN) answers the question: **"Who are you?"**
 
-Okapi delegates primary authentication to external Identity Providers (IdPs) and does not store user passwords. The AuthN module is responsible for:
+Starling delegates primary authentication to external Identity Providers (IdPs) and does not store user passwords. The AuthN module is responsible for:
 
 - **Protocol handling**: OIDC and SAML 2.0 integration with external IdPs
 - **Identity normalization**: Mapping IdP claims to a stable internal identity record
@@ -34,7 +34,7 @@ Okapi delegates primary authentication to external Identity Providers (IdPs) and
 
     ┌──────────┐         ┌──────────────────┐         ┌──────────────────┐
     │          │         │                  │         │                  │
-    │   User   │────────▶│   Okapi Web UI   │────────▶│  Okapi Auth API  │
+    │   User   │────────▶│   Starling Web UI   │────────▶│  Starling Auth API  │
     │          │         │                  │         │                  │
     └──────────┘         └──────────────────┘         └────────┬─────────┘
                                                                │
@@ -84,7 +84,7 @@ Okapi delegates primary authentication to external Identity Providers (IdPs) and
 
 ```
 ┌────────┐     ┌─────────┐     ┌──────────────┐     ┌─────────┐     ┌──────────┐
-│  User  │     │ Browser │     │  Okapi Auth  │     │   IdP   │     │ Database │
+│  User  │     │ Browser │     │  Starling Auth  │     │   IdP   │     │ Database │
 └───┬────┘     └────┬────┘     └──────┬───────┘     └────┬────┘     └────┬─────┘
     │               │                 │                  │               │
     │ 1. Login      │                 │                  │               │
@@ -120,12 +120,12 @@ Okapi delegates primary authentication to external Identity Providers (IdPs) and
 
 ### 3.3 SAML 2.0 Flow
 
-Okapi acts as a SAML Service Provider (SP). The flow is similar to OIDC but uses SAML assertions instead of ID tokens:
+Starling acts as a SAML Service Provider (SP). The flow is similar to OIDC but uses SAML assertions instead of ID tokens:
 
 1. User initiates login
-2. Okapi generates SAML AuthnRequest and redirects to IdP
+2. Starling generates SAML AuthnRequest and redirects to IdP
 3. IdP authenticates user and returns SAML Response
-4. Okapi validates assertion signature and extracts attributes
+4. Starling validates assertion signature and extracts attributes
 5. Identity is normalized and persisted
 6. Session is established
 
@@ -174,7 +174,7 @@ On successful authentication:
 
 ### 5.1 Session Establishment
 
-After identity normalization, Okapi establishes an authenticated session:
+After identity normalization, Starling establishes an authenticated session:
 
 - **Session storage**: Server-side session with HTTP-only session cookie
 - **Session ID**: Opaque, cryptographically random identifier
@@ -278,7 +278,7 @@ Users can manage their trusted devices via the profile interface:
 | Control | Implementation | Requirement |
 |---------|----------------|-------------|
 | **External AuthN** | Authentication delegated to external IdP; no password storage | SYS-AUTHN-001, SYS-AUTHN-002 |
-| **MFA delegation** | MFA enforcement is IdP responsibility; Okapi trusts IdP assertion | SYS-AUTHN-003 |
+| **MFA delegation** | MFA enforcement is IdP responsibility; Starling trusts IdP assertion | SYS-AUTHN-003 |
 | **Fail closed** | Invalid/expired tokens or missing auth context yields 401/403 | SYS-AUTHN-006 |
 | **Issuer-scoped identity** | Uniqueness enforced per IdP via `(provider_id, external_subject)` | SYS-AUTHN-005 |
 | **Secure cookies** | HTTP-only, Secure, SameSite attributes on session cookies | SYS-AUTHN-007 |

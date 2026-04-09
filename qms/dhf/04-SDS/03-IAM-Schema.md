@@ -10,7 +10,7 @@ created_date: 2026-01-26
 trace_source: SRS-001, DHF-04-01, DHF-04-02
 ---
 
-> **Project rename notice (2026-04-08):** This project was renamed from **Okapi** to **Starling**. Historical references to "Okapi" within this document (and in database schema identifiers like `okapi_auth`) are preserved for regulatory traceability and build stability. See `qms/dhf/00-Index.md` for the rename record.
+> **Project rename notice (2026-04-08, v2):** This project was renamed from **Okapi** to **Starling**. An initial cosmetic rename retained structural identifiers; the full rename was completed on this date across Java packages (`com.starling.auth.*`), Spring configuration, database (`starling_auth`), Keycloak realm (`starling`), JWT issuer, protocol field names, seed group names (`Starling_*`), and documentation. Historical traceability of the Okapi name is preserved via git history and `qms/dhf/00-Index.md` revision history; no legacy Okapi identifiers remain.
 
 > Database schema specification for the Identity and Access Management (IAM) module. This document defines the PostgreSQL schema that implements the authentication and authorization designs in [01-AuthN-Architecture.md](01-AuthN-Architecture.md) and [02-AuthZ-Architecture.md](02-AuthZ-Architecture.md).
 

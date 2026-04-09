@@ -1,6 +1,6 @@
 -- Patient seed data from Xenonym (seed: azure-vale-9728)
--- Source: Okapi/seed/patients/xenonym-azure-vale-9728.json
--- Run manually: psql -h localhost -U okapi_service -d okapi_auth -p 5433 -f Okapi/seed/patients/seed-patients.sql
+-- Source: Starling/seed/patients/xenonym-azure-vale-9728.json
+-- Run manually: psql -h localhost -U starling_service -d starling_auth -p 5433 -f Starling/seed/patients/seed-patients.sql
 -- Requires: V7__core_patient_schema.sql migration applied first.
 
 BEGIN;

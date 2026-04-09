@@ -1,13 +1,23 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-: "${KEYCLOAK_CONTAINER:=okapi-keycloak}"
+# Resolve the starling/ project root regardless of where this script is invoked
+# from. The script lives at starling/seed/keycloak/seed-keycloak-users.sh, so
+# three `dirname`s up is the starling/ directory. All relative defaults below
+# (SEED_IDENTITY_FILES, OUT_DIR, DOTENV_FILE) are resolved against that root,
+# so the script works whether you call it from starling-workspace/, starling/,
+# or seed/keycloak/ itself.
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+STARLING_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
+cd "${STARLING_ROOT}"
+
+: "${KEYCLOAK_CONTAINER:=starling-keycloak}"
 : "${KEYCLOAK_INTERNAL_URL:=http://localhost:8080}"   # URL as seen from inside the container
 : "${KEYCLOAK_ADMIN_REALM:=master}"
-: "${KEYCLOAK_REALM:=okapi}"
+: "${KEYCLOAK_REALM:=starling}"
 
 : "${SEED_IDENTITY_FILES:=seed/identities/xenonym-identities.v1.json}"
-: "${DEMO_PASSWORD_DEFAULT:=OkapiDev!2026}"           # dev only; set via .env, do not commit secrets
+: "${DEMO_PASSWORD_DEFAULT:=StarlingDev!2026}"           # dev only; set via .env, do not commit secrets
 : "${OUT_DIR:=seed/keycloak/out}"
 
 # NOTE:

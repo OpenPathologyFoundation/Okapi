@@ -59,3 +59,6 @@ seed/keycloak/out/
 CASE-ASSIGNMENT-API.md
 CHANGELOG-WIP.md
 /web-client/NAVIGATION-ARCHITECTURE.md
+
+# Local dev notes (per-iteration PR drafts, scratch)
+.dev-notes/

@@ -40,7 +40,7 @@
 				asset = {
 					id: assetId,
 					identifiers: [
-						{ type: 'BARCODE_NORMALIZED', value: assetId.toUpperCase(), source: 'OKAPI', createdAt: new Date().toISOString() },
+						{ type: 'BARCODE_NORMALIZED', value: assetId.toUpperCase(), source: 'STARLING', createdAt: new Date().toISOString() },
 						{ type: 'LIS_ACCESSION', value: 'S24-' + Math.floor(Math.random() * 10000), source: 'COPATH', createdAt: new Date().toISOString() }
 					],
 					status: 'AVAILABLE',
@@ -53,7 +53,7 @@
 						assertedBy: 'system'
 					},
 					provenance: {
-						source: 'OKAPI',
+						source: 'STARLING',
 						assertedBy: 'system',
 						assertedAt: new Date().toISOString()
 					},

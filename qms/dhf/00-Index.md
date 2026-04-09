@@ -1,9 +1,9 @@
 # Design History File (DHF) Index — Starling (formerly Okapi)
 
-> **Project rename notice (2026-04-08):** This project was renamed from **Okapi** to **Starling** as part of a rebranding of the orchestration platform. The new name reflects the murmuration metaphor for coordinated independent modules — a flock of autonomous agents producing unified behavior through a shared coordination protocol. Historical DHF documents, code identifiers (Java packages `com.okapi.*`, Spring configuration namespace `okapi.*`, Keycloak realm `okapi`, database `okapi_auth`, etc.), and legacy repository references retain the original name for regulatory traceability and build stability. All new documentation and user-facing surfaces use the name **Starling**.
+> **Project rename notice (2026-04-08, v2):** This project was renamed from **Okapi** to **Starling** as a rebranding of the open pathology platform. The name reflects the murmuration metaphor for coordinated independent modules — a flock of autonomous agents producing unified behavior through a shared coordination protocol. An initial cosmetic rename retained structural identifiers; on 2026-04-08 the rename was completed in full across Java packages (`com.starling.auth.*`), Spring configuration namespace (`starling.*`), database (`starling_auth`), DB user (`starling_service`), Keycloak realm (`starling`), JWT issuer and audience, protocol field names, seed group names (`Starling_*`), and all user-facing documentation. Historical traceability of the Okapi name is preserved via git history (file-move history, commit SHAs) and this revision log rather than via embedded string references. No legacy Okapi identifiers remain in the source code.
 
 ## 1. Purpose
-This file is the authoritative index for the Design History File (DHF) for the Okapi system.
+This file is the authoritative index for the Design History File (DHF) for the Starling system.
 It provides:
 - The complete list of controlled DHF artifacts (documents and records)
 - Where each artifact lives in the repository
@@ -13,7 +13,7 @@ It provides:
 This DHF index is maintained in source control and updated as part of change control.
 
 ## 2. Scope
-This DHF covers the design and evolution of the Okapi platform, including:
+This DHF covers the design and evolution of the Starling platform, including:
 - Cloud-hosted deployment (AWS)
 - Clinical decision support (CDS) and workflow automation
 - AI-assisted suggestions (assistive, clinician-in-the-loop)
@@ -172,5 +172,5 @@ Each RELREC-<release>.md SHALL reference:
 
 ## 10. Revision History (Index)
 - v0.1: Initial DHF index created (YYYY-MM-DD)
-- v0.2: Project renamed from Okapi to Starling (2026-04-08). Title and purpose narrative updated; historical code identifiers and legacy references retained for traceability and build stability. See rename notice at top of this document.
-- v0.3: <TBD>
+- v0.2: Project renamed from Okapi to Starling (2026-04-08). Title and purpose narrative updated; historical code identifiers and legacy references initially retained for traceability and build stability.
+- v0.3: Full identifier rename from Okapi to Starling completed (2026-04-08). The v0.2 legacy-retention policy was superseded. Java packages (`com.okapi.auth` → `com.starling.auth`), Spring configuration namespace (`okapi.*` → `starling.*`), database (`okapi_auth` → `starling_auth`), DB user (`okapi_service` → `starling_service`), Keycloak realm (`okapi` → `starling`), Keycloak theme directory (`themes/okapi/` → `themes/starling/`), seeded IdP group names (`Okapi_*` → `Starling_*`), JWT issuer, audience (`okapi-tile-server` → `starling-tile-server`), and the JWT response field (`okapiAuthzVersion` → `starlingAuthzVersion`) were all renamed. Flyway migrations V1/V2/V9 were edited in place and development databases were rebuilt (`docker compose down -v`). Traceability of the historical Okapi identifiers is preserved via git history and this revision entry. User-facing descriptions of Starling as the "Orchestration Kernel" were replaced with "Open Pathology Platform".

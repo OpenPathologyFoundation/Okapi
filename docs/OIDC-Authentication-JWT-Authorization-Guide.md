@@ -1,6 +1,6 @@
 # OIDC Authentication & JWT Authorization Guide
 
-This guide explains how detached applications (web UI, backend APIs, optional admin UI) integrate with the Okapi authentication module and Keycloak (OIDC). It covers setup, local testing, token handling, backend verification, and deployment practices.
+This guide explains how detached applications (web UI, backend APIs, optional admin UI) integrate with the Starling authentication module and Keycloak (OIDC). It covers setup, local testing, token handling, backend verification, and deployment practices.
 
 ## Purpose and guarantees (plain language)
 
@@ -14,7 +14,7 @@ Security guarantees and why they hold:
 - TLS is required: protects tokens and credentials in transit.
 - Signed JWTs: integrity and authenticity of tokens.
   - Keycloak tokens use asymmetric signing (JWKS), enabling key rotation without redeploys.
-  - Okapi-issued JWTs (via `POST /auth/token`) are signed with a shared secret (HS256) and rotated by updating the secret.
+  - Starling-issued JWTs (via `POST /auth/token`) are signed with a shared secret (HS256) and rotated by updating the secret.
 - Short-lived access tokens + refresh strategy: reduces risk if a token leaks.
 - Server-side authorization: APIs enforce access with roles/permissions (never trust the UI).
 
@@ -39,7 +39,7 @@ Token definitions:
 ### A. First-time setup
 
 1. Start Keycloak locally (see `auth-system/docker-compose.yml`).
-2. Create a realm (or use the provided `okapi` realm import).
+2. Create a realm (or use the provided `starling` realm import).
 3. Create clients:
    - Web client (public client, Authorization Code + PKCE)
    - Backend APIs (confidential clients if they call other services)
@@ -49,17 +49,17 @@ Token definitions:
    - Admin app redirect: `http://localhost:<admin-port>/auth/callback`
 5. Define roles and groups:
    - Example roles: `ADMIN`, `PATHOLOGIST`, `RESEARCHER`
-   - Example groups: `Okapi_Admins`, `Okapi_Pathologists`
+   - Example groups: `Starling_Admins`, `Starling_Pathologists`
 
 Configure the auth module (`auth-system`):
-- `OIDC_ISSUER_URI` (example: `http://localhost:8180/realms/okapi`)
+- `OIDC_ISSUER_URI` (example: `http://localhost:8180/realms/starling`)
 - `OIDC_CLIENT_ID`
 - `OIDC_CLIENT_SECRET`
-- `OKAPI_JWT_SECRET` (for Okapi-issued JWTs)
-- `OKAPI_JWT_ISSUER`
+- `STARLING_JWT_SECRET` (for Starling-issued JWTs)
+- `STARLING_JWT_ISSUER`
 
 JWKS endpoint (Keycloak):
-- `http://localhost:8180/realms/okapi/protocol/openid-connect/certs`
+- `http://localhost:8180/realms/starling/protocol/openid-connect/certs`
 
 Frontend environment variables (example):
 - `OIDC_ISSUER_URI`
@@ -70,8 +70,8 @@ Frontend environment variables (example):
 Backend environment variables (example):
 - `OIDC_ISSUER_URI`
 - `OIDC_AUDIENCE` (if your JWTs include audience)
-- `OKAPI_JWT_ISSUER`
-- `OKAPI_JWT_SECRET`
+- `STARLING_JWT_ISSUER`
+- `STARLING_JWT_SECRET`
 
 Admin app environment variables (example):
 - `OIDC_ISSUER_URI`
@@ -100,7 +100,7 @@ User -> Web App -> Keycloak -> Web App callback -> (token exchange) -> Web App -
 Backend APIs must validate:
 - Token signature:
   - Keycloak access tokens: verify using JWKS (`/protocol/openid-connect/certs`).
-  - Okapi-issued JWTs: verify using `OKAPI_JWT_SECRET`.
+  - Starling-issued JWTs: verify using `STARLING_JWT_SECRET`.
 - `iss` (issuer)
 - `aud` (audience, if used)
 - `exp` and `nbf` (expiry and not-before)
@@ -120,8 +120,8 @@ When access tokens expire:
 
 Token sources used in this stack:
 - Keycloak access token: used by clients to call APIs that accept IdP tokens directly.
-- Okapi JWT (`POST /auth/token`): used when you want a normalized Okapi authorization token for downstream services.
-- Okapi JWTs are access tokens only; there is no refresh token. Re-mint them using the authenticated session in the auth module.
+- Starling JWT (`POST /auth/token`): used when you want a normalized Starling authorization token for downstream services.
+- Starling JWTs are access tokens only; there is no refresh token. Re-mint them using the authenticated session in the auth module.
 
 Do:
 - Prefer httpOnly, secure cookies (BFF pattern) to keep tokens out of JS.
@@ -155,16 +155,16 @@ cd auth-system
 
 Minimal end-to-end checklist:
 1. Open Keycloak Admin Console: `http://localhost:8180/admin` (admin/admin).
-2. Create a test user and add to `Okapi_Admins` or `Okapi_Pathologists`.
+2. Create a test user and add to `Starling_Admins` or `Starling_Pathologists`.
 3. Log in via `http://localhost:8080/auth/me`.
-4. Mint an Okapi JWT: `POST http://localhost:8080/auth/token`.
+4. Mint an Starling JWT: `POST http://localhost:8080/auth/token`.
 5. Call a protected endpoint with the token (a downstream API in your stack).
 6. Verify role-based access by using a second user without the role and confirm a `403`.
 
 End-to-end checklist (auth-system RBAC demo):
-- Log in with a user in `Okapi_Admins`.
+- Log in with a user in `Starling_Admins`.
 - Call `POST /admin/seed/identities` (requires session + CSRF token) and confirm 200.
-- Log in with a user not in `Okapi_Admins`.
+- Log in with a user not in `Starling_Admins`.
 - Call the same endpoint and confirm 403.
 
 Troubleshooting:
@@ -193,11 +193,11 @@ Optional: build a lightweight admin app.
 
 Environment configuration:
 - Use separate Keycloak realms or separate clients per environment.
-- Rotate secrets regularly (client secrets, Okapi JWT secret).
+- Rotate secrets regularly (client secrets, Starling JWT secret).
 
 Key rotation:
 - Keycloak JWKS keys rotate without service redeploys; resource servers must fetch JWKS and cache it.
-- For Okapi JWTs, rotate `OKAPI_JWT_SECRET` and deploy dependent services.
+- For Starling JWTs, rotate `STARLING_JWT_SECRET` and deploy dependent services.
 
 Observability:
 - Log request IDs, auth failure reasons, and user IDs (no tokens).

@@ -1,7 +1,7 @@
 # 03-User-Feedback-Architecture
 
 ---
-title: Okapi Echo Module Architecture
+title: Starling Echo Module Architecture
 document_id: DHF-04-03
 version: 1.0
 status: DRAFT
@@ -10,9 +10,9 @@ created_date: 2026-01-10
 trace_source: DHF-04
 ---
 
-> **Project rename notice (2026-04-08):** This project was renamed from **Okapi** to **Starling**. The "Okapi Echo" module name within this document is retained as the historical design name. See `qms/dhf/00-Index.md` for the rename record.
+> **Project rename notice (2026-04-08, v2):** This project was renamed from **Okapi** to **Starling**. An initial cosmetic rename retained structural identifiers; the full rename was completed on this date across Java packages (`com.starling.auth.*`), Spring configuration, database (`starling_auth`), Keycloak realm (`starling`), JWT issuer, protocol field names, seed group names (`Starling_*`), and documentation. Historical traceability of the Okapi name is preserved via git history and `qms/dhf/00-Index.md` revision history; no legacy Okapi identifiers remain.
 
-> Defines the architecture for the "Okapi Echo" feedback module, enabling context-aware user reporting to mitigate clinical disruption and improve usability.
+> Defines the architecture for the "Starling Echo" feedback module, enabling context-aware user reporting to mitigate clinical disruption and improve usability.
 
 ## 1. Concept: "The Glass Scribe"
 

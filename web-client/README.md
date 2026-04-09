@@ -1,6 +1,6 @@
 # Starling Web Client
 
-**Orchestrator UI for Clinical Pathology** (project formerly known as Okapi)
+**Orchestrator UI for Clinical Pathology** (project formerly known as Starling)
 
 The web-client is a SvelteKit application that serves as the clinician-facing orchestrator for the Starling open pathology platform. It provides login, worklist, case detail, and viewer window management. It does **not** render whole slide images directly — instead it launches a separate [Digital Viewer](https://github.com/your-org/large_image/tree/main/digital-viewer) window and communicates with it over a typed `postMessage` bridge.
 
@@ -160,7 +160,7 @@ The web-client uses SvelteKit's built-in environment handling. Key variables:
 For the two-window architecture to work, all services must share a single origin. The nginx reverse proxy (`proxy/nginx.dev.conf`) provides this:
 
 ```bash
-# From the Okapi repository root
+# From the Starling repository root
 docker run --rm -p 8443:8443 \
   --add-host=host.docker.internal:host-gateway \
   -v $(pwd)/proxy/nginx.dev.conf:/etc/nginx/conf.d/default.conf:ro \

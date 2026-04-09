@@ -10,15 +10,15 @@ created_date: 2026-01-26
 trace_source: DHF-04, SRS-001
 ---
 
-> **Project rename notice (2026-04-08):** This project was renamed from **Okapi** to **Starling**. Historical references to "Okapi" within this document are preserved for regulatory traceability. See `qms/dhf/00-Index.md` for the rename record.
+> **Project rename notice (2026-04-08, v2):** This project was renamed from **Okapi** to **Starling**. An initial cosmetic rename retained structural identifiers; the full rename was completed on this date across Java packages (`com.starling.auth.*`), Spring configuration, database (`starling_auth`), Keycloak realm (`starling`), JWT issuer, protocol field names, seed group names (`Starling_*`), and documentation. Historical traceability of the Okapi name is preserved via git history and `qms/dhf/00-Index.md` revision history; no legacy Okapi identifiers remain.
 
-> Detailed architecture for Okapi Authorization services. This document covers **RBAC**, **permissions**, **IdP group mapping**, **break-glass access**, and **research access grants**. For authentication (identity federation, sessions), see [01-AuthN-Architecture.md](01-AuthN-Architecture.md).
+> Detailed architecture for Starling Authorization services. This document covers **RBAC**, **permissions**, **IdP group mapping**, **break-glass access**, and **research access grants**. For authentication (identity federation, sessions), see [01-AuthN-Architecture.md](01-AuthN-Architecture.md).
 
 ## 1. Overview
 
 Authorization (AuthZ) answers the question: **"What can you do?"**
 
-Given an authenticated identity, the AuthZ module determines what actions that identity may perform. Okapi implements:
+Given an authenticated identity, the AuthZ module determines what actions that identity may perform. Starling implements:
 
 - **Role-Based Access Control (RBAC)**: Roles aggregate permissions
 - **Fine-grained permissions**: Individual capabilities that can be checked
@@ -146,8 +146,8 @@ Role assignments track their provenance via `assignment_source`:
 
 | Source | Description | Example |
 |--------|-------------|---------|
-| `IDP_GROUP` | Derived from IdP group membership | Okta group "Okapi_Pathologists" |
-| `LOCAL_ADMIN` | Assigned by Okapi administrator | Manual role grant via admin UI |
+| `IDP_GROUP` | Derived from IdP group membership | Okta group "Starling_Pathologists" |
+| `LOCAL_ADMIN` | Assigned by Starling administrator | Manual role grant via admin UI |
 | `BREAK_GLASS` | Temporary emergency assignment | Coverage during colleague absence |
 | `SYSTEM` | System-generated assignment | Default roles for service accounts |
 
@@ -207,10 +207,10 @@ WHERE ir.identity_id = :identity_id
 
 ### 5.1 Purpose
 
-IdP group federation maps external group memberships to internal Okapi roles, enabling:
+IdP group federation maps external group memberships to internal Starling roles, enabling:
 - Centralized access management in enterprise IdP
 - Automatic provisioning/deprovisioning aligned with HR changes
-- Reduced manual configuration in Okapi
+- Reduced manual configuration in Starling
 
 ### 5.2 Group Mapping Model
 
@@ -218,24 +218,24 @@ IdP group federation maps external group memberships to internal Okapi roles, en
 ┌───────────────────────────────────────────────────────────────────┐
 │                        IdP (e.g., Okta)                           │
 │  ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐   │
-│  │ Okapi_Admins    │  │ Okapi_Pathology │  │ Okapi_Research  │   │
+│  │ Starling_Admins    │  │ Starling_Pathology │  │ Starling_Research  │   │
 │  └────────┬────────┘  └────────┬────────┘  └────────┬────────┘   │
 └───────────┼─────────────────────┼─────────────────────┼───────────┘
             │                     │                     │
             ▼                     ▼                     ▼
 ┌───────────────────────────────────────────────────────────────────┐
-│                    Okapi IdP Group Mappings                       │
+│                    Starling IdP Group Mappings                       │
 │  ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐   │
 │  │ provider_id:    │  │ provider_id:    │  │ provider_id:    │   │
 │  │   okta.com/xxx  │  │   okta.com/xxx  │  │   okta.com/xxx  │   │
 │  │ group_name:     │  │ group_name:     │  │ group_name:     │   │
-│  │   Okapi_Admins  │  │   Okapi_Pathol  │  │   Okapi_Research│   │
+│  │   Starling_Admins  │  │   Starling_Pathol  │  │   Starling_Research│   │
 │  └────────┬────────┘  └────────┬────────┘  └────────┬────────┘   │
 └───────────┼─────────────────────┼─────────────────────┼───────────┘
             │                     │                     │
             ▼                     ▼                     ▼
 ┌───────────────────────────────────────────────────────────────────┐
-│                       Okapi Roles                                 │
+│                       Starling Roles                                 │
 │  ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐   │
 │  │     ADMIN       │  │   PATHOLOGIST   │  │   RESEARCHER    │   │
 │  └─────────────────┘  └─────────────────┘  └─────────────────┘   │
@@ -310,7 +310,7 @@ CREATE TABLE iam.break_glass_grant (
 
 ```
 ┌──────────┐     ┌─────────────────┐     ┌─────────────────┐     ┌──────────────┐
-│   User   │     │   Okapi UI      │     │   AuthZ Engine  │     │  Audit Log   │
+│   User   │     │   Starling UI      │     │   AuthZ Engine  │     │  Audit Log   │
 └────┬─────┘     └────────┬────────┘     └────────┬────────┘     └──────┬───────┘
      │                    │                       │                     │
      │ 1. Request case    │                       │                     │
@@ -444,14 +444,14 @@ public interface AuthorizationService {
 
 ## 9. JWT Augmentation (Authorization Claims)
 
-Okapi augments access tokens after AuthN succeeds by injecting authoritative authorization claims derived from the IAM schema. These claims are the only source of truth for downstream service authorization decisions.
+Starling augments access tokens after AuthN succeeds by injecting authoritative authorization claims derived from the IAM schema. These claims are the only source of truth for downstream service authorization decisions.
 
 ### 9.1 Claim Schema
 
 Required claims:
 - `roles`: array of role names (e.g., `["PATHOLOGIST","RESEARCHER"]`)
 - `permissions`: array of permission names (e.g., `["CASE_VIEW","CASE_SIGN_OUT"]`)
-- `okapi_authz_version`: string identifying the active authorization policy/mapping version
+- `starling_authz_version`: string identifying the active authorization policy/mapping version
 
 Standard claims (from IdP/issuer policy):
 - `iss`, `sub`, `aud`, `exp`, `iat`, `jti`
@@ -464,7 +464,7 @@ Standard claims (from IdP/issuer policy):
 
 ### 9.3 Revocation Policy (Option 1: Short-Lived Tokens)
 
-Okapi does **not** implement per-token revocation (no introspection, deny-list, or back-channel logout) for access tokens. Instead:
+Starling does **not** implement per-token revocation (no introspection, deny-list, or back-channel logout) for access tokens. Instead:
 
 - Access tokens are short-lived (default **10 minutes**).
 - Role/permission changes take effect on the **next token issuance** (session renewal).
@@ -482,13 +482,13 @@ This minimizes operational complexity and aligns with the clinical workflow assu
                       │ AuthN assertion
                       ▼
            ┌───────────────────────────┐
-           │   Okapi AuthN             │
+           │   Starling AuthN             │
            │   (validates, normalizes) │
            └──────────┬────────────────┘
                       │ Identity (issuer-scoped)
                       ▼
            ┌───────────────────────────┐
-           │   Okapi AuthZ             │
+           │   Starling AuthZ             │
            │   (IAM roles/permissions) │
            └──────────┬────────────────┘
                       │ Augmented token
@@ -532,12 +532,12 @@ The AuthZ module emits the following audit events:
 
 ## 12. Authorization Hardening Requirements
 
-Authorization decisions are enforced centrally by Okapi, with IdP authentication delegated to institutional SSO (Keycloak used for demo OIDC/SAML). Okapi derives roles/permissions from its authoritative IAM store and uses them to augment access tokens used by downstream services.
+Authorization decisions are enforced centrally by Starling, with IdP authentication delegated to institutional SSO (Keycloak used for demo OIDC/SAML). Starling derives roles/permissions from its authoritative IAM store and uses them to augment access tokens used by downstream services.
 
 Hardening requirements:
 1. **Default-deny**: Unmapped IdP groups confer no access; permissions must be explicitly granted. (SYS-AUTHZ-010)
 2. **Server-side enforcement**: All protected APIs perform authorization checks server-side; UI checks only inform UX. (SYS-AUTHZ-011)
-3. **Token augmentation**: Okapi augments access tokens with derived roles/permissions and refreshes them on session renewal. (SYS-AUTHZ-012)
+3. **Token augmentation**: Starling augments access tokens with derived roles/permissions and refreshes them on session renewal. (SYS-AUTHZ-012)
 
 ## 13. Security Considerations
 
@@ -546,11 +546,11 @@ Hardening requirements:
 3. **Time-bounded access**: Temporary assignments automatically expire
 4. **Break-glass accountability**: Emergency access requires justification and is fully audited
 5. **PHI minimization**: Research grants enforce appropriate PHI exposure levels
-6. **No credential storage**: Okapi does not create or store user credentials
+6. **No credential storage**: Starling does not create or store user credentials
 
-## 14. Appendix: `okapi_authz_version` Format
+## 14. Appendix: `starling_authz_version` Format
 
-`okapi_authz_version` identifies the active authorization mapping/policy used to compute roles and permissions. It is mandatory in augmented access tokens and must change when policy/mapping changes.
+`starling_authz_version` identifies the active authorization mapping/policy used to compute roles and permissions. It is mandatory in augmented access tokens and must change when policy/mapping changes.
 
 Recommended format:
 - `YYYY.MM.DD+<short-hash>` (e.g., `2026.01.26+1a2b3c4`)
@@ -561,9 +561,9 @@ Recommended format:
 
 When authorization mappings or policies change:
 1. Update the policy/config bundle under change control.
-2. Recompute the `okapi_authz_version` (`YYYY.MM.DD+<short-hash>`).
+2. Recompute the `starling_authz_version` (`YYYY.MM.DD+<short-hash>`).
 3. Deploy the updated policy and invalidate affected sessions if required by site policy.
-4. Verify new tokens carry the updated `okapi_authz_version` and audit the change.
+4. Verify new tokens carry the updated `starling_authz_version` and audit the change.
 
 Change control reference: follow the project change-control SOP when present in the QMS (e.g., `SOP-CC`).
 
@@ -573,13 +573,13 @@ Change control reference: follow the project change-control SOP when present in 
 {
   "iss": "https://idp.example.org/realms/hospital",
   "sub": "f2c7b3b4-8c2a-4b89-9c49-1f0c0e1a2b3c",
-  "aud": "okapi",
+  "aud": "starling",
   "exp": 1767184200,
   "iat": 1767183600,
   "jti": "a3dcb4d2-3b0b-4a6d-bd46-2fd7f822f3d4",
   "roles": ["PATHOLOGIST", "RESEARCHER"],
   "permissions": ["CASE_VIEW", "CASE_SIGN_OUT", "RESEARCH_VIEW"],
-  "okapi_authz_version": "2026.01.26+1a2b3c4",
+  "starling_authz_version": "2026.01.26+1a2b3c4",
   "auth_time": 1767180000,
   "acr": "urn:mace:incommon:iap:gold",
   "amr": ["pwd", "mfa"]

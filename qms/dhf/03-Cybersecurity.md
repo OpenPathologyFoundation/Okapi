@@ -10,17 +10,17 @@ trace_source: SRS-001
 trace_destination: DHF-06-VVP
 ---
 
-> **Project rename notice (2026-04-08):** This project was renamed from **Okapi** to **Starling**. Historical references to "Okapi" within this document are preserved for regulatory traceability. See `qms/dhf/00-Index.md` for the rename record.
+> **Project rename notice (2026-04-08, v2):** This project was renamed from **Okapi** to **Starling**. An initial cosmetic rename retained structural identifiers; the full rename was completed on this date across Java packages (`com.starling.auth.*`), Spring configuration, database (`starling_auth`), Keycloak realm (`starling`), JWT issuer, protocol field names, seed group names (`Starling_*`), and documentation. Historical traceability of the Okapi name is preserved via git history and `qms/dhf/00-Index.md` revision history; no legacy Okapi identifiers remain.
 
 # 1. Purpose
-Define cybersecurity assumptions, threat model (STRIDE), and security requirements for Okapi modules in scope, including:
+Define cybersecurity assumptions, threat model (STRIDE), and security requirements for Starling modules in scope, including:
 - IAM (Authentication/Authorization)
 - HAT (Histology Asset Tracking)
 
 # 2. System Context (security-relevant)
 ## 2.1 Trust boundaries
-- **External IdP (OIDC/SAML):** authenticates users; Okapi trusts issuer metadata and signed tokens.
-- **Okapi Auth System:** enforces internal RBAC (authorization) based on normalized identity + group→role mappings.
+- **External IdP (OIDC/SAML):** authenticates users; Starling trusts issuer metadata and signed tokens.
+- **Starling Auth System:** enforces internal RBAC (authorization) based on normalized identity + group→role mappings.
 - **Database (PostgreSQL):** stores normalized identities, RBAC mappings, and audit-event records.
 
 For HAT:
@@ -29,8 +29,8 @@ For HAT:
 - **HAT data store:** stores current state, requests, and append-only event history for traceability.
 
 ## 2.3 Identity provisioning and access management assumptions
-- **Identity source of truth:** user accounts and group membership are managed in the external IdP (e.g., Keycloak). Okapi does not create primary credentials.
-- **Local authorization source of truth:** Okapi stores issuer-scoped group→role mappings and local permission assignments (e.g., permission groups).
+- **Identity source of truth:** user accounts and group membership are managed in the external IdP (e.g., Keycloak). Starling does not create primary credentials.
+- **Local authorization source of truth:** Starling stores issuer-scoped group→role mappings and local permission assignments (e.g., permission groups).
 - **Timeliness:** timely provisioning reduces operational pressure to bypass controls during urgent clinical workflows (availability and safety concern).
 - **Access tokens are short-lived:** access tokens default to 10 minutes and are not per-token revocable; emergency response relies on role changes, incident controls, and short TTL.
 
@@ -113,7 +113,7 @@ The following security requirements are defined in `qms/dhf/02-SRS.md` and verif
 - `SYS-AUTHZ-002` + `SYS-AUTHN-005`: Issuer-scoped group mapping and identity uniqueness
 - `SYS-AUTHN-006`: Fail-closed behavior on invalid auth context
 - `SYS-AUTHN-008`: Authenticated identity introspection (“who am I”) endpoint
-- `SYS-AUTHZ-005`/`SYS-AUTHZ-006`: Admin access management and timely provisioning model (IdP-managed identities + Okapi-local permissions)
+- `SYS-AUTHZ-005`/`SYS-AUTHZ-006`: Admin access management and timely provisioning model (IdP-managed identities + Starling-local permissions)
 - `SYS-AUTHZ-010`/`SYS-AUTHZ-011`/`SYS-AUTHZ-012`: Default-deny authorization, server-side enforcement, and token augmentation
 - `SYS-AUD-001`/`SYS-AUD-002`: Audit event recording + schema support
 - `SYS-DATA-001`: Flyway-managed schema as a controlled baseline

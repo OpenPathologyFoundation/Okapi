@@ -3,7 +3,7 @@
 **Document Version:** 1.2  
 **Date:** January 2026  
 **Status:** Working Specification for Phase 1 Implementation  
-**Upstream Dependencies:** Okapi orchestration kernel, Authorization/Identity service, HL7/FHIR Gateway, Document Repository APIs (see §2)
+**Upstream Dependencies:** Starling orchestration kernel, Authorization/Identity service, HL7/FHIR Gateway, Document Repository APIs (see §2)
 
 ---
 
@@ -67,8 +67,8 @@ This module provides a **case-scoped diagnostic report authoring workspace** wit
 
 ### 2.2 Data Sources Used by This Module
 
-- Case header and part list (from LIS/Okapi datastore, originally HL7-fed).
-- Case workflow state (Okapi event/state store).
+- Case header and part list (from LIS/Starling datastore, originally HL7-fed).
+- Case workflow state (Starling event/state store).
 - Peripheral documents and summaries (via internal APIs, asynchronous).
 - Nomenclature dictionary (module-owned datastore).
 

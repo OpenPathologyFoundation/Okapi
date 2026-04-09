@@ -88,7 +88,7 @@ describe('ViewerBridge', () => {
 
 			expect(window.open).toHaveBeenCalledWith(
 				'/viewer/orchestrated.html',
-				'okapi-viewer',
+				'starling-viewer',
 				expect.any(String),
 			);
 			expect(stateChanges).toContain('launching');

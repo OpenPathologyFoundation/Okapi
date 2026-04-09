@@ -5,10 +5,10 @@ version: 1.0
 status: DRAFT
 owner: Lead Architect
 created_date: 2026-04-04
-trace_source: DHF-04, OKAPI-MIS-001
+trace_source: DHF-04, STARLING-MIS-001
 ---
 
-> **Project rename notice (2026-04-08):** This project was renamed from **Okapi** to **Starling**. Historical references to "Okapi" and document IDs beginning with "OKAPI-" (e.g., `OKAPI-MIS-001`) within this document are preserved for regulatory traceability. See `qms/dhf/00-Index.md` for the rename record.
+> **Project rename notice (2026-04-08, v2):** This project was renamed from **Okapi** to **Starling**. An initial cosmetic rename retained structural identifiers; the full rename was completed on this date across Java packages (`com.starling.auth.*`), Spring configuration, database (`starling_auth`), Keycloak realm (`starling`), JWT issuer, protocol field names, seed group names (`Starling_*`), and documentation. Historical traceability of the Okapi name is preserved via git history and `qms/dhf/00-Index.md` revision history; no legacy Okapi identifiers remain.
 
 # Software Design Specification — Module Orchestration Architecture
 
@@ -19,13 +19,13 @@ trace_source: DHF-04, OKAPI-MIS-001
 | **Date** | April 4, 2026 |
 | **IEC 62304 Reference** | §5.3 — Software Architectural Design |
 | **Status** | DRAFT |
-| **Parent** | OKAPI-MIS-001 (Module Integration Specification) |
+| **Parent** | STARLING-MIS-001 (Module Integration Specification) |
 
 ---
 
 ## 1. Purpose
 
-This document describes the implementation of the module orchestration layer within the Okapi web-client. It covers:
+This document describes the implementation of the module orchestration layer within the Starling web-client. It covers:
 
 - The `ModuleBridge` base class and how module-specific bridges extend it
 - The `activityStore` that tracks all open activities across the platform
@@ -33,15 +33,15 @@ This document describes the implementation of the module orchestration layer wit
 - Cross-module message forwarding
 - Migration of the existing `ViewerBridge` to the new architecture
 
-This document implements the orchestrator-side responsibilities defined in OKAPI-MIS-001 §4.
+This document implements the orchestrator-side responsibilities defined in STARLING-MIS-001 §4.
 
 ---
 
 ## 2. Scope
 
-**In scope:** Orchestrator web-client code only — the bridge classes, stores, registry, and cross-module routing that live in `Okapi/web-client/src/lib/`.
+**In scope:** Orchestrator web-client code only — the bridge classes, stores, registry, and cross-module routing that live in `Starling/web-client/src/lib/`.
 
-**Out of scope:** Module-internal architecture (see each module's own SDS), session service protocol (see FDP documentation), auth-system API design (see DHF-04-01/02), nginx configuration (see OKAPI-MIS-001 §6.1).
+**Out of scope:** Module-internal architecture (see each module's own SDS), session service protocol (see FDP documentation), auth-system API design (see DHF-04-01/02), nginx configuration (see STARLING-MIS-001 §6.1).
 
 ---
 
@@ -64,7 +64,7 @@ web-client/src/lib/
 │   ├── auth.svelte.ts                # (unchanged)
 │   └── ...
 ├── types/
-│   ├── bridge-protocol.ts            # Base protocol types (OKAPI-MIS-001 §3.4.2)
+│   ├── bridge-protocol.ts            # Base protocol types (STARLING-MIS-001 §3.4.2)
 │   ├── viewer-bridge.ts              # Viewer-specific message types (existing, extended)
 │   ├── willet-bridge.ts              # WILLET-specific message types (new)
 │   ├── activity.ts                   # Activity registry and state types
@@ -820,14 +820,14 @@ The case page (`/app/case/[accession]/+page.svelte`) gains additional launch but
 
 | Section | Traces To |
 |---|---|
-| §3 Component Architecture | OKAPI-MIS-001 §4 (Orchestrator Responsibilities) |
-| §4 ModuleBridge | OKAPI-MIS-001 §3.4 (Message Protocol), existing `viewer-bridge.ts` |
-| §5 ActivityStore | OKAPI-MIS-001 §4.2 (Activity State Store) |
-| §6 Activity Registry | OKAPI-MIS-001 §4.1 (Activity Registry) |
-| §7 Cross-Module Routing | OKAPI-MIS-001 §4.3 (Cross-Module Communication) |
-| §8 App Shell Updates | Okapi web-client `routes/app/+layout.svelte`, DHF-04-SDS/05-Worklist-Architecture |
-| §9 Case Page Updates | Okapi web-client `routes/app/case/[accession]/+page.svelte` |
-| §11 Migration Plan | OKAPI-MIS-001 §9 (Migration Path) |
+| §3 Component Architecture | STARLING-MIS-001 §4 (Orchestrator Responsibilities) |
+| §4 ModuleBridge | STARLING-MIS-001 §3.4 (Message Protocol), existing `viewer-bridge.ts` |
+| §5 ActivityStore | STARLING-MIS-001 §4.2 (Activity State Store) |
+| §6 Activity Registry | STARLING-MIS-001 §4.1 (Activity Registry) |
+| §7 Cross-Module Routing | STARLING-MIS-001 §4.3 (Cross-Module Communication) |
+| §8 App Shell Updates | Starling web-client `routes/app/+layout.svelte`, DHF-04-SDS/05-Worklist-Architecture |
+| §9 Case Page Updates | Starling web-client `routes/app/case/[accession]/+page.svelte` |
+| §11 Migration Plan | STARLING-MIS-001 §9 (Migration Path) |
 
 ---
 

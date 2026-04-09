@@ -2,7 +2,7 @@
 -- Source: large_image/test-cases/cases.json (v1.0, 2026-01-19)
 --
 -- This is NOT a Flyway migration. Run manually for dev/test:
---   psql -h localhost -U okapi_service -d okapi_auth -p 5433 -f Okapi/seed/wsi/seed-wsi-test-cases.sql
+--   psql -h localhost -U starling_service -d starling_auth -p 5433 -f Starling/seed/wsi/seed-wsi-test-cases.sql
 --
 -- Requires:
 --   V6__wsi_storage_schema.sql   (wsi schema)

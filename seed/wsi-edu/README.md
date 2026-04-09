@@ -22,7 +22,7 @@ The script is idempotent (`ON CONFLICT DO NOTHING`) — safe to re-run.
 ## Verification
 
 ```sql
--- Connect with: source Okapi/auth-system/.env && PGPASSWORD="$POSTGRES_PASSWORD" psql -h localhost -p "$POSTGRES_PORT" -U "$POSTGRES_USER" -d "$POSTGRES_DB"
+-- Connect with: source Starling/auth-system/.env && PGPASSWORD="$POSTGRES_PASSWORD" psql -h localhost -p "$POSTGRES_PORT" -U "$POSTGRES_USER" -d "$POSTGRES_DB"
 
 -- 10 cases
 SELECT case_id, collection, status, metadata->>'teaching_category' AS category

@@ -1,8 +1,8 @@
 -- WSI-EDU Seed Data — Educational teaching cases from TCGA public dataset
--- Source: Okapi/seed/wsi-edu/wsi-edu-cases.v1.json (v1.0, 2026-03-02)
+-- Source: Starling/seed/wsi-edu/wsi-edu-cases.v1.json (v1.0, 2026-03-02)
 --
 -- This is NOT a Flyway migration. Run manually for dev/test:
---   psql -h localhost -U okapi_service -d okapi_auth -p 5433 -f Okapi/seed/wsi-edu/seed-wsi-edu-cases.sql
+--   psql -h localhost -U starling_service -d starling_auth -p 5433 -f Starling/seed/wsi-edu/seed-wsi-edu-cases.sql
 --
 -- Requires:
 --   wsi_edu schema created (Flyway migration TBD)

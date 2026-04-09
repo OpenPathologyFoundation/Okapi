@@ -4,7 +4,7 @@
 
 # Starling — Open Pathology Platform
 
-> **Note:** This project was renamed from **Okapi** to **Starling** on 2026-04-08. Internal code identifiers (Java packages `com.okapi.*`, Spring configuration namespace `okapi.*`, Keycloak realm, database names, and JWT issuer strings) retain the legacy `okapi` name for regulatory traceability and build stability. User-facing documentation uses **Starling**.
+> **Project rename notice (2026-04-08, v2):** This project was renamed from **Okapi** to **Starling**. An initial cosmetic rename retained all structural identifiers (Java packages, database, Keycloak realm, JWT issuer, protocol fields); on this date the rename was completed in full across every layer — Java packages (`com.starling.auth.*`), Spring configuration namespace (`starling.*`), database (`starling_auth`), DB user (`starling_service`), Keycloak realm (`starling`), JWT issuer and audience, protocol field names, seed group names (`Starling_*`), and documentation. Historical traceability of the Okapi name is preserved via git history and the DHF revision log (`qms/dhf/00-Index.md`); no legacy Okapi identifiers remain in the codebase.
 
 Starling is a cloud-native open pathology platform designed to modernize Anatomic Pathology workflows by bridging the gap between hospital Laboratory Information Systems (LIS) and advanced AI decision support tools. The name reflects the murmuration metaphor — independent modules coordinating through a shared protocol to produce unified behavior, like a flock of starlings in flight.
 
@@ -12,7 +12,7 @@ Starling is a cloud-native open pathology platform designed to modernize Anatomi
 
 ## 🎯 Purpose
 
-Starling serves as the "Orchestration Kernel" that enables:
+Starling serves as the "Open Pathology Platform" that enables:
 -   **AI-Assisted Diagnostics**: Seamlessly integrating AI suggestions into the pathologist's workflow.
 -   **Interoperability**: Connecting on-premise hospital networks (Traditional AP LIS, Cerner) with cloud-hosted utilities via HL7/FHIR.
 -   **Clinical Decision Support (CDS)**: Automating routine tasks to reduce burnout and error rates.
@@ -53,7 +53,7 @@ The **orchestrator** (web-client) manages login, worklist, and case navigation. 
 
 The **session awareness service** implements the Focus Declaration Protocol (FDP) — a WebSocket hub that tracks which cases each user has open across viewer windows. It raises clinically important safety warnings when a pathologist has the same case open in multiple contexts, helping prevent diagnostic errors.
 
-The viewer window is a separate application (`large_image/digital-viewer`) with its own repository. See the Digital Viewer README for viewer-specific documentation.
+The viewer window is a separate application (`pelican/digital-viewer`) with its own repository. See the Digital Viewer README for viewer-specific documentation.
 
 ## 🗺️ Repository Structure
 
@@ -94,7 +94,7 @@ cd auth-system && ./gradlew bootRun
 
 **3. Tile Server (FastAPI on :8000)**
 ```bash
-# In the large_image repository
+# In the pelican repository
 source .venv/bin/activate
 large_image_server --image-dir /path/to/slides --port 8000
 ```
@@ -102,21 +102,21 @@ large_image_server --image-dir /path/to/slides --port 8000
 ```bash
 # or with database-backed case routing clinical only:
 large_image_server \
-    --db-url "postgresql://okapi_service:postgres_dev_password@localhost:5433/okapi_auth" \
+    --db-url "postgresql://starling_service:postgres_dev_password@localhost:5433/starling_auth" \
     --clinical-root test-cases/clinical \
     --port 8000
 ```
 
 ```bash
 # or with database-backed case routing with clinical and edu:
-large_image_server --db-url "postgresql://okapi_service:postgres_dev_password@localhost:5433/okapi_auth" --clinical-root test-cases/clinical --edu-root test-cases/edu --port 8000
+large_image_server --db-url "postgresql://starling_service:postgres_dev_password@localhost:5433/starling_auth" --clinical-root test-cases/clinical --edu-root test-cases/edu --port 8000
 ```
 
 
 
 **4. Digital Viewer (Vite on :5174)**
 ```bash
-# In the large_image/digital-viewer directory
+# In the pelican/digital-viewer directory
 # VITE_BASE=/viewer/ is required so Vite serves assets under /viewer/
 # when accessed through the nginx proxy.
 npm install && VITE_BASE=/viewer/ npm run dev -- --port 5174 --host
@@ -124,7 +124,7 @@ npm install && VITE_BASE=/viewer/ npm run dev -- --port 5174 --host
 
 **5. Session Awareness Service (WebSocket on :8765)**
 ```bash
-# In the large_image/digital-viewer directory
+# In the pelican/digital-viewer directory
 npm run dev:session
 `
 
@@ -168,6 +168,91 @@ The auth-system uses Spring Security's `CookieCsrfTokenRepository` so that the S
 ### Reverse Proxy Notes
 
 The nginx reverse proxy routes OIDC flows (`/oauth2/`, `/login/oauth2/`, `/logout`) directly to the Spring Boot backend — these must **not** fall through to SvelteKit. The backend requires `server.forward-headers-strategy: framework` in `application.yml` to trust the `X-Forwarded-Host` and `X-Forwarded-Port` headers from nginx, so that Spring constructs correct OIDC redirect URIs using the proxy's address (`localhost:8443`) instead of the backend's address (`host.docker.internal:8080`).
+
+## 🧹 Stopping & Cleanup
+
+Starling is a 7-process stack (3 dev servers in foreground terminals, 2 docker-compose containers, 1 standalone nginx container, and 1 python tile server). There's no single "stop" command — each layer must be torn down individually. Use one of the two recipes below depending on whether you want to **pause work** (preserve state) or **fully reset** (wipe dev data).
+
+### A. Pause work (quick stop — state preserved)
+
+This is the normal end-of-day teardown. Your Keycloak users and Postgres data survive, so the next `up -d` brings you back where you were.
+
+**1. Stop foreground dev servers** — in each terminal running `./gradlew bootRun`, `npm run dev`, `npm run dev:session`, or `large_image_server`, press `Ctrl+C`.
+
+**2. Stop the nginx proxy container.** Because it was started with `docker run --rm`, `Ctrl+C` in its terminal is sufficient and the container auto-removes. If you backgrounded it, find and kill it:
+```bash
+docker ps --filter "ancestor=nginx:alpine" --format '{{.ID}}' | xargs -r docker stop
+```
+
+**3. Stop Keycloak + Postgres (keep data).**
+```bash
+docker compose -f auth-system/docker-compose.yml stop
+```
+`stop` (not `down`) leaves the containers and their bind-mounted state in place.
+
+### B. Full reset (wipe everything)
+
+Use this when you want a clean slate — e.g., after a schema change, after editing `realm.json`, or when you want Flyway to re-run migrations from V1 against a fresh database. **This deletes all dev data, including any users/cases you created through the running app.**
+
+**1. Stop every foreground process** (`Ctrl+C` in each dev-server terminal, as in recipe A).
+
+**2. Tear down docker-compose with its volumes.**
+```bash
+docker compose -f auth-system/docker-compose.yml down -v
+```
+The `-v` flag drops any named volumes. The Postgres container in this compose file has no persistent volume declared, so each fresh `up` gives you an empty DB that Flyway re-populates on the next `bootRun`. Keycloak runs in dev mode with an ephemeral H2 store and re-imports `keycloak-data/realm.json` on startup.
+
+**3. Remove the nginx proxy container** (it should already be gone because of `--rm`, but just in case):
+```bash
+docker rm -f $(docker ps -aq --filter "ancestor=nginx:alpine") 2>/dev/null || true
+```
+
+**4. Optional — clean build artifacts.** These aren't needed for correctness, only if you want to free disk or force a fully clean rebuild:
+```bash
+# auth-system (Gradle build, test reports, jacoco coverage)
+cd auth-system && ./gradlew clean && cd ..
+
+# web-client (SvelteKit cache + Vite cache)
+cd web-client && rm -rf .svelte-kit node_modules/.vite && cd ..
+
+# digital-viewer (in the pelican repo)
+cd ../pelican/digital-viewer && rm -rf dist .vite node_modules/.vite && cd -
+```
+
+**5. Optional — reset the Keycloak theme mount.** Only needed if you edited theme CSS and Keycloak is serving a stale copy:
+```bash
+docker compose -f auth-system/docker-compose.yml down
+docker compose -f auth-system/docker-compose.yml up -d
+```
+
+### Verifying nothing is left running
+
+After either recipe, confirm all the Starling ports are free:
+```bash
+lsof -iTCP:5173,5174,8000,8080,8180,8443,8765,5433 -sTCP:LISTEN -nP
+```
+No output means the stack is fully down. If something is still listening, it's typically a stale `bootRun` or a backgrounded `npm run dev`. Find the PID and kill it:
+```bash
+lsof -iTCP:8080 -sTCP:LISTEN -nP -t | xargs -r kill
+```
+
+You can also verify no Starling containers are running:
+```bash
+docker ps --filter "name=starling-"
+```
+
+### One-liner for frustrated developers
+
+If you just want to nuke the lot and start over:
+```bash
+# From the starling/ directory:
+docker compose -f auth-system/docker-compose.yml down -v
+docker rm -f $(docker ps -aq --filter "ancestor=nginx:alpine") 2>/dev/null
+lsof -iTCP:5173,5174,8000,8080,8180,8443,8765,5433 -sTCP:LISTEN -nP -t | xargs -r kill
+(cd auth-system && ./gradlew clean)
+(cd web-client && rm -rf .svelte-kit)
+echo "Starling stack stopped. Next boot will start from an empty database."
+```
 
 ## 📘 Integration Guide
 
